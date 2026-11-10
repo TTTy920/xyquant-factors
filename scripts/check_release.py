@@ -4,10 +4,11 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import runpy
 import sys
 
 ROOT=Path(__file__).resolve().parents[1]
-ALLOWED_ROOTS={'client','plugins','scripts','docs','.agents','.github'}
+ALLOWED_ROOTS={'client','plugins','scripts','docs','.agents','.github','.codebuddy-plugin','.claude-plugin'}
 ALLOWED_FILES={'README.md','LICENSE','CHANGELOG.md','.gitignore','.gitattributes','requirements-build.lock','THIRD_PARTY_NOTICES.md'}
 SKIP_PARTS={'.git','.work','__pycache__'}
 SECRET_PATTERNS=[rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',rb'gh[pousr]_[A-Za-z0-9]{30,}',rb'github_pat_[A-Za-z0-9_]{30,}']
@@ -68,6 +69,7 @@ def validate_manifest(metadata,binary):
 
 def main():
     tools=validate_tool_contract()
+    runpy.run_path(str(ROOT/'scripts/workbuddy/package.py'))['check'](ROOT)
     failures=[];files=[]
     for path,rel in release_files():
         if rel.parts[0] not in ALLOWED_ROOTS and rel.as_posix() not in ALLOWED_FILES:failures.append('Not allowlisted: '+rel.as_posix())
