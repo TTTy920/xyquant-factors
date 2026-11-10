@@ -15,6 +15,18 @@
         "authentication": "ON_USE"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "xyquant-factors-macos",
+      "source": {
+        "source": "local",
+        "path": "./plugins/xyquant-factors-macos"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
     }
   ]
 }
