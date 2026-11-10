@@ -1,6 +1,13 @@
 # XYQuant 因子与研究资料
 
-通过 Windows Codex 插件查询股票因子、下载完整因子数据，查看团队已发布的策略说明、表现、净值和人员介绍。配套网站提供研究结果图表及受保护文件下载。客户使用自己的 Codex／大模型环境；本项目提供数据访问和研究工具，不提供云端大模型或新的在线回测引擎。
+XYQuant 为 Codex 提供因子数据和本地分析技能。请按电脑系统选择：
+
+| 电脑 | 插件 | 下载与计算 |
+| --- | --- | --- |
+| macOS | [XYQuant 因子 · macOS](plugins/xyquant-factors-macos/README.md) · [下载技能包](https://github.com/TTTy920/xyquant-factors/releases/download/macos-v0.1.0-rc.1/xyquant-factors-macos-0.1.0-rc.1.zip) | 两个 Skill 和远程 MCP 配置。完整因子由浏览器下载，Barra 归因在本机运行，无需另装 XYQuant 程序。候选版，尚未做运行验收。 |
+| Windows x64 | [XYQuant 因子 Windows 版](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1) | 原有桥接程序处理登录、自动下载到项目与文件校验。 |
+
+Mac 版的使用方式见上表；下文的安装流程和候选验收记录描述 Windows 客户端与配套网站。
 
 **`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
 
@@ -100,6 +107,7 @@
 - [管理员说明](docs/admin-guide.md) · [旧独立连接迁移](docs/migration.md)。
 - [本版候选验收](docs/acceptance-0.3.0-rc.1.md) · [早期验收记录](docs/acceptance.md)。
 - [构建与发布](docs/releasing.md) · [更新记录](CHANGELOG.md)。
+- Mac 版从 `plugins/xyquant-factors/skills/` 复用 Barra 计算代码，只单独维护因子下载的浏览器流程。更新共享技能后运行 `python3 scripts/macos/package.py`，将同步到 Mac 插件目录，并在 `.work/macos/` 生成只含公开文件的 ZIP；提交同步后的目录供 GitHub 市场安装。新增共同技能时在打包脚本的 `SHARED_FILES` 中登记要分发的文件。
 
 公开仓库包含客户端源码、插件、合成测试和 Windows 构建产物。服务端源码、真实研究资料、客户身份和凭据留在私有环境。本分支提供 `.github/workflows/verify-windows.yml`：在干净 Windows 运行器测试、构建并上传候选制品，仅读仓库，不自动发布。是否已启用和通过以对应提交的 Actions 记录为准；没有运行的 CI 仍标为未运行。
 
