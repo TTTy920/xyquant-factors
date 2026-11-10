@@ -1,16 +1,18 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "xyquant-factors-macos",
-  "version": "0.1.0-rc.1",
-  "description": "在 Mac 上查询和导出 XYQuant 因子，并用本地持仓与模型数据计算 Barra 风格归因。",
-  "author": {"name": "XYQuant"},
+  "version": "0.3.0-rc.1",
+  "description": "用自己的账号查询因子和已开放的研究资料，将完整因子下载到 Mac 项目中，并在本机计算 Barra 风格归因。",
+  "author": {
+    "name": "XYQuant"
+  },
   "repository": "https://github.com/TTTy920/xyquant-factors",
   "license": "MIT",
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "XYQuant 因子 · macOS",
-        "shortDescription": "查询因子、在浏览器下载数据，在 Mac 上计算 Barra 归因",
+        "shortDescription": "查询研究资料、下载因子到项目，在本机做 Barra 归因",
         "developerName": "XYQuant",
         "category": "Productivity",
         "defaultPrompt": [

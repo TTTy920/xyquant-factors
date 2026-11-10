@@ -23,7 +23,7 @@ description: 使用 Skill 自带的 Python 脚本在本地计算 A 股组合的 
 
 ## 计算与展示
 
-在 Skill 目录中用 Python 3 运行随包脚本：macOS 上用 `python3 scripts/attribute.py "本地输入.json"`，Windows 上用 `py -3 scripts/attribute.py "本地输入.json"`，也可以使用宿主已有的 Python 3 解释器。用实际本地文件路径替换示例文件名，从标准输出读取两张 JSON 表。脚本仅依赖 Python 标准库。没有可用的解释器或缺少原始数据时，说明缺项；不要把持仓发送给远程归因工具。
+完整 Mac 插件使用随包解释器：`/bin/sh "<插件根目录>/bin/factor-bridge" --barra "<本地输入.json的实际路径>"`，无需系统 Python。Windows 版或只复制了 Skill 的用户，在 Skill 目录中用宿主 Python 3 运行 `scripts/attribute.py`：Windows 可用 `py -3 scripts/attribute.py "本地输入.json"`，Mac 可用 `python3 scripts/attribute.py "本地输入.json"`。用实际本地文件路径替换示例文件名，从标准输出读取两张 JSON 表。脚本仅依赖 Python 标准库。没有可用的解释器或缺少原始数据时，说明缺项；不要把持仓发送给远程归因工具。
 
 - **月末组合暴露**按持仓月展示。每项暴露等于各只股票的实际持仓权重乘以其因子暴露后加总。若非零持仓缺少某项暴露，按脚本提示补充原始数据。
 - **月度风格收益贡献**按收益发生月展示。每项贡献等于上月末组合暴露乘以当月因子收益。9 月末持仓对应 10 月的贡献，贡献值 `0.012` 表示贡献 1.20 个百分点。缺少下一自然月的收益行，或该行有因子值为 `null` 时，保留持仓月的暴露，并向用户注明哪一期贡献缺失。

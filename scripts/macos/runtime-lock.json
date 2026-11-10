@@ -1,0 +1,231 @@
+{
+  "architectures": {
+    "arm64": {
+      "wheels": [
+        "annotated_types-0.8.0-py3-none-any.whl",
+        "anyio-4.15.1-py3-none-any.whl",
+        "attrs-26.1.0-py3-none-any.whl",
+        "authlib-1.8.0-py2.py3-none-any.whl",
+        "cffi-2.1.1-cp312-cp312-macosx_11_0_arm64.whl",
+        "click-8.5.0-py3-none-any.whl",
+        "cryptography-50.0.1-cp311-abi3-macosx_11_0_arm64.whl",
+        "h11-0.16.0-py3-none-any.whl",
+        "httpcore2-2.13.0-py3-none-any.whl",
+        "httpx2-2.13.0-py3-none-any.whl",
+        "idna-3.20-py3-none-any.whl",
+        "joserfc-1.7.5-py3-none-any.whl",
+        "jsonschema-4.26.0-py3-none-any.whl",
+        "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+        "mcp-2.2.0-py3-none-any.whl",
+        "mcp_types-2.2.0-py3-none-any.whl",
+        "opentelemetry_api-1.44.0-py3-none-any.whl",
+        "pycparser-3.0-py3-none-any.whl",
+        "pydantic-2.13.5-py3-none-any.whl",
+        "pydantic_core-2.46.5-cp312-cp312-macosx_11_0_arm64.whl",
+        "pyjwt-2.14.0-py3-none-any.whl",
+        "python_multipart-0.0.32-py3-none-any.whl",
+        "referencing-0.37.0-py3-none-any.whl",
+        "rpds_py-2026.6.3-cp312-cp312-macosx_11_0_arm64.whl",
+        "sse_starlette-3.4.11-py3-none-any.whl",
+        "starlette-1.6.0-py3-none-any.whl",
+        "tomlkit-0.15.1-py3-none-any.whl",
+        "truststore-0.10.4-py3-none-any.whl",
+        "typing_inspection-0.4.4-py3-none-any.whl",
+        "typing_extensions-4.16.0-py3-none-any.whl",
+        "uvicorn-0.53.0-py3-none-any.whl"
+      ],
+      "python": "cpython-3.12.14+20260825-aarch64-apple-darwin-install_only_stripped.tar.gz"
+    },
+    "x86_64": {
+      "wheels": [
+        "annotated_types-0.8.0-py3-none-any.whl",
+        "anyio-4.15.1-py3-none-any.whl",
+        "attrs-26.1.0-py3-none-any.whl",
+        "authlib-1.8.0-py2.py3-none-any.whl",
+        "cffi-2.1.1-cp312-cp312-macosx_10_15_x86_64.whl",
+        "click-8.5.0-py3-none-any.whl",
+        "h11-0.16.0-py3-none-any.whl",
+        "httpcore2-2.13.0-py3-none-any.whl",
+        "httpx2-2.13.0-py3-none-any.whl",
+        "idna-3.20-py3-none-any.whl",
+        "joserfc-1.7.5-py3-none-any.whl",
+        "jsonschema-4.26.0-py3-none-any.whl",
+        "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+        "mcp-2.2.0-py3-none-any.whl",
+        "mcp_types-2.2.0-py3-none-any.whl",
+        "opentelemetry_api-1.44.0-py3-none-any.whl",
+        "pycparser-3.0-py3-none-any.whl",
+        "pydantic-2.13.5-py3-none-any.whl",
+        "pydantic_core-2.46.5-cp312-cp312-macosx_10_12_x86_64.whl",
+        "pyjwt-2.14.0-py3-none-any.whl",
+        "python_multipart-0.0.32-py3-none-any.whl",
+        "referencing-0.37.0-py3-none-any.whl",
+        "rpds_py-2026.6.3-cp312-cp312-macosx_10_12_x86_64.whl",
+        "sse_starlette-3.4.11-py3-none-any.whl",
+        "starlette-1.6.0-py3-none-any.whl",
+        "tomlkit-0.15.1-py3-none-any.whl",
+        "truststore-0.10.4-py3-none-any.whl",
+        "typing_inspection-0.4.4-py3-none-any.whl",
+        "typing_extensions-4.16.0-py3-none-any.whl",
+        "uvicorn-0.53.0-py3-none-any.whl"
+      ],
+      "python": "cpython-3.12.14+20260825-x86_64-apple-darwin-install_only_stripped.tar.gz",
+      "cryptography": "cryptography-50.0.1-py312h6b03e6b_0.conda",
+      "openssl": "openssl-3.5.9-h332eb6d_0.conda"
+    }
+  },
+  "artifacts": {
+    "annotated_types-0.8.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl",
+      "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
+    },
+    "anyio-4.15.1-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/12/b8/4bd346e22b28902df4d651910f5242c28d84e4a5c2435ca5c3f797ed7e2e/anyio-4.15.1-py3-none-any.whl",
+      "sha256": "6152fdbbf9a77fdec97731721bebf7c4c44f7c29b424b0065826173efc7ed101"
+    },
+    "attrs-26.1.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309"
+    },
+    "authlib-1.8.0-py2.py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/b8/c6/6f124bcfbbfb20fba22c939b4e43a06dccfc0e1ca20e5634ca573cb1e271/authlib-1.8.0-py2.py3-none-any.whl",
+      "sha256": "88aebbd9af6757e14e912d5dc007ae1dc1f3e27e3b2152ce7c552ee2c3b3c121"
+    },
+    "cffi-2.1.1-cp312-cp312-macosx_10_15_x86_64.whl": {
+      "url": "https://files.pythonhosted.org/packages/10/69/43965eccfdead3b9220015fd1320e117be8c6ed01a62ffab76eeb752f5d5/cffi-2.1.1-cp312-cp312-macosx_10_15_x86_64.whl",
+      "sha256": "c8c69575568085ba0b1b10c0249d779a214aea6f6522e949a0fc9fb0fcb449d0"
+    },
+    "cffi-2.1.1-cp312-cp312-macosx_11_0_arm64.whl": {
+      "url": "https://files.pythonhosted.org/packages/54/7d/16e5a096677b5e313ca80cd5e5170efa3ea44624a82bb111925522da64b1/cffi-2.1.1-cp312-cp312-macosx_11_0_arm64.whl",
+      "sha256": "f81b3b8f3d4e343550fa4baa0e479bba9f2d29ce9c2e9b51d1ce1718d7442fcf"
+    },
+    "click-8.5.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/58/50/6c0d534c5f134586a8e1ba4e330569e32f057e33372ae556463212fb4cd3/click-8.5.0-py3-none-any.whl",
+      "sha256": "255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360"
+    },
+    "cpython-3.12.14+20260825-aarch64-apple-darwin-install_only_stripped.tar.gz": {
+      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-aarch64-apple-darwin-install_only_stripped.tar.gz",
+      "sha256": "8b0f1fa71eab7ca644e482c631807a1116fa848491051cd1c8d9429491de63a6"
+    },
+    "cpython-3.12.14+20260825-x86_64-apple-darwin-install_only_stripped.tar.gz": {
+      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-apple-darwin-install_only_stripped.tar.gz",
+      "sha256": "bd486eadd20259ad1fece28c800205baac0113c3b9cc663ddae495c19ba9db38"
+    },
+    "cryptography-50.0.1-cp311-abi3-macosx_11_0_arm64.whl": {
+      "url": "https://files.pythonhosted.org/packages/ba/19/797e2aaac9df6a66f1550f49979dc1b1e39ecd2077501c30efa81e8d5d67/cryptography-50.0.1-cp311-abi3-macosx_11_0_arm64.whl",
+      "sha256": "b8f852c65863251b9e3a1b8c150ce21e59b522dbb6a7d4bc80e680d38388e986"
+    },
+    "cryptography-50.0.1-py312h6b03e6b_0.conda": {
+      "url": "https://conda.anaconda.org/conda-forge/osx-64/cryptography-50.0.1-py312h6b03e6b_0.conda",
+      "sha256": "aaf52c68695aa81c68946d07f8c7e2899ca25e441ab6643e8884c715c4b91ef3"
+    },
+    "h11-0.16.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl",
+      "sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"
+    },
+    "httpcore2-2.13.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/7e/0d/117a771a2bb91df334b66bf4da14cd02f21aefbcfe53180f336ce55e8f90/httpcore2-2.13.0-py3-none-any.whl",
+      "sha256": "35ae5be347aa40467b4a5dc032ac67ebb6d27189fc97e8cebcf99616f6a1bb9e"
+    },
+    "httpx2-2.13.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/fe/d1/a0c72b0e006df654709fbc366cc5bcb53e5aee13e1e3395152c6dd293376/httpx2-2.13.0-py3-none-any.whl",
+      "sha256": "fc12720cedf72faa26cca6b4ca394e05c894e7d7933fc45cafe767960804e49a"
+    },
+    "idna-3.20-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl",
+      "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
+    },
+    "joserfc-1.7.5-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/67/c5/82addfd375e5ee6520644e0553e4aadde92d668c4fc99cc716d337fe7bb3/joserfc-1.7.5-py3-none-any.whl",
+      "sha256": "add2c2c84e8373b084d526a8b53daba5d7a513a118cd2dcd9fc9f979d0922159"
+    },
+    "jsonschema-4.26.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/69/90/f63fb5873511e014207a475e2bb4e8b2e570d655b00ac19a9a0ca0a385ee/jsonschema-4.26.0-py3-none-any.whl",
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce"
+    },
+    "jsonschema_specifications-2025.9.1-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/41/45/1a4ed80516f02155c51f51e8cedb3c1902296743db0bbc66608a0db2814f/jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe"
+    },
+    "mcp-2.2.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/1b/ff/8e7eade68b8a28f7da0ed1085544341b51f9c935dbf6b95c76b7edfea6a0/mcp-2.2.0-py3-none-any.whl",
+      "sha256": "bde982589473a060ae145e3406e9a5333fe538c97229ba841f5a7f92be004f81"
+    },
+    "mcp_types-2.2.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/8f/d7/6ffba5d8cd5dd9b8a19478875c50e04945314ba5074e84d749283f27f62d/mcp_types-2.2.0-py3-none-any.whl",
+      "sha256": "ea476b73ee86709ab5abc9452385ed36cc05907e582355622e294595c9a04f13"
+    },
+    "openssl-3.5.9-h332eb6d_0.conda": {
+      "url": "https://conda.anaconda.org/conda-forge/osx-64/openssl-3.5.9-h332eb6d_0.conda",
+      "sha256": "4747221abec91a82a8ebd7e8b36eac90c21c74435f9473c86c0e41a9305f2183"
+    },
+    "opentelemetry_api-1.44.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/ca/6f/a04e900f465ff3221ccc395522503e2d10e79fa21f2723c8e177aae1e0d1/opentelemetry_api-1.44.0-py3-none-any.whl",
+      "sha256": "94b98c893a91b88657eaac1e3ba89618cdb85be6918196705354f34728b2cdef"
+    },
+    "pycparser-3.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl",
+      "sha256": "b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992"
+    },
+    "pydantic-2.13.5-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/eb/47/c95ffc2009878c7aac0c5e08528022dcb885933252a88b5f170058014464/pydantic-2.13.5-py3-none-any.whl",
+      "sha256": "346a034f080da3755d8e9cb5e00e8b07de1d39e4f6e2c87d8ab7cafa0b269a73"
+    },
+    "pydantic_core-2.46.5-cp312-cp312-macosx_10_12_x86_64.whl": {
+      "url": "https://files.pythonhosted.org/packages/82/3f/76358795aa7a8c6d4f36e2cb828ad1c90ee118e1393a9281664f5aade9d4/pydantic_core-2.46.5-cp312-cp312-macosx_10_12_x86_64.whl",
+      "sha256": "b9fe6fb92520e3fd61f2e49000b6911b188824f089b75973ea06d6267f0b476d"
+    },
+    "pydantic_core-2.46.5-cp312-cp312-macosx_11_0_arm64.whl": {
+      "url": "https://files.pythonhosted.org/packages/db/50/26b091836076ce4cb2fac264186936acc069e0595772cfd02a563bc4761a/pydantic_core-2.46.5-cp312-cp312-macosx_11_0_arm64.whl",
+      "sha256": "a39ac25a9a2fa4072efdb429833c4a4c8009a51ff9eea3eeae131713cd27991e"
+    },
+    "pyjwt-2.14.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/9c/97/672cb32ce0dfea44b740cb7b4f97038463b9cf7c0ead1aacf595572851d6/pyjwt-2.14.0-py3-none-any.whl",
+      "sha256": "ad0cef71c756a56e74863c2919cf0985f72decbcfcb550ee2f422e7c62b5eedc"
+    },
+    "python_multipart-0.0.32-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/e1/04/e8135ebd1ad02c56ec633277529b2602ff99ff634be76cdba5744cf554fd/python_multipart-0.0.32-py3-none-any.whl",
+      "sha256": "ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23"
+    },
+    "referencing-0.37.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/2c/58/ca301544e1fa93ed4f80d724bf5b194f6e4b945841c5bfd555878eea9fcb/referencing-0.37.0-py3-none-any.whl",
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231"
+    },
+    "rpds_py-2026.6.3-cp312-cp312-macosx_10_12_x86_64.whl": {
+      "url": "https://files.pythonhosted.org/packages/5c/be/2e8974163072e7bab7df1a5acd54c4498e75e35d6d18b864d3a9d5dadc92/rpds_py-2026.6.3-cp312-cp312-macosx_10_12_x86_64.whl",
+      "sha256": "a0811d33247c3d6128a3001d763f2aa056bb3425204335400ac54f89eec3a0d0"
+    },
+    "rpds_py-2026.6.3-cp312-cp312-macosx_11_0_arm64.whl": {
+      "url": "https://files.pythonhosted.org/packages/a4/73/319dfa745dd668efe89309141ded489126461fcecd2b8f3a3cda185129b6/rpds_py-2026.6.3-cp312-cp312-macosx_11_0_arm64.whl",
+      "sha256": "538949e262e46caa31ac01bdb3c1e8f642622922cacbabbae6a8445d9dc33eaf"
+    },
+    "sse_starlette-3.4.11-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/98/6a/2ba3ed4a69babf3afdddf7d8314a48d87562c0a442206bbc2a1b50d5efc0/sse_starlette-3.4.11-py3-none-any.whl",
+      "sha256": "c7b2244bdff016fe7f64e10075e89a3e6bbf899649cc89b0fe884b5545042453"
+    },
+    "starlette-1.6.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/c8/cb/6a6a47d5b464bd08695d254f3da6e7986cc70c9fa5d778eda57538edfe56/starlette-1.6.0-py3-none-any.whl",
+      "sha256": "a86dd39d14bb45f85a3d18525215a9ef0cfd1f192ac793220e72598c90335f0c"
+    },
+    "tomlkit-0.15.1-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/13/bc/8c13eb66537dce1d2bd3a57132902f38d0e7f5bb46fa9f4daed9fe9d76ee/tomlkit-0.15.1-py3-none-any.whl",
+      "sha256": "177a05aece5a8ca5266fd3c448abb47b8d352f09d477d3ca8332db4d89b24304"
+    },
+    "truststore-0.10.4-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/19/97/56608b2249fe206a67cd573bc93cd9896e1efb9e98bce9c163bcdc704b88/truststore-0.10.4-py3-none-any.whl",
+      "sha256": "adaeaecf1cbb5f4de3b1959b42d41f6fab57b2b1666adb59e89cb0b53361d981"
+    },
+    "typing_extensions-4.16.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+    },
+    "typing_inspection-0.4.4-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl",
+      "sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147"
+    },
+    "uvicorn-0.53.0-py3-none-any.whl": {
+      "url": "https://files.pythonhosted.org/packages/76/18/0eea75741ee812e9f598b687619ce2454f6c3a1c5cd21ea990ec6bd26f45/uvicorn-0.53.0-py3-none-any.whl",
+      "sha256": "e8dca71ec86dce5f04e333f0d56cdedf942446e6643b9cea1af0d6d3a02cb03e"
+    }
+  }
+}

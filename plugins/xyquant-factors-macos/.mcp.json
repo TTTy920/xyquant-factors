@@ -1,19 +1,21 @@
 {
   "mcpServers": {
     "xyquant_factors": {
-      "url": "https://47.103.215.251/mcp",
-      "enabled_tools": [
-        "list_factors",
-        "get_factor_info",
-        "preview_factor",
-        "create_export",
-        "get_export",
-        "list_exports"
+      "command": "/bin/sh",
+      "args": [
+        "./bin/factor-bridge",
+        "--stdio"
       ],
-      "scopes": [
-        "factors:read",
-        "factors:export"
-      ]
+      "cwd": ".",
+      "env_vars": [
+        "HOME",
+        "TMPDIR",
+        "CODEX_HOME",
+        "LANG",
+        "LC_CTYPE"
+      ],
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 60
     }
   }
 }

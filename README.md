@@ -4,7 +4,7 @@ XYQuant 为 Codex 提供因子数据和本地分析技能。请按电脑系统�
 
 | 电脑 | 插件 | 下载与计算 |
 | --- | --- | --- |
-| macOS | [XYQuant 因子 · macOS](plugins/xyquant-factors-macos/README.md) · [下载技能包](https://github.com/TTTy920/xyquant-factors/releases/download/macos-v0.1.0-rc.1/xyquant-factors-macos-0.1.0-rc.1.zip) | 两个 Skill 和远程 MCP 配置。完整因子由浏览器下载，Barra 归因在本机运行，无需另装 XYQuant 程序。候选版，尚未做运行验收。 |
+| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.1) | 与 Windows 共用 20 个客户端工具入口：账号授权、因子和已开放研究资料查询、下载到项目并校验；Barra 归因在本机运行。已打包，尚未做运行验收。 |
 | Windows x64 | [XYQuant 因子 Windows 版](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1) | 原有桥接程序处理登录、自动下载到项目与文件校验。 |
 
 Mac 版的使用方式见上表；下文的安装流程和候选验收记录描述 Windows 客户端与配套网站。
@@ -63,7 +63,7 @@ Mac 版的使用方式见上表；下文的安装流程和候选验收记录描�
 | 软件版本及研究发布事件 | `get_research_updates` |
 | 完整净值 CSV、原始 Excel 及图表 | 受保护研究中心；研究工具返回网页入口 |
 
-策略对比已下线：网页入口和专属 API 停止提供服务，远端 MCP 不再发现 `compare_strategies`。既有 `0.3.0-rc.1` 本地插件仍列出 20 个工具，其中对比入口只返回已下线说明，不返回对比数据；远端现在发现 13 个数据工具。无需重新登录。本次没有更新客户端 EXE、标签或发布资产。登录管理和本地文件下载仍由 Windows 插件完成。
+策略对比已下线：网页入口和专属 API 停止提供服务，远端 MCP 不再发现 `compare_strategies`。既有 `0.3.0-rc.1` 本地插件仍列出 20 个工具，其中对比入口只返回已下线说明，不返回对比数据；该记录对应当时的远端配置；实际开放工具以当前服务器设置为准。无需重新登录。本次没有更新客户端 EXE、标签或发布资产。登录管理和项目文件下载由各平台的本地插件完成。
 
 因子预览最多 50 行，完整数据下载到 `<项目目录>/downloads/factors/<任务编号>/`，校验大小和 SHA-256 后才算完成。每个导出最多 10 个因子、200 个指定股票代码、5,000 万行、1 GiB、30 分钟；完成文件保留一小时。
 
@@ -107,7 +107,7 @@ Mac 版的使用方式见上表；下文的安装流程和候选验收记录描�
 - [管理员说明](docs/admin-guide.md) · [旧独立连接迁移](docs/migration.md)。
 - [本版候选验收](docs/acceptance-0.3.0-rc.1.md) · [早期验收记录](docs/acceptance.md)。
 - [构建与发布](docs/releasing.md) · [更新记录](CHANGELOG.md)。
-- Mac 版从 `plugins/xyquant-factors/skills/` 复用 Barra 计算代码，只单独维护因子下载的浏览器流程。更新共享技能后运行 `python3 scripts/macos/package.py`，将同步到 Mac 插件目录，并在 `.work/macos/` 生成只含公开文件的 ZIP；提交同步后的目录供 GitHub 市场安装。新增共同技能时在打包脚本的 `SHARED_FILES` 中登记要分发的文件。
+- [Mac 打包说明](scripts/macos/README.md)：两个系统共用客户端和两份 Skills，Mac 只适配系统钥匙串、文件和进程；同一份 ZIP 包含两种芯片的运行环境。
 
 公开仓库包含客户端源码、插件、合成测试和 Windows 构建产物。服务端源码、真实研究资料、客户身份和凭据留在私有环境。本分支提供 `.github/workflows/verify-windows.yml`：在干净 Windows 运行器测试、构建并上传候选制品，仅读仓库，不自动发布。是否已启用和通过以对应提交的 Actions 记录为准；没有运行的 CI 仍标为未运行。
 

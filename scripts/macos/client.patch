@@ -1,0 +1,212 @@
+--- a/auth_client.py
++++ b/auth_client.py
+@@ -1,12 +1,8 @@
+-"""Browser OAuth + per-Windows-user encrypted credentials. Never expose tokens to tools."""
++"""Browser OAuth + per-user macOS Keychain credentials. Never expose tokens to tools."""
+ import base64
+-import contextlib
+-import ctypes
+-from ctypes import wintypes
+ import hashlib
+ import http.server
+ import json
+-import os
+ from pathlib import Path
+ import secrets
+ import threading
+@@ -15,57 +11,12 @@
+ import urllib.parse
+ import urllib.request
+ import webbrowser
++from macos_platform import ClientError, Credentials, app_dir, mutex
+ 
+ ORIGIN='https://47.103.215.251'
+ RESOURCE=ORIGIN+'/mcp'
+ VERSION='0.3.0-rc.1'
+ SCOPES='factors:read factors:export factors:download research:read'
+-
+-
+-class ClientError(Exception):
+-    def __init__(self,message,code='client_error'):super().__init__(message);self.code=code
+-
+-
+-def app_dir():
+-    return Path(os.environ.get('LOCALAPPDATA',str(Path.home()/'AppData'/'Local')))/'XYQuant'/'FactorConnect'
+-
+-
+-@contextlib.contextmanager
+-def mutex(name,timeout=60,root=None):
+-    if os.name!='nt':raise ClientError('因子插件首版仅支持 Windows。')
+-    kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+-    kernel.CreateMutexW.argtypes=[ctypes.c_void_p,wintypes.BOOL,wintypes.LPCWSTR];kernel.CreateMutexW.restype=wintypes.HANDLE
+-    kernel.WaitForSingleObject.argtypes=[wintypes.HANDLE,wintypes.DWORD];kernel.WaitForSingleObject.restype=wintypes.DWORD
+-    kernel.ReleaseMutex.argtypes=[wintypes.HANDLE];kernel.CloseHandle.argtypes=[wintypes.HANDLE]
+-    # Include the per-user directory, so another Windows account has its own lock namespace.
+-    identity=hashlib.sha256(str(Path(root) if root else app_dir()).lower().encode()).hexdigest()[:24]
+-    handle=kernel.CreateMutexW(None,False,'Local\\XYQuant-'+identity+'-'+name)
+-    if not handle:raise ClientError('无法创建本地互斥锁。')
+-    result=kernel.WaitForSingleObject(handle,int(timeout*1000))
+-    try:
+-        if result not in (0,0x80):raise ClientError('另一个连接操作正在进行，请稍后重试。','busy')
+-        yield
+-    finally:
+-        if result in (0,0x80):kernel.ReleaseMutex(handle)
+-        kernel.CloseHandle(handle)
+-
+-
+-class Blob(ctypes.Structure):
+-    _fields_=[('size',wintypes.DWORD),('data',ctypes.POINTER(ctypes.c_byte))]
+-
+-
+-def crypt(data,decrypt=False):
+-    if os.name!='nt':raise ClientError('凭据加密需要 Windows。')
+-    raw=ctypes.create_string_buffer(data);source=Blob(len(data),ctypes.cast(raw,ctypes.POINTER(ctypes.c_byte)));result=Blob()
+-    dll=ctypes.WinDLL('crypt32',use_last_error=True)
+-    fn=dll.CryptUnprotectData if decrypt else dll.CryptProtectData
+-    fn.argtypes=[ctypes.POINTER(Blob),ctypes.c_void_p,ctypes.c_void_p,ctypes.c_void_p,ctypes.c_void_p,wintypes.DWORD,ctypes.POINTER(Blob)]
+-    fn.restype=wintypes.BOOL
+-    if not fn(ctypes.byref(source),None,None,None,None,1,ctypes.byref(result)):
+-        raise ClientError('无法读取此 Windows 用户的登录状态，请重新登录。','login_required')
+-    try:return ctypes.string_at(result.data,result.size)
+-    finally:
+-        kernel=ctypes.WinDLL('kernel32');kernel.LocalFree.argtypes=[ctypes.c_void_p];kernel.LocalFree(result.data)
+ 
+ 
+ class NoRedirect(urllib.request.HTTPRedirectHandler):
+@@ -75,21 +26,18 @@
+ class AuthClient:
+     def __init__(self,root=None):
+         self.root=Path(root) if root else app_dir();self.root.mkdir(parents=True,exist_ok=True)
+-        self.file=self.root/'credentials.dpapi'
++        self.credentials = Credentials(self.root)
+         self.opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect())
+ 
+     def _read(self):
+-        if not self.file.exists():raise ClientError('尚未连接因子账号，请调用 start_login 在浏览器登录授权。','login_required')
+-        try:data=json.loads(crypt(self.file.read_bytes(),True))
++        try:data=json.loads(self.credentials.read())
+         except (OSError,ValueError,TypeError):raise ClientError('登录状态损坏，请重新登录。','login_required') from None
+         if not isinstance(data,dict):raise ClientError('登录状态损坏，请重新登录。','login_required')
+         if data.get('issuer')!=ORIGIN:raise ClientError('登录状态的服务地址不匹配。','login_required')
+         return data
+ 
+     def _save(self,data):
+-        temporary=self.file.with_suffix('.'+secrets.token_hex(6)+'.tmp')
+-        try:temporary.write_bytes(crypt(json.dumps(data).encode()));temporary.replace(self.file)
+-        finally:temporary.unlink(missing_ok=True)
++        self.credentials.save(json.dumps(data).encode("utf-8"))
+ 
+     def json_request(self,path,data=None,token=None,form=False):
+         headers={'Accept':'application/json'};body=None
+@@ -126,7 +74,7 @@
+             if not force and data.get('access_expires_at',0)>time.time()+90:return data['access_token']
+             try:updated=self.json_request('/factors/oauth/token',dict(grant_type='refresh_token',refresh_token=data['refresh_token'],client_id=data['client_id'],resource=RESOURCE),form=True)
+             except ClientError as error:
+-                if error.code=='login_required':self.file.unlink(missing_ok=True)
++                if error.code=='login_required':self.credentials.clear()
+                 raise
+             data.update(updated);data['access_expires_at']=time.time()+updated['expires_in'];self._save(data)
+             return data['access_token']
+@@ -141,7 +89,7 @@
+                         if error.code=='login_required':return
+                         raise
+                     if data.get('access_token')!=token:return
+-                self.file.unlink(missing_ok=True)
++                self.credentials.clear()
+         except ClientError as error:
+             if error.code=='busy':return
+             raise
+@@ -180,7 +128,7 @@
+             server=CallbackServer(('127.0.0.1',0),Handler);server.timeout=1
+             redirect='http://127.0.0.1:'+str(server.server_port)+callback
+             try:
+-                client=self.json_request('/factors/oauth/register',dict(client_name='XYQuant 因子插件 Windows',application_type='native',redirect_uris=[redirect],token_endpoint_auth_method='none'))
++                client=self.json_request('/factors/oauth/register',dict(client_name='XYQuant 因子插件 macOS',application_type='native',redirect_uris=[redirect],token_endpoint_auth_method='none'))
+                 check_cancelled()
+                 params=dict(client_id=client['client_id'],redirect_uri=redirect,response_type='code',scope=SCOPES,state=state,resource=RESOURCE,
+                     code_challenge_method='S256',code_challenge=base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip('='))
+@@ -200,19 +148,28 @@
+                         try:self.json_request('/factors/oauth/revoke',dict(token=data['refresh_token'],client_id=data['client_id']),form=True)
+                         except ClientError:pass
+                         raise ClientError('已取消登录。','login_cancelled')
+-                    try:previous=self._read()
+-                    except ClientError:previous=None
++                    try:
++                        try:previous = self._read()
++                        except ClientError as error:
++                            if error.code != 'login_required':raise
++                            previous = None
++                        self._save(data)
++                    except ClientError:
++                        try:self.json_request('/factors/oauth/revoke',dict(token=data['refresh_token'],client_id=data['client_id']),form=True)
++                        except ClientError:pass
++                        raise
+                     if previous:
+                         try:self.json_request('/factors/oauth/revoke',dict(token=previous['refresh_token'],client_id=previous['client_id']),form=True)
+                         except ClientError:pass
+-                    self._save(data)
+                 return self.identity()
+             finally:server.server_close()
+ 
+     def disconnect(self):
+         with mutex('credentials',root=self.root):
+             try:data=self._read()
+-            except ClientError:self.file.unlink(missing_ok=True);return
++            except ClientError as error:
++                if error.code != 'login_required':raise
++                self.credentials.clear();return
+             # If offline, keep the credentials so a later disconnect can revoke the server grant.
+             self.json_request('/factors/oauth/revoke',dict(token=data['refresh_token'],client_id=data['client_id']),form=True)
+-            self.file.unlink(missing_ok=True)
++            self.credentials.clear()
+--- a/downloads.py
++++ b/downloads.py
+@@ -18,6 +18,7 @@
+ import time
+ import urllib.error
+ import urllib.request
++from macos_platform import publish_download
+ from auth_client import AuthClient,ClientError,ORIGIN,app_dir,mutex
+ from remote import remote_call
+ from runtime import process_alive,runtime_status,spawn_worker
+@@ -274,7 +275,6 @@
+                 time.sleep((5,15,30)[attempt])
+             self.update(row['id'],status='verifying',bytes=size)
+             self.check_identity(row);safe_folder(row['project'],row['job_id'])
+-            # Windows rename fails if a destination appeared concurrently; never overwrite.
+-            partial.rename(destination)
++            publish_download(partial, destination)
+             self.update(row['id'],status='ready',path=str(destination),sha256=job['sha256'],bytes=size,total=size)
+         finally:partial.unlink(missing_ok=True)
+--- a/runtime.py
++++ b/runtime.py
+@@ -77,7 +77,7 @@
+     if getattr(sys, 'frozen', False):
+         command = [str(ensure_runtime(root=root))]
+     else:
+-        command = [sys.executable, str(Path(__file__).with_name('factor_bridge.py').absolute())]
++        command = [sys.executable, '-I', '-B', str(Path(sys.argv[0]).resolve())]
+     command += [flags[mode], *map(str, args), '--state-root', str(root)]
+     options = dict(stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    close_fds=True, cwd=str(root))
+@@ -95,7 +95,8 @@
+                                     subprocess.CREATE_BREAKAWAY_FROM_JOB)
+     else:
+         options['start_new_session'] = True
+-    lifetime='independent'
++    # A new POSIX session alone cannot prove that the host will keep a worker alive.
++    lifetime='unknown'
+     try:
+         process=subprocess.Popen(command, **options)
+     except OSError as error:
+--- a/configuration.py
++++ b/configuration.py
+@@ -57,7 +57,7 @@
+         entry=servers.get(SERVER)
+         if entry is None:
+             return {'changed':False,'config_path':str(path),'backup_path':None,'restart_required':False}
+-        if not owned(entry,app_dir()/'FactorBridge.exe'):
++        if not owned(entry,app_dir()/'factor-bridge'):
+             raise ClientError('xyquant_factors 的旧配置无法确认为本服务，已停止迁移；请保留原配置并检查服务归属。','config_conflict')
+         del doc['mcp_servers'][SERVER]
+         backup=_replace_config(path,original,tomlkit.dumps(doc))
