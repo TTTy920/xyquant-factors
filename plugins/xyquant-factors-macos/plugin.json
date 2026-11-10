@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "xyquant-factors-macos",
+  "version": "0.1.0-rc.1",
+  "description": "在 Mac 上查询和导出 XYQuant 因子，并用本地持仓与模型数据计算 Barra 风格归因。",
+  "author": {"name": "XYQuant"},
+  "repository": "https://github.com/TTTy920/xyquant-factors",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "XYQuant 因子 · macOS",
+        "shortDescription": "查询因子、在浏览器下载数据，在 Mac 上计算 Barra 归因",
+        "developerName": "XYQuant",
+        "category": "Productivity",
+        "defaultPrompt": [
+          "查一下波动率相关因子有哪些，可以查询哪些日期。",
+          "把我指定的因子和日期范围导出，告诉我在哪里下载。",
+          "用我的本地月末持仓、个股暴露和因子收益做 Barra 归因。"
+        ]
+      }
+    }
+  }
+}
