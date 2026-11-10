@@ -2,7 +2,7 @@
 
 通过 Windows Codex 插件查询股票因子、下载完整因子数据，查看团队已发布的策略说明、表现、净值和人员介绍。配套网站提供研究结果图表及受保护文件下载。客户使用自己的 Codex／大模型环境；本项目提供数据访问和研究工具，不提供云端大模型或新的在线回测引擎。
 
-**`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/ZXChen299/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
+**`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
 
 本版提供统一搜索和软件／研究资料发布更新；策略对比已下线。沿用已有网络重试、安全诊断与固定输入的 Windows CI。服务端、发布包及已有 Windows 用户的已安装插件均已完成本轮验证；既有 [0.2.0-rc.2 验收记录](docs/acceptance-0.2.0-rc.2.md)保留为历史证据，不能代替本候选验收。
 
@@ -26,7 +26,7 @@
 1. 在 Codex 插件市场添加本项目 GitHub 来源，选择已发布的固定版本 `v0.3.0-rc.1`，安装 **XYQuant 因子**。使用已配置 Codex CLI 时：
 
    ```powershell
-   codex plugin marketplace add https://github.com/ZXChen299/xyquant-factors.git --ref v0.3.0-rc.1
+   codex plugin marketplace add https://github.com/TTTy920/xyquant-factors.git --ref v0.3.0-rc.1
    codex plugin add xyquant-factors@xyquant
    ```
 
