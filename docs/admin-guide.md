@@ -4,7 +4,7 @@
 
 ## 向客户交付
 
-当前预发布版已上线，可交付 [v0.2.0-rc.1 发布页](https://github.com/ZXChen299/xyquant-factors/releases/tag/v0.2.0-rc.1)、GitHub 插件市场来源和[注册页](https://47.103.215.251/factors/apply)即可。普通客户无需 API Key，无需单独安装连接助手。
+当前预发布版已上线，可交付 [v0.3.0-rc.1 发布页](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)、GitHub 插件市场来源和[注册页](https://47.103.215.251/factors/apply)即可。普通客户无需 API Key，无需单独安装连接助手。
 
 当前网站采用自助注册：填写姓名、手机号、机构名称，并使用默认或自设密码，立即开通。注册初始权限为永久有效、全部因子可用，包含之后新增因子；管理员可按业务需要调整客户范围。客户端源码公开不等于数据开放，所有请求仍须登录并通过权限检查。
 
