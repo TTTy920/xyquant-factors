@@ -46,6 +46,29 @@ def release_files():
         if any(part in SKIP_PARTS for part in rel.parts) or not path.is_file():continue
         yield path,rel
 
+def validate_skill_parity():
+    plugins = [ROOT / 'plugins' / name for name in ('xyquant-factors', 'xyquant-factors-macos')]
+    payloads = []
+    for plugin in plugins:
+        skills = plugin / 'skills'
+        folders = sorted(p.parent for p in skills.glob('*/SKILL.md'))
+        if not folders:
+            raise ValueError('Missing Skills in ' + plugin.name)
+        payloads.append({
+            path.relative_to(skills).as_posix(): path.read_bytes()
+            for folder in folders for path in folder.rglob('*')
+            if path.is_file() and '__pycache__' not in path.parts
+        })
+    differences = sorted(key for key in payloads[0].keys() | payloads[1].keys()
+                         if payloads[0].get(key) != payloads[1].get(key))
+    if differences:
+        raise ValueError('Windows and macOS Skill payloads differ: ' + ', '.join(differences))
+    versions = {json.loads((plugin / '.codex-plugin/plugin.json').read_text(encoding='utf8'))['version']
+                for plugin in plugins}
+    if len(versions) != 1:
+        raise ValueError('Windows and macOS plugin versions differ.')
+    return sorted(p.split('/')[0] for p in payloads[0] if p.endswith('/SKILL.md'))
+
 def validate_manifest(metadata,binary):
     from build import source_digest,build_inputs,pe_machine,PYTHON_VERSION
     digest=hashlib.sha256(binary.read_bytes()).hexdigest()
@@ -69,6 +92,7 @@ def validate_manifest(metadata,binary):
 
 def main():
     tools=validate_tool_contract()
+    skills=validate_skill_parity()
     runpy.run_path(str(ROOT/'scripts/workbuddy/package.py'))['check'](ROOT)
     failures=[];files=[]
     for path,rel in release_files():
@@ -83,6 +107,6 @@ def main():
     metadata=json.loads((plugin/'release.json').read_text(encoding='utf-8'))
     digest=validate_manifest(metadata,binary)
     if failures:raise SystemExit('\n'.join(failures))
-    print(json.dumps({'checked_files':len(files),'runtime_sha256':digest,**tools,'publish_files':files},ensure_ascii=False,indent=2))
+    print(json.dumps({'checked_files':len(files),'runtime_sha256':digest,'skills':skills,**tools,'publish_files':files},ensure_ascii=False,indent=2))
 
 if __name__=='__main__':main()

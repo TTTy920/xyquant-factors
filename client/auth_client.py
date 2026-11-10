@@ -18,7 +18,7 @@ import webbrowser
 
 ORIGIN='https://47.103.215.251'
 RESOURCE=ORIGIN+'/mcp'
-VERSION='0.3.0-rc.1'
+VERSION='0.3.0-rc.6'
 SCOPES='factors:read factors:export factors:download research:read'
 
 

@@ -6,16 +6,10 @@ WorkBuddy 用户请看 [WorkBuddy 安装说明](docs/workbuddy.md)。两个客�
 
 | 电脑 | 插件 | 下载与计算 |
 | --- | --- | --- |
-| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.4) | `0.3.0-rc.4`：三个 Skill，支持因子查询下载、本地 Barra 归因和本地策略选股归因；16 个客户端工具，策略原表查询统一为一个入口。 |
-| Windows x64 | [XYQuant 因子 Windows 版](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1) | 原有桥接程序处理登录、自动下载到项目与文件校验。 |
+| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [Mac 发布包](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.6) | 随包运行本地归因，登录授权保存在系统钥匙串。 |
+| Windows x64 | [Windows 使用说明](docs/customer-guide.md) · [Windows 发布包](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.6) | 随包运行本地归因，用系统 DPAPI 保护登录授权。 |
 
-Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/acceptance-macos-0.3.0-rc.4.md)。本轮只发布 Mac；下文的安装流程和候选验收记录描述 Windows `0.3.0-rc.1` 客户端与配套网站。
-
-**`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
-
-本版提供统一搜索和软件／研究资料发布更新；策略对比已下线。沿用已有网络重试、安全诊断与固定输入的 Windows CI。服务端、发布包及已有 Windows 用户的已安装插件均已完成本轮验证；既有 [0.2.0-rc.2 验收记录](docs/acceptance-0.2.0-rc.2.md)保留为历史证据，不能代替本候选验收。
-
-网站本轮整理研究首页、品牌与策略详情的阅读顺序：中性目录及已有更新优先，原表指标带组合、期间和来源；因子名称优先且可搜索说明。接入帮助按使用场景组织。客户端仍为 `0.3.0-rc.1`，无须重新安装或新增授权，见 [网页内容与版式说明](docs/website-editorial.md)。
+`0.3.0-rc.6` 为两端同步的预发布版本。两个完整插件提供相同的三个 Skill（因子查询与下载、Barra 归因、策略选股归因）和 16 个客户端工具。归因输入为本地持仓或评分资料，两个系统都可直接运行随包脚本。服务端逐次根据账号授权决定可用数据。[验证范围](docs/acceptance-0.3.0-rc.6.md)
 
 ## 访问入口
 
@@ -32,10 +26,10 @@ Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/
 
 支持 Windows 10/11 x64 的本地 Codex。插件自带运行程序，无需另装 Python、复制 API Key 或单独打开连接助手。
 
-1. 在 Codex 插件市场添加本项目 GitHub 来源，选择已发布的固定版本 `v0.3.0-rc.1`，安装 **XYQuant 因子**。使用已配置 Codex CLI 时：
+1. 在 Codex 插件市场添加本项目 GitHub 来源，选择 Windows 固定版本 `v0.3.0-rc.6`，安装 **XYQuant 因子**。使用已配置 Codex CLI 时：
 
    ```powershell
-   codex plugin marketplace add https://github.com/TTTy920/xyquant-factors.git --ref v0.3.0-rc.1
+   codex plugin marketplace add https://github.com/TTTy920/xyquant-factors.git --ref v0.3.0-rc.6
    codex plugin add xyquant-factors@xyquant
    ```
 
@@ -69,7 +63,7 @@ Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/
 
 `query_strategy_research` 不传 `strategy_id` 时搜索目录；指定目录中的 ID 后默认同时返回介绍和表现。`sections` 支持 `info`、`performance`、`nav` 及其组合，所有内容固定在同一已发布工作簿版本。后续净值页携带返回的 `version` 与 `next_offset`，每页最多 50 行。四个旧的独立查询入口及团队入口在远端保持关闭。
 
-研究结果保留原表指标名称、统计期间、空值和警告，不重算回测。Mac `0.3.0-rc.4` 使用统一策略查询入口；策略选股归因已改为 Skill 自带本地脚本，不再转发 `explain_strategy_selection`。旧安装需要更新，Windows 包另行同步。
+研究结果保留原表指标名称、统计期间、空值和警告，不重算回测。本版两个平台都使用统一策略查询入口 `query_strategy_research`，在 Skill 内计算选股归因。
 
 统一搜索只显示现有授权可见的类型，翻页固定研究 `version` 和因子 `catalog_version`。发布更新区分软件版本、资料发布时间与原始净值截止日，翻页固定 `publication_cursor`；不会自动升级软件或申请新授权。
 
@@ -94,11 +88,11 @@ Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/
 
 账号的数据权限与客户端 OAuth 授权分别检查。**升级插件或刷新旧令牌不会自动增加 `research:read`。** 遇到研究授权不足时，先明确同意替换当前连接，再断开并重新登录，在网页确认新增范围。断开影响同一 Windows 用户共享的连接，不删除已下载文件。
 
-连接最长有效 30 天，并受账号有效期限制。短期 access token 可在有效连接内自动刷新，刷新不扩大 scope 或延长连接期限。凭据由 Windows DPAPI 加密，默认保存在 `%LOCALAPPDATA%/XYQuant/FactorConnect`，不写入项目仓库或插件安装目录。
+插件授权跟随账号有效期，续期后客户端向服务器核对并更新连接日期，短期访问令牌自动刷新。凭据由 Windows DPAPI 加密，默认保存在 `%LOCALAPPDATA%/XYQuant/FactorConnect`，不写入项目仓库或插件安装目录。
 
 ## 从旧版本升级
 
-- 固定在旧标签的客户需在确认新 Release 已发布后，将市场来源选择为 `v0.3.0-rc.1`，再按 Codex 提示更新或重新安装插件；只刷新旧固定标签不会变成新版。既有旧独立 MCP 入口保留，只有明确要求迁移时才移除。
+- 固定在旧标签的客户需在确认新 Release 已发布后，将 Windows 市场来源选择为 `v0.3.0-rc.6`，再按 Codex 提示更新或重新安装插件；只刷新旧固定标签不会变成新版。既有旧独立 MCP 入口保留，只有明确要求迁移时才移除。
 - 新增工具需要客户端刷新工具列表，按界面提示重新打开会话。仅更新同一 Windows 用户的默认连接时，插件下一次调用会读取新凭据；已验证同一 `0.2.0-rc.1` 进程无需重启即可读取新连接。
 - 服务端上线、GitHub 文档更新和本机连接切换是不同操作。网站更新不会替客户升级插件或同意 OAuth 授权。
 
@@ -107,7 +101,7 @@ Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/
 - [客户使用说明](docs/customer-guide.md)：安装、网页登录、升级和常见问题。
 - [研究工具说明](docs/research-mcp.md)：数据版本、统计口径和权限边界。
 - [管理员说明](docs/admin-guide.md) · [旧独立连接迁移](docs/migration.md)。
-- [本版候选验收](docs/acceptance-0.3.0-rc.1.md) · [早期验收记录](docs/acceptance.md)。
+- [本版候选验收](docs/acceptance-0.3.0-rc.6.md) · [早期验收记录](docs/acceptance.md)。
 - [构建与发布](docs/releasing.md) · [更新记录](CHANGELOG.md)。
 - [Mac 打包说明](scripts/macos/README.md)：Mac 包含三个 Skills，适配系统钥匙串、文件和进程；同一份 ZIP 包含两种芯片的运行环境。
 

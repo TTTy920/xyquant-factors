@@ -162,7 +162,10 @@ def build(directory, cache):
     files = {"bridge.pyz"}
     for arch, spec in lock["architectures"].items():
         python, packages, sums = "python-" + arch + ".tgz", "packages-" + arch + ".tgz", arch + ".sha256"
-        shutil.copyfile(cache / spec["python"], directory / python)
+        with (cache / spec["python"]).open("rb") as src, (directory / python).open("wb") as dst:
+            shutil.copyfileobj(src, dst, 1024 * 1024)
+        if digest(directory / python) != lock["artifacts"][spec["python"]]["sha256"]:
+            raise ValueError("Copied Python archive differs from the pinned input: " + arch)
         with tempfile.TemporaryDirectory() as tmp:
             stage = Path(tmp)
             wheels(stage, cache, spec["wheels"])

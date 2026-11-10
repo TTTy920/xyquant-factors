@@ -17,7 +17,13 @@ description: 使用 Skill 自带的本地脚本，根据策略评分明细、分
 
 ## 本地运行
 
-完整 Mac 插件使用随包解释器，无需安装系统 Python：
+完整插件使用随包解释器运行本 Skill 的 `scripts/attribute.py`。Windows PowerShell 调用方式如下。
+
+```powershell
+& "<插件根目录>\bin\FactorBridge.exe" --selection "<本地输入.json的实际路径>"
+```
+
+macOS 调用方式如下。
 
 ```sh
 /bin/sh "<插件根目录>/bin/factor-bridge" --selection "<本地输入.json的实际路径>"

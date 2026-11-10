@@ -2,6 +2,7 @@
 import argparse
 import json
 import logging
+import runpy
 import sys
 from pathlib import Path
 from typing import Any, Literal
@@ -139,6 +140,21 @@ def get_download(download_id:str)->dict[str,Any]:
     try:return Downloads(STATE_ROOT).get(download_id)
     except ClientError as error:raise tool_error(error) from None
 
+
+def run_local_attribution(skill, input_path):
+    if getattr(sys, 'frozen', False):
+        plugin = Path(sys.executable).resolve().parents[1]
+    else:
+        plugin = Path(__file__).resolve().parents[1] / 'plugins' / 'xyquant-factors'
+    script = plugin / 'skills' / skill / 'scripts' / 'attribute.py'
+    if not script.is_file():
+        raise SystemExit('请从完整插件目录运行，缺少 ' + str(script.relative_to(plugin)))
+    for stream in (sys.stdout, sys.stderr):
+        stream.reconfigure(encoding='utf-8')
+    sys.argv = [str(script), str(input_path)]
+    runpy.run_path(str(script), run_name='__main__')
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description='XYQuant Factors plugin runtime')
     parser.add_argument('--state-root',type=Path)
@@ -148,10 +164,14 @@ if __name__=='__main__':
     mode.add_argument('--login-worker')
     mode.add_argument('--migrate-legacy',action='store_true')
     mode.add_argument('--version',action='store_true')
+    mode.add_argument('--barra', type=Path, metavar='INPUT.json')
+    mode.add_argument('--selection', type=Path, metavar='INPUT.json')
     args=parser.parse_args()
     if args.state_root and not args.state_root.is_absolute():parser.error('state-root must be absolute')
     STATE_ROOT=args.state_root
     if args.version:print(VERSION)
+    elif args.barra is not None:run_local_attribution('barra-attribution', args.barra)
+    elif args.selection is not None:run_local_attribution('strategy-attribution', args.selection)
     elif args.worker:Downloads(STATE_ROOT).run()
     elif args.login_worker:LoginTasks(STATE_ROOT).run(args.login_worker)
     elif args.migrate_legacy:
