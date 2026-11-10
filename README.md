@@ -4,7 +4,7 @@
 
 ## 安装与授权
 
-在客户端的插件市场中添加本仓库的本地检出目录，选择 **xyquant** 并启用。试用开发分支时，检出 `feature/direct-mcp`。支持指定 Git 分支的客户端也可以直接从该分支添加市场。
+下载开发分支的仓库 ZIP 并解压，或在本地检出 `feature/direct-mcp`。在客户端添加本地插件市场时，选择解压后含有 `.agents/` 和 `plugins/` 的目录，再安装 **xyquant**。支持指定 Git 分支的客户端也可以直接添加该分支。[下载开发分支 ZIP](https://github.com/TTTy920/xyquant-factors/archive/refs/heads/feature/direct-mcp.zip)
 
 在 Codex 桌面端打开「插件」添加市场后安装。在 WorkBuddy 打开「插件市场」，添加市场来源并安装。Claude Code 可在 `/plugin` 中添加本地仓库目录并安装 `xyquant@xyquant`。解压的插件包本身包含清单、连接配置和全部 Skill。
 

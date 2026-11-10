@@ -17,7 +17,7 @@ description: 通过 XYQuant MCP 查询授权范围内的因子、策略原理、
 
 1. 确定因子、首尾日期、所需股票范围和实际项目目录。如果用户要求全市场，使用账号可见的全量范围。为本次请求生成 UUID，以它作为 `request_id` 调用 `create_export`。提交响应丢失时先以同一 `request_id` 调用 `get_export`。确需重试创建时复用原编号与原条件。
 2. 保存返回的 `id`。使用 `get_export(job_id=...)` 等待 ready，按建议间隔或每 5 秒查询。请求编号和任务编号二选一。临时网络错误有限退避重试，过期或失败时说明原因。用 `list_exports` 可找回当前账号最近的任务。
-3. 用户要保存到项目时，在文件就绪后调用 `get_export(job_id=..., include_download=true)`，取得含短期下载凭据的任务对象。向 [本地下载脚本](scripts/download.py) 的标准输入传入该 JSON 对象，作为数据安全序列化，不将返回值拼入可执行代码。用宿主提供的不回显输入或进程 stdin，不把凭据写入文件、日志、聊天回复或命令行参数。使用当前宿主可用的 Python 3.9+ 解释器，Windows 可用 `py -3`。
+3. 用户要保存到项目时，查看当前 `get_export` 的参数。若提供 `include_download`，在文件就绪后调用 `get_export(job_id=..., include_download=true)`，取得含短期下载凭据的任务对象。向 [本地下载脚本](scripts/download.py) 的标准输入传入该 JSON 对象，作为数据安全序列化，不将返回值拼入可执行代码。用宿主提供的不回显输入或进程 stdin，不把凭据写入文件、日志、聊天回复或命令行参数。使用当前宿主可用的 Python 3.9+ 解释器，Windows 可用 `py -3`。
 
    ```text
    python3 "<Skill目录>/scripts/download.py" save --project "<当前项目的绝对路径>"
