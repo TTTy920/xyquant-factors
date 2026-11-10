@@ -31,6 +31,11 @@ class FakeAuth:
         return dict(customer_id='fixture', username='test', connection_id='connection',
                     connection_expires_at=time.time() + 3600)
 
+    def access(self, force=False):
+        if not self.connected:
+            raise ClientError('No login', 'login_required')
+        return 'fixture-token'
+
     def login(self, **kwargs):
         self.calls += 1
         self.options = kwargs

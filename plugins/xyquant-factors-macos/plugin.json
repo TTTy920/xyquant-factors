@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "xyquant-factors-macos",
-  "version": "0.3.0-rc.4",
+  "version": "0.3.0-rc.5",
   "description": "用自己的账号查询和下载因子、查看已开放策略资料，在 Mac 本地计算 Barra 风格归因和策略选股归因。",
   "author": {
     "name": "XYQuant"

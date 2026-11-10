@@ -68,7 +68,7 @@ class LoginTasks:
                         message='尚未连接因子账号，请调用 start_login。',**runtime)
         if (identity.get('connection_expires_at') or 0) <= time.time():
             return dict(status='expired', connected=False, verified_by_server=False,
-                        message='本地记录的授权已到期，请调用 start_login。',**runtime)
+                        message='本地授权日期需要更新，请调用 start_login 核对当前授权。',**runtime)
         return dict(status='connected', connected=True, verified_by_server=False,
                     **runtime,
                     **{key: identity.get(key) for key in
@@ -166,9 +166,20 @@ class LoginTasks:
                 thread = threading.Thread(target=heartbeat, daemon=True)
                 thread.start()
                 try:
-                    identity = self.auth.login(open_browser=None, on_ready=on_ready,
-                                               cancelled=lambda: self._cancelled(login_id),
-                                               timeout=max(0, expires - time.time()))
+                    # Verify stale cached dates before asking for browser authorization.
+                    # This stays in the worker so start_login remains a short tool call.
+                    try:
+                        self.auth.access(force=True)
+                    except ClientError as error:
+                        if error.code != 'login_required':
+                            raise
+                        identity = self.auth.login(open_browser=None, on_ready=on_ready,
+                                                   cancelled=lambda: self._cancelled(login_id),
+                                                   timeout=max(0, expires - time.time()))
+                    else:
+                        if self._cancelled(login_id):
+                            raise ClientError('已取消登录。', 'login_cancelled')
+                        identity = self.auth.identity()
                     self._finish(login_id, 'connected', identity=identity)
                 except ClientError as error:
                     status = {'login_cancelled': 'cancelled', 'login_timeout': 'expired'}.get(error.code, 'failed')

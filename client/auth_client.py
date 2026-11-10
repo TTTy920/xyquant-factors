@@ -122,8 +122,8 @@ class AuthClient:
     def access(self,force=False):
         with mutex('credentials',root=self.root):
             data=self._read()
-            if data.get('connection_expires_at',0)<=time.time():raise ClientError('连接授权已到期，请重新登录。','login_required')
-            if not force and data.get('access_expires_at',0)>time.time()+90:return data['access_token']
+            # Account renewal can make a cached connection deadline stale.
+            if not force and data.get('connection_expires_at',0)>time.time() and data.get('access_expires_at',0)>time.time()+90:return data['access_token']
             try:updated=self.json_request('/factors/oauth/token',dict(grant_type='refresh_token',refresh_token=data['refresh_token'],client_id=data['client_id'],resource=RESOURCE),form=True)
             except ClientError as error:
                 if error.code=='login_required':self.file.unlink(missing_ok=True)
