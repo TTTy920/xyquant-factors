@@ -2,6 +2,8 @@
 
 XYQuant 为 Codex 提供因子数据和本地分析技能。请按电脑系统选择：
 
+WorkBuddy 用户请看 [WorkBuddy 安装说明](docs/workbuddy.md)。两个客户端复用相同取数程序和 Skills，市场与启动配置分别提供兼容入口。
+
 | 电脑 | 插件 | 下载与计算 |
 | --- | --- | --- |
 | macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.1) | 与 Windows 共用 20 个客户端工具入口：账号授权、因子和已开放研究资料查询、下载到项目并校验；Barra 归因在本机运行。已打包，尚未做运行验收。 |

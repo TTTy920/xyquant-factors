@@ -1,0 +1,12 @@
+{
+  "name": "xyquant-factors",
+  "version": "0.3.0-rc.1",
+  "author": {
+    "name": "XYQuant"
+  },
+  "license": "MIT",
+  "description": "XYQuant 因子与研究资料 · Windows x64：账号授权、因子查询与完整数据下载。",
+  "repository": "https://github.com/TTTy920/xyquant-factors",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.workbuddy.json"
+}

@@ -1,6 +1,7 @@
 """Assemble the macOS plugin directory and its stand-alone ZIP for publication."""
 import argparse
 import json
+import runpy
 from pathlib import Path
 from shutil import copyfile
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, ZipInfo
@@ -37,6 +38,10 @@ def package(output_dir, cache):
                      "cwd": ".", "env_vars": ["HOME", "TMPDIR", "CODEX_HOME", "LANG", "LC_CTYPE"],
                      "startup_timeout_sec": 120, "tool_timeout_sec": 60} for name, server in servers.items()}
     files.append(write_json(".mcp.json", {"mcpServers": legacy}))
+    compatibility = runpy.run_path(str(ROOT / "scripts/workbuddy/package.py"))["render"](ROOT)
+    for path, value in compatibility.items():
+        if path.parts[:2] == ("plugins", PLUGIN.name):
+            files.append(write_json(Path(*path.parts[2:]).as_posix(), value))
     for relative in SHARED_FILES:
         target = PLUGIN / "skills" / relative
         target.parent.mkdir(parents=True, exist_ok=True)

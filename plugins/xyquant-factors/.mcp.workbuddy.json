@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "xyquant_factors": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/bin/FactorBridge.exe",
+      "args": [
+        "--stdio"
+      ],
+      "cwd": "${CLAUDE_PLUGIN_ROOT}"
+    }
+  }
+}
