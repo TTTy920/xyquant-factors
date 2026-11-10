@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "xyquant_factors": {
+      "url": "https://47.103.215.251/mcp",
+      "enabled_tools": [
+        "list_factors",
+        "get_factor_info",
+        "preview_factor",
+        "create_export",
+        "get_export",
+        "list_exports"
+      ],
+      "scopes": [
+        "factors:read",
+        "factors:export"
+      ]
+    }
+  }
+}
