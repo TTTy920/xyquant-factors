@@ -33,7 +33,7 @@ MESSAGES = {
 READ_TOOLS = frozenset(('list_factors', 'get_factor_info', 'preview_factor', 'get_export',
                         'list_exports', 'query_strategy_research',
                         'search_research', 'compare_strategies', 'get_research_updates',
-                        'explain_strategy_selection'))
+                        ))
 RETRY_CODES = frozenset(('network_error', 'busy'))
 RETRY_DELAYS = (1, 2)
 CALL_BUDGET = 50

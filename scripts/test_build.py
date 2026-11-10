@@ -12,7 +12,7 @@ import check_release
 
 class BuildTests(unittest.TestCase):
     def test_shipped_tool_and_safe_read_allowlists_match_contract(self):
-        self.assertEqual(check_release.validate_tool_contract(),dict(client_tools=17,remote_tools=11))
+        self.assertEqual(check_release.validate_tool_contract(),dict(client_tools=16,remote_tools=10))
 
     def test_release_rejects_missing_tool_or_mutating_retry_allowlist(self):
         with tempfile.TemporaryDirectory() as td:
@@ -25,7 +25,7 @@ class BuildTests(unittest.TestCase):
             remote_path.write_text(original,encoding='utf8')
             bridge=root/'client/factor_bridge.py';text=bridge.read_text(encoding='utf8')
             bridge.write_text(text.replace('async def search_research(', 'async def accidental_other_name(',1),encoding='utf8')
-            with self.assertRaisesRegex(ValueError,'17 expected tools'):check_release.validate_tool_contract(root)
+            with self.assertRaisesRegex(ValueError,'16 expected tools'):check_release.validate_tool_contract(root)
 
     def test_runtime_rejects_32bit_arm_and_unpinned_python(self):
         good=dict(os_name='nt',version='3.12.14',pointer_bits=64,machine='AMD64')

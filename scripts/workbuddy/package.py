@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HOST_ROOT = "${CLAUDE_PLUGIN_ROOT}"
 DESCRIPTIONS = {
     "xyquant-factors": "XYQuant 因子与研究资料 · Windows x64：账号授权、因子查询与完整数据下载。",
-    "xyquant-factors-macos": "XYQuant 因子与研究资料 · macOS：因子下载、策略选股解释和本地 Barra 归因。",
+    "xyquant-factors-macos": "XYQuant 因子与研究资料 · macOS：因子下载、本地策略选股与 Barra 归因。",
 }
 
 

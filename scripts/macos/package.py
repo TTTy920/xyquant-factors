@@ -13,6 +13,8 @@ SHARED = ROOT / "plugins" / "xyquant-factors" / "skills"
 SHARED_FILES = (
     "factor-download/SKILL.md",
     "strategy-attribution/SKILL.md",
+    "strategy-attribution/references/input.md",
+    "strategy-attribution/scripts/attribute.py",
     "barra-attribution/SKILL.md",
     "barra-attribution/agents/openai.yaml",
     "barra-attribution/scripts/attribute.py",

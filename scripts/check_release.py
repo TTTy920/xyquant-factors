@@ -14,7 +14,7 @@ SKIP_PARTS={'.git','.work','__pycache__'}
 SECRET_PATTERNS=[rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',rb'gh[pousr]_[A-Za-z0-9]{30,}',rb'github_pat_[A-Za-z0-9_]{30,}']
 REMOTE_TOOLS={'list_factors','get_factor_info','preview_factor','create_export','get_export','list_exports',
               'query_strategy_research',
-              'search_research','compare_strategies','get_research_updates','explain_strategy_selection'}
+              'search_research','compare_strategies','get_research_updates'}
 LOCAL_TOOLS={'get_connection_status','start_login','get_login_status','disconnect','download_export','get_download'}
 
 
@@ -26,7 +26,7 @@ def validate_tool_contract(root=None):
            and any(isinstance(decorator,ast.Call) and isinstance(decorator.func,ast.Attribute)
                    and isinstance(decorator.func.value,ast.Name) and decorator.func.value.id=='mcp'
                    and decorator.func.attr=='tool' for decorator in node.decorator_list)}
-    if tools!=REMOTE_TOOLS|LOCAL_TOOLS:raise ValueError('Client tool declarations must match 17 expected tools (11 remote).')
+    if tools!=REMOTE_TOOLS|LOCAL_TOOLS:raise ValueError('Client tool declarations must match 16 expected tools (10 remote).')
     def declared_set(filename,name):
         nodes=ast.parse((root/'client'/filename).read_text(encoding='utf8')).body
         expression=next(node.value for node in nodes if isinstance(node,ast.Assign)

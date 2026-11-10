@@ -128,14 +128,6 @@ async def get_research_updates(page:int=1,page_size:int=10,publication_cursor:in
     """区分软件版本与已发布数据事件，每页最多20条；后续页固定publication_cursor。发布时间不是净值截止日，不自动更新软件或申请新授权。"""
     return await call('get_research_updates',dict(page=page,page_size=page_size,publication_cursor=publication_cursor))
 
-@mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
-async def explain_strategy_selection(strategy:str,month:str,symbol:str|None=None)->dict[str,Any]:
-    """解释已接入策略某月的选股评分驱动。月份为YYYY-MM，股票代码带交易所后缀。
-    省略symbol查询分组名单，指定symbol查询入选或落选的主要原因。
-    结果按既有评分、组内排序与名额推算；保留并列待定和缺失状态，不代表实际成交或收益归因。
-    """
-    return await call('explain_strategy_selection',dict(strategy=strategy,month=month,symbol=symbol))
-
 @mcp.tool(structured_output=True)
 def download_export(job_id:str,project_dir:str)->dict[str,Any]:
     """后台等待并下载到真实项目绝对目录下 downloads/factors/任务编号。返回本地下载 id，需调用 get_download 查询。"""

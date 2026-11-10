@@ -16,7 +16,7 @@ LEGACY = {'list_strategies', 'get_strategy_info', 'get_strategy_performance',
 class ResearchBridgeTests(unittest.IsolatedAsyncioTestCase):
     async def test_discovery_uses_one_read_only_query_and_removes_legacy_team_tools(self):
         tools = {tool.name: tool for tool in await factor_bridge.mcp.list_tools()}
-        self.assertEqual(len(tools), 17)
+        self.assertEqual(len(tools), 16)
         self.assertIn(TOOL, tools)
         self.assertFalse(LEGACY & tools.keys())
         tool = tools[TOOL]

@@ -49,4 +49,8 @@ if [ "${1-}" = --barra ]; then
     [ "$#" -eq 2 ] || die '用法: factor-bridge --barra 本地输入.json'
     exec "$py" -I -B "$plugin/skills/barra-attribution/scripts/attribute.py" "$2"
 fi
+if [ "${1-}" = --selection ]; then
+    [ "$#" -eq 2 ] || die '用法: factor-bridge --selection 本地输入.json'
+    exec "$py" -I -B "$plugin/skills/strategy-attribution/scripts/attribute.py" "$2"
+fi
 exec "$py" -I -B "$dest/bridge.pyz" "$@"

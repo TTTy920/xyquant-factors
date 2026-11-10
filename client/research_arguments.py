@@ -1,12 +1,11 @@
 """Validate new read-tool inputs before the MCP SDK performs coercion.
 
 The SDK accepts extra fields and pre-parses JSON strings by default. Only the
-exploration and selection-explanation tools use this guard; existing tool
+exploration and strategy-query tools use this guard; existing tool
 compatibility is retained.
 """
 import json
 import re
-from datetime import date
 from strategy_query_arguments import TOOL as QUERY_TOOL, validate_query
 
 from mcp.server import MCPServer
@@ -17,7 +16,6 @@ FIELDS = {
     'search_research': {'query', 'kind', 'page', 'page_size', 'version', 'catalog_version'},
     'compare_strategies': {'strategy_ids', 'version'},
     'get_research_updates': {'page', 'page_size', 'publication_cursor'},
-    'explain_strategy_selection': {'strategy', 'month', 'symbol'},
 }
 
 
@@ -62,18 +60,6 @@ def validate_explore_arguments(name, arguments):
         if len(set(ids)) != len(ids) or arguments.get('version') is None:
             _reject()
         _version(arguments['version'], 32)
-    elif name == 'explain_strategy_selection':
-        strategy, month, symbol = arguments.get('strategy'), arguments.get('month'), arguments.get('symbol')
-        if not isinstance(strategy, str) or not 1 <= len(strategy.strip()) <= 120:
-            _reject()
-        if not isinstance(month, str) or not re.fullmatch(r'[0-9]{4}-[0-9]{2}', month):
-            _reject()
-        try:
-            date.fromisoformat(month + '-01')
-        except ValueError:
-            _reject()
-        if symbol is not None and (not isinstance(symbol, str) or not re.fullmatch(r'[0-9]{6}\.(SH|SZ|BJ)', symbol)):
-            _reject()
     else:
         _integer(arguments, 'page', 1000000)
         _integer(arguments, 'page_size', 20)

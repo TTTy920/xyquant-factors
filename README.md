@@ -6,10 +6,10 @@ WorkBuddy 用户请看 [WorkBuddy 安装说明](docs/workbuddy.md)。两个客�
 
 | 电脑 | 插件 | 下载与计算 |
 | --- | --- | --- |
-| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.3) | `0.3.0-rc.3`：三个 Skill，支持因子查询下载、本地 Barra 归因和策略选股解释；17 个客户端工具，策略原表查询统一为一个入口。 |
+| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.4) | `0.3.0-rc.4`：三个 Skill，支持因子查询下载、本地 Barra 归因和本地策略选股归因；16 个客户端工具，策略原表查询统一为一个入口。 |
 | Windows x64 | [XYQuant 因子 Windows 版](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1) | 原有桥接程序处理登录、自动下载到项目与文件校验。 |
 
-Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/acceptance-macos-0.3.0-rc.3.md)。本轮只发布 Mac；下文的安装流程和候选验收记录描述 Windows `0.3.0-rc.1` 客户端与配套网站。
+Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/acceptance-macos-0.3.0-rc.4.md)。本轮只发布 Mac；下文的安装流程和候选验收记录描述 Windows `0.3.0-rc.1` 客户端与配套网站。
 
 **`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
 
@@ -69,7 +69,7 @@ Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/
 
 `query_strategy_research` 不传 `strategy_id` 时搜索目录；指定目录中的 ID 后默认同时返回介绍和表现。`sections` 支持 `info`、`performance`、`nav` 及其组合，所有内容固定在同一已发布工作簿版本。后续净值页携带返回的 `version` 与 `next_offset`，每页最多 50 行。四个旧的独立查询入口及团队入口在远端保持关闭。
 
-研究结果保留原表指标名称、统计期间、空值和警告，不重算回测。Mac `0.3.0-rc.2` 已接入统一入口和 `explain_strategy_selection`；已发布的旧安装包不会自动增加工具，Windows 包另行同步。
+研究结果保留原表指标名称、统计期间、空值和警告，不重算回测。Mac `0.3.0-rc.4` 使用统一策略查询入口；策略选股归因已改为 Skill 自带本地脚本，不再转发 `explain_strategy_selection`。旧安装需要更新，Windows 包另行同步。
 
 统一搜索只显示现有授权可见的类型，翻页固定研究 `version` 和因子 `catalog_version`。发布更新区分软件版本、资料发布时间与原始净值截止日，翻页固定 `publication_cursor`；不会自动升级软件或申请新授权。
 

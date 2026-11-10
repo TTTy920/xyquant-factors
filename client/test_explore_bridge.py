@@ -19,7 +19,7 @@ EXPLORE = {'search_research', 'compare_strategies', 'get_research_updates'}
 class ExploreBridgeTests(unittest.IsolatedAsyncioTestCase):
     async def test_discovery_requires_comparison_version_and_keeps_existing_scopes(self):
         tools = {tool.name: tool for tool in await factor_bridge.mcp.list_tools()}
-        self.assertEqual(len(tools), 17)
+        self.assertEqual(len(tools), 16)
         self.assertTrue(EXPLORE <= tools.keys())
         for name in EXPLORE:
             self.assertTrue(tools[name].annotations.read_only_hint)
