@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "skills": "./skills/",
-  "mcpServers": "./.mcp.codex.json",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "xyquant",
     "shortDescription": "因子下载、策略查询与本地归因",

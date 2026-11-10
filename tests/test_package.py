@@ -35,7 +35,7 @@ class PackageTest(unittest.TestCase):
                 self.assertNotIn("command", servers["xyquant"])
             portable = json.loads((pkg / "mcp.json").read_text())["mcpServers"]["xyquant"]
             self.assertEqual(portable["type"], "streamable-http")
-            self.assertEqual(portable["extensions"]["com.openai"]["auth"]["client"]["mode"], "dcr")
+            self.assertEqual(portable["url"], servers["xyquant"]["url"])
             skills = {s.parent.name for s in (pkg / "skills").glob("*/SKILL.md")}
             self.assertTrue({"factor-download", "barra-attribution", "strategy-attribution"} <= skills)
             script = pkg / "skills/barra-attribution/scripts/attribute.py"
