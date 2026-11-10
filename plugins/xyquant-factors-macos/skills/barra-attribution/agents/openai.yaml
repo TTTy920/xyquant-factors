@@ -1,0 +1,3 @@
+interface:
+  display_name: "Barra 归因"
+  short_description: "在本地用月末持仓和 Barra 因子数据计算组合暴露及次月风格收益贡献"
