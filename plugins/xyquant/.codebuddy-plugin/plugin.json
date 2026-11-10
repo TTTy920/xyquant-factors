@@ -1,0 +1,12 @@
+{
+  "name": "xyquant",
+  "version": "0.4.0-rc.1",
+  "description": "查询已授权的量化因子和策略资料，将因子数据下载到当前项目，在本地计算 Barra 风格归因和策略选股归因。",
+  "author": {
+    "name": "XYQuant"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/TTTy920/xyquant-factors",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,27 @@
+name: Verify xyquant
+on:
+  pull_request:
+  push:
+    branches: [main, feature/direct-mcp]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify plugin and local workflows
+        run: python -m unittest discover -s tests
+      - name: Build portable package
+        run: python scripts/package.py
+      - name: Upload plugin
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: xyquant
+          path: dist/
+          if-no-files-found: error

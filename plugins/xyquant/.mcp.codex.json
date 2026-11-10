@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "xyquant": {
+      "url": "https://47.103.215.251/mcp",
+      "scopes": [
+        "factors:read",
+        "factors:export",
+        "factors:download",
+        "research:read"
+      ]
+    }
+  }
+}

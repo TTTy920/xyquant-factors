@@ -5,17 +5,10 @@
   },
   "plugins": [
     {
-      "name": "xyquant-factors",
-      "source": "./plugins/xyquant-factors",
-      "version": "0.3.0-rc.6",
-      "description": "XYQuant 因子与研究资料 · Windows x64：因子下载、本地策略选股与 Barra 归因。",
-      "category": "productivity"
-    },
-    {
-      "name": "xyquant-factors-macos",
-      "source": "./plugins/xyquant-factors-macos",
-      "version": "0.3.0-rc.6",
-      "description": "XYQuant 因子与研究资料 · macOS：因子下载、本地策略选股与 Barra 归因。",
+      "name": "xyquant",
+      "source": "./plugins/xyquant",
+      "version": "0.4.0-rc.1",
+      "description": "查询已授权的量化因子和策略资料，将因子数据下载到当前项目，在本地计算 Barra 风格归因和策略选股归因。",
       "category": "productivity"
     }
   ]
