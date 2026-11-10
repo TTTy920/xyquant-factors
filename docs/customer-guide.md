@@ -1,6 +1,6 @@
 # 客户使用说明
 
-本文描述 `v0.3.0-rc.1` 未签名候选版的使用流程，市场来源为 [GitHub 仓库](https://github.com/ZXChen299/xyquant-factors)。候选有尚未完成的客户场景，请先查看[本版验收记录](acceptance-0.3.0-rc.1.md)，确认 Release 已发布再安装。
+本文描述 `v0.3.0-rc.1` 未签名候选版的使用流程，市场来源为 [GitHub 仓库](https://github.com/TTTy920/xyquant-factors)。候选有尚未完成的客户场景，请先查看[本版验收记录](acceptance-0.3.0-rc.1.md)，确认 Release 已发布再安装。
 
 **登录和下载完成前请保持当前 Codex 对话运行。** 当前验证版本限制后台任务独立于 Codex 运行；结束对话或完全退出可能中断任务，下一次查询会显示中断并允许重试。Codex 会在当前回合等待并查询进度，不应先结束回合让你稍后继续。一次运行就退出的 `codex exec` 不能用来跨退出等待任务。
 
@@ -11,7 +11,7 @@
 先在 GitHub Releases 确认 `v0.3.0-rc.1` 已发布；如果使用 Codex CLI，执行：
 
 ```powershell
-codex plugin marketplace add https://github.com/ZXChen299/xyquant-factors.git --ref v0.3.0-rc.1
+codex plugin marketplace add https://github.com/TTTy920/xyquant-factors.git --ref v0.3.0-rc.1
 codex plugin add xyquant-factors@xyquant
 ```
 
