@@ -6,10 +6,10 @@ WorkBuddy 用户请看 [WorkBuddy 安装说明](docs/workbuddy.md)。两个客�
 
 | 电脑 | 插件 | 下载与计算 |
 | --- | --- | --- |
-| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.2) | `0.3.0-rc.2`：四个 Skill，支持因子计数、查询下载、本地 Barra 归因和策略选股解释；17 个客户端工具，策略原表查询统一为一个入口。 |
+| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.3) | `0.3.0-rc.3`：三个 Skill，支持因子查询下载、本地 Barra 归因和策略选股解释；17 个客户端工具，策略原表查询统一为一个入口。 |
 | Windows x64 | [XYQuant 因子 Windows 版](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1) | 原有桥接程序处理登录、自动下载到项目与文件校验。 |
 
-Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/acceptance-macos-0.3.0-rc.2.md)。本轮只发布 Mac；下文的安装流程和候选验收记录描述 Windows `0.3.0-rc.1` 客户端与配套网站。
+Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/acceptance-macos-0.3.0-rc.3.md)。本轮只发布 Mac；下文的安装流程和候选验收记录描述 Windows `0.3.0-rc.1` 客户端与配套网站。
 
 **`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
 
@@ -109,7 +109,7 @@ Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/
 - [管理员说明](docs/admin-guide.md) · [旧独立连接迁移](docs/migration.md)。
 - [本版候选验收](docs/acceptance-0.3.0-rc.1.md) · [早期验收记录](docs/acceptance.md)。
 - [构建与发布](docs/releasing.md) · [更新记录](CHANGELOG.md)。
-- [Mac 打包说明](scripts/macos/README.md)：Mac 包含四个 Skills，适配系统钥匙串、文件和进程；同一份 ZIP 包含两种芯片的运行环境。
+- [Mac 打包说明](scripts/macos/README.md)：Mac 包含三个 Skills，适配系统钥匙串、文件和进程；同一份 ZIP 包含两种芯片的运行环境。
 
 公开仓库包含客户端源码、插件、合成测试和 Windows 构建产物。服务端源码、真实研究资料、客户身份和凭据留在私有环境。本分支提供 `.github/workflows/verify-windows.yml`：在干净 Windows 运行器测试、构建并上传候选制品，仅读仓库，不自动发布。是否已启用和通过以对应提交的 Actions 记录为准；没有运行的 CI 仍标为未运行。
 

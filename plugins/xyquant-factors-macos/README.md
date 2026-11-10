@@ -1,13 +1,13 @@
 # XYQuant 因子 · macOS
 
-Mac `0.3.0-rc.2` 包含四个 Skill：因子计数、因子查询与下载、Barra 风格归因、策略选股归因。可以在对话里授权自己的 XYQuant 账号，把完整因子保存到研究项目，查询已发布策略，并解释某月股票入选或落选的评分依据。一个包包含 Apple 芯片和 Intel Mac 的运行环境（macOS 11 或以上；Codex 本身的系统要求另计）。不需要管理员权限、独立安装程序或系统 Python。
+Mac `0.3.0-rc.3` 包含三个 Skill：因子查询与下载、Barra 风格归因、策略选股归因。可以在对话里授权自己的 XYQuant 账号，把完整因子保存到研究项目，查询已发布策略，并解释某月股票入选或落选的评分依据。一个包包含 Apple 芯片和 Intel Mac 的运行环境（macOS 11 或以上；Codex 本身的系统要求另计）。不需要管理员权限、独立安装程序或系统 Python。
 
 ## 安装与首次使用
 
-在 Codex 插件市场添加 GitHub 来源 `TTTy920/xyquant-factors`，选择版本 **macos-v0.3.0-rc.2**，安装 **XYQuant 因子 · macOS**。已添加过市场的用户请更新市场来源，再更新 Mac 插件。也可从 [GitHub Release](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.2) 下载完整 ZIP 和校验文件。使用 Codex CLI 时：
+在 Codex 插件市场添加 GitHub 来源 `TTTy920/xyquant-factors`，选择版本 **macos-v0.3.0-rc.3**，安装 **XYQuant 因子 · macOS**。已添加过市场的用户请更新市场来源，再更新 Mac 插件。也可从 [GitHub Release](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.3) 下载完整 ZIP 和校验文件。使用 Codex CLI 时：
 
 ```sh
-codex plugin marketplace add TTTy920/xyquant-factors --ref macos-v0.3.0-rc.2
+codex plugin marketplace add TTTy920/xyquant-factors --ref macos-v0.3.0-rc.3
 codex plugin add xyquant-factors-macos@xyquant
 ```
 
@@ -23,4 +23,4 @@ codex plugin add xyquant-factors-macos@xyquant
 
 如果宿主已有独立远程 MCP，也可以复制所需的完整 `skills/` 子目录到项目的 `.agents/skills/` 中。只复制 Skills 不会安装本机下载工具或解释器；这种用法继续通过浏览器下载，归因使用已有的 Python。要获得完整功能，请安装整个 Mac 插件，并避免重复加载同名工具。
 
-本版为预发布版。验证范围见[验收记录](https://github.com/TTTy920/xyquant-factors/blob/main/docs/acceptance-macos-0.3.0-rc.2.md)。源码和随包运行环境的许可见 [LICENSE](LICENSE) 和[第三方说明](THIRD_PARTY_NOTICES.md)。
+本版为预发布版。验证范围见[验收记录](https://github.com/TTTy920/xyquant-factors/blob/main/docs/acceptance-macos-0.3.0-rc.3.md)。源码和随包运行环境的许可见 [LICENSE](LICENSE) 和[第三方说明](THIRD_PARTY_NOTICES.md)。

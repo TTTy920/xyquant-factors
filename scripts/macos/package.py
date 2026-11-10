@@ -17,8 +17,7 @@ SHARED_FILES = (
     "barra-attribution/agents/openai.yaml",
     "barra-attribution/scripts/attribute.py",
 )
-MAC_FILES = ("README.md", "THIRD_PARTY_NOTICES.md", "plugin.json", "mcp.json", "bin/factor-bridge",
-             "skills/factor-count/SKILL.md")
+MAC_FILES = ("README.md", "THIRD_PARTY_NOTICES.md", "plugin.json", "mcp.json", "bin/factor-bridge")
 
 
 def write_json(relative, value):

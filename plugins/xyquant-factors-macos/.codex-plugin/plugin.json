@@ -1,6 +1,6 @@
 {
   "name": "xyquant-factors-macos",
-  "version": "0.3.0-rc.2",
+  "version": "0.3.0-rc.3",
   "description": "用自己的账号查询和下载因子、查看已开放策略资料、解释月度选股原因，并在 Mac 本机计算 Barra 风格归因。",
   "author": {
     "name": "XYQuant"

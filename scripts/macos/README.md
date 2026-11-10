@@ -1,6 +1,6 @@
 # Maintaining the macOS package
 
-Edit the shared tool declarations and workflows in `client/` and the shared Skills in `plugins/xyquant-factors/skills/`. The Mac-specific factor-count Skill stays in the Mac plugin directory. The Mac packager stages the same client, applies `client.patch` for system-specific operations, takes the version from the Mac manifest and adds `macos_platform.py`. OAuth scopes, the remote endpoint, tool names and arguments, retry rules, download layout and the Barra formula have no separate Mac implementation. The Windows binary remains tied to its own recorded build inputs; rebuild that release separately when preparing a Windows update.
+Edit the shared tool declarations and workflows in `client/` and the shared Skills in `plugins/xyquant-factors/skills/`. The Mac packager stages the same client, applies `client.patch` for system-specific operations, takes the version from the Mac manifest and adds `macos_platform.py`. OAuth scopes, the remote endpoint, tool names and arguments, retry rules, download layout and the Barra formula have no separate Mac implementation. The Windows binary remains tied to its own recorded build inputs; rebuild that release separately when preparing a Windows update.
 
 For packagers: Python 3.9+, git and zstd are needed. Run from the repository root:
 

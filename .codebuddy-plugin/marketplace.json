@@ -14,7 +14,7 @@
     {
       "name": "xyquant-factors-macos",
       "source": "./plugins/xyquant-factors-macos",
-      "version": "0.3.0-rc.2",
+      "version": "0.3.0-rc.3",
       "description": "XYQuant 因子与研究资料 · macOS：因子下载、策略选股解释和本地 Barra 归因。",
       "category": "productivity"
     }
