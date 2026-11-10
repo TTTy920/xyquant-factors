@@ -4,7 +4,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from research_arguments import ExploreMCPServer as MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from auth_client import ClientError,VERSION
@@ -80,26 +80,35 @@ async def list_exports()->dict[str,Any]:
     return await call('list_exports',{})
 
 @mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
+async def query_strategy_research(strategy_id:str|None=None,
+        sections:list[Literal['info','performance','nav']]|None=None,
+        search:str='',category:str='',page:int=1,page_size:int=20,version:str|None=None,
+        start:str|None=None,end:str|None=None,offset:int=0,limit:int=50)->dict[str,Any]:
+    """统一查询策略展示工作簿，不提供团队成员资料。
+    省略strategy_id查询目录；指定目录中的ID后默认同时返回介绍和表现。
+    sections可选info/performance/nav及其组合；净值每页最多50行，翻页固定返回的version。
+    保留原表指标、期间和空值；需要research:read授权，不运行新回测。
+    """
+    return await call('query_strategy_research',dict(strategy_id=strategy_id,sections=sections,
+        search=search,category=category,page=page,page_size=page_size,version=version,
+        start=start,end=end,offset=offset,limit=limit))
+
 async def list_strategies(search:str='',category:str='',page:int=1,page_size:int=20,version:str|None=None)->dict[str,Any]:
     """搜索已发布策略，每页最多50条；返回version、来源和统计口径警告，需要research:read授权。"""
     return await call('list_strategies',dict(search=search,category=category,page=page,page_size=page_size,version=version))
 
-@mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
 async def get_strategy_info(strategy_id:str,version:str|None=None)->dict[str,Any]:
     """读取策略说明、报告标题、费用和样本外说明；使用目录返回的strategy_id和version。"""
     return await call('get_strategy_info',dict(strategy_id=strategy_id,version=version))
 
-@mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
 async def get_strategy_performance(strategy_id:str,version:str|None=None)->dict[str,Any]:
     """读取原表整体、年度和月度表现及其统计期间；不重算指标，不执行回测。"""
     return await call('get_strategy_performance',dict(strategy_id=strategy_id,version=version))
 
-@mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
 async def get_strategy_nav(strategy_id:str,version:str,start:str|None=None,end:str|None=None,offset:int=0,limit:int=50)->dict[str,Any]:
     """按日期读取净值分页，每页最多50行；翻页固定version，返回完整性标记，不能当全量回测。"""
     return await call('get_strategy_nav',dict(strategy_id=strategy_id,version=version,start=start,end=end,offset=offset,limit=limit))
 
-@mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
 async def get_research_team(search:str='',page:int=1,page_size:int=20,version:str|None=None)->dict[str,Any]:
     """分页查看已发布团队介绍及联系方式，最多50人；服务端重新验证客户和research:read授权。"""
     return await call('get_research_team',dict(search=search,page=page,page_size=page_size,version=version))
@@ -118,6 +127,14 @@ async def compare_strategies(strategy_ids:list[str],version:str)->dict[str,Any]:
 async def get_research_updates(page:int=1,page_size:int=10,publication_cursor:int|None=None)->dict[str,Any]:
     """区分软件版本与已发布数据事件，每页最多20条；后续页固定publication_cursor。发布时间不是净值截止日，不自动更新软件或申请新授权。"""
     return await call('get_research_updates',dict(page=page,page_size=page_size,publication_cursor=publication_cursor))
+
+@mcp.tool(structured_output=True, annotations={'readOnlyHint': True, 'destructiveHint': False, 'idempotentHint': True})
+async def explain_strategy_selection(strategy:str,month:str,symbol:str|None=None)->dict[str,Any]:
+    """解释已接入策略某月的选股评分驱动。月份为YYYY-MM，股票代码带交易所后缀。
+    省略symbol查询分组名单，指定symbol查询入选或落选的主要原因。
+    结果按既有评分、组内排序与名额推算；保留并列待定和缺失状态，不代表实际成交或收益归因。
+    """
+    return await call('explain_strategy_selection',dict(strategy=strategy,month=month,symbol=symbol))
 
 @mcp.tool(structured_output=True)
 def download_export(job_id:str,project_dir:str)->dict[str,Any]:

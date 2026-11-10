@@ -31,9 +31,9 @@ MESSAGES = {
     'export_result_unknown': '导出提交结果暂未确认。请保留原 request_id，先用 get_export(request_id=原编号) 核查；未找到不代表提交未执行。需要重试创建时必须使用原编号和完全相同条件，不要新建请求编号。',
 }
 READ_TOOLS = frozenset(('list_factors', 'get_factor_info', 'preview_factor', 'get_export',
-                        'list_exports', 'list_strategies', 'get_strategy_info',
-                        'get_strategy_performance', 'get_strategy_nav', 'get_research_team',
-                        'search_research', 'compare_strategies', 'get_research_updates'))
+                        'list_exports', 'query_strategy_research',
+                        'search_research', 'compare_strategies', 'get_research_updates',
+                        'explain_strategy_selection'))
 RETRY_CODES = frozenset(('network_error', 'busy'))
 RETRY_DELAYS = (1, 2)
 CALL_BUDGET = 50

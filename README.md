@@ -6,10 +6,10 @@ WorkBuddy 用户请看 [WorkBuddy 安装说明](docs/workbuddy.md)。两个客�
 
 | 电脑 | 插件 | 下载与计算 |
 | --- | --- | --- |
-| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.1) | 与 Windows 共用 20 个客户端工具入口：账号授权、因子和已开放研究资料查询、下载到项目并校验；Barra 归因在本机运行。已打包，尚未做运行验收。 |
+| macOS（Apple 芯片 / Intel） | [Mac 使用说明](plugins/xyquant-factors-macos/README.md) · [下载完整插件](https://github.com/TTTy920/xyquant-factors/releases/tag/macos-v0.3.0-rc.2) | `0.3.0-rc.2`：四个 Skill，支持因子计数、查询下载、本地 Barra 归因和策略选股解释；17 个客户端工具，策略原表查询统一为一个入口。 |
 | Windows x64 | [XYQuant 因子 Windows 版](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1) | 原有桥接程序处理登录、自动下载到项目与文件校验。 |
 
-Mac 版的使用方式见上表；下文的安装流程和候选验收记录描述 Windows 客户端与配套网站。
+Mac 版的使用方式见上表，验证范围见 [Mac 本版验收记录](docs/acceptance-macos-0.3.0-rc.2.md)。本轮只发布 Mac；下文的安装流程和候选验收记录描述 Windows `0.3.0-rc.1` 客户端与配套网站。
 
 **`v0.3.0-rc.1` 未签名预发布版已发布并上线**（2026-10-03）。[下载与校验文件](https://github.com/TTTy920/xyquant-factors/releases/tag/v0.3.0-rc.1)及[本版验收记录](docs/acceptance-0.3.0-rc.1.md)已更新；这是预发布版，尚未完成签名及全部真实客户设备验收。
 
@@ -58,10 +58,8 @@ Mac 版的使用方式见上表；下文的安装流程和候选验收记录描�
 | 登录、状态和断开连接 | `get_connection_status`、`start_login`、`get_login_status`、`disconnect` |
 | 因子目录、说明和数值预览 | `list_factors`、`get_factor_info`、`preview_factor` |
 | 因子完整导出、任务查询和本地校验下载 | `create_export`、`get_export`、`list_exports`、`download_export`、`get_download` |
-| 策略目录与详情 | `list_strategies`、`get_strategy_info` |
-| 原表表现与净值分页 | `get_strategy_performance`、`get_strategy_nav` |
-| 团队介绍及已发布联系方式 | `get_research_team` |
-| 因子、策略、团队统一搜索 | `search_research` |
+| 策略目录、介绍、原表表现与净值分页 | `query_strategy_research`；不提供团队成员查询 |
+| 历史统一搜索入口（按服务端开关） | `search_research` |
 | 软件版本及研究发布事件 | `get_research_updates` |
 | 完整净值 CSV、原始 Excel 及图表 | 受保护研究中心；研究工具返回网页入口 |
 
@@ -69,7 +67,9 @@ Mac 版的使用方式见上表；下文的安装流程和候选验收记录描�
 
 因子预览最多 50 行，完整数据下载到 `<项目目录>/downloads/factors/<任务编号>/`，校验大小和 SHA-256 后才算完成。每个导出最多 10 个因子、200 个指定股票代码、5,000 万行、1 GiB、30 分钟；完成文件保留一小时。
 
-净值每页最多 50 行，翻页固定同一 `version`。研究结果保留来源、统计期间、原始指标名称、空值和资料警告；日期筛选不重算表现指标。预览和分页结果不代表全量回测。本版不执行新回测、排名或指标重算。
+`query_strategy_research` 不传 `strategy_id` 时搜索目录；指定目录中的 ID 后默认同时返回介绍和表现。`sections` 支持 `info`、`performance`、`nav` 及其组合，所有内容固定在同一已发布工作簿版本。后续净值页携带返回的 `version` 与 `next_offset`，每页最多 50 行。四个旧的独立查询入口及团队入口在远端保持关闭。
+
+研究结果保留原表指标名称、统计期间、空值和警告，不重算回测。Mac `0.3.0-rc.2` 已接入统一入口和 `explain_strategy_selection`；已发布的旧安装包不会自动增加工具，Windows 包另行同步。
 
 统一搜索只显示现有授权可见的类型，翻页固定研究 `version` 和因子 `catalog_version`。发布更新区分软件版本、资料发布时间与原始净值截止日，翻页固定 `publication_cursor`；不会自动升级软件或申请新授权。
 
@@ -109,7 +109,7 @@ Mac 版的使用方式见上表；下文的安装流程和候选验收记录描�
 - [管理员说明](docs/admin-guide.md) · [旧独立连接迁移](docs/migration.md)。
 - [本版候选验收](docs/acceptance-0.3.0-rc.1.md) · [早期验收记录](docs/acceptance.md)。
 - [构建与发布](docs/releasing.md) · [更新记录](CHANGELOG.md)。
-- [Mac 打包说明](scripts/macos/README.md)：两个系统共用客户端和两份 Skills，Mac 只适配系统钥匙串、文件和进程；同一份 ZIP 包含两种芯片的运行环境。
+- [Mac 打包说明](scripts/macos/README.md)：Mac 包含四个 Skills，适配系统钥匙串、文件和进程；同一份 ZIP 包含两种芯片的运行环境。
 
 公开仓库包含客户端源码、插件、合成测试和 Windows 构建产物。服务端源码、真实研究资料、客户身份和凭据留在私有环境。本分支提供 `.github/workflows/verify-windows.yml`：在干净 Windows 运行器测试、构建并上传候选制品，仅读仓库，不自动发布。是否已启用和通过以对应提交的 Actions 记录为准；没有运行的 CI 仍标为未运行。
 

@@ -9,10 +9,9 @@ from auth_client import ClientError, mutex
 
 MAX_BYTES = 256 * 1024
 TOOLS = frozenset(('list_factors', 'get_factor_info', 'preview_factor', 'create_export',
-                   'get_export', 'list_exports', 'list_strategies', 'get_strategy_info',
-                   'get_strategy_performance', 'get_strategy_nav', 'get_research_team',
+                   'get_export', 'list_exports', 'query_strategy_research',
                    'search_research', 'compare_strategies', 'get_research_updates',
-                   'download_export'))
+                   'download_export', 'explain_strategy_selection'))
 STAGES = frozenset(('auth', 'request', 'retry', 'reconcile', 'complete', 'wait', 'download'))
 CODES = frozenset(('ok', 'login_required', 'permission_denied', 'busy', 'network_error',
                    'invalid_request', 'not_found', 'source_unavailable',

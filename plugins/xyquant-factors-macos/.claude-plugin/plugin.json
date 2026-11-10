@@ -1,11 +1,11 @@
 {
   "name": "xyquant-factors-macos",
-  "version": "0.3.0-rc.1",
+  "version": "0.3.0-rc.2",
   "author": {
     "name": "XYQuant"
   },
   "license": "MIT",
-  "description": "XYQuant 因子与研究资料 · macOS：账号授权、因子下载和本地 Barra 归因。",
+  "description": "XYQuant 因子与研究资料 · macOS：因子下载、策略选股解释和本地 Barra 归因。",
   "repository": "https://github.com/TTTy920/xyquant-factors",
   "skills": "./skills/",
   "mcpServers": "./.mcp.workbuddy.json"

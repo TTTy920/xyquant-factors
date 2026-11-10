@@ -6,6 +6,7 @@ import io
 import json
 import os
 from pathlib import Path, PurePosixPath
+import re
 import shutil
 import subprocess
 import tarfile
@@ -19,7 +20,7 @@ ROOT = HERE.parents[1]
 SITE = "lib/python3.12/site-packages/"
 CLIENT_MODULES = (
     "auth_async", "auth_client", "configuration", "diagnostics", "downloads", "factor_bridge",
-    "login_tasks", "remote", "research_arguments", "runtime",
+    "login_tasks", "remote", "research_arguments", "runtime", "strategy_query_arguments",
 )
 
 
@@ -134,6 +135,13 @@ def bridge(dest):
             (stage / name).write_bytes((ROOT / "client" / name).read_text(encoding="utf-8").encode("utf-8"))
         subprocess.run(["git", "apply", "--no-index", "--whitespace=nowarn", "-p1", str(HERE / "client.patch")],
                                cwd=stage, check=True)
+        version = json.loads((ROOT / "plugins/xyquant-factors-macos/plugin.json").read_text(encoding="utf-8"))["version"]
+        auth = stage / "auth_client.py"
+        source, count = re.subn(r"^VERSION='[^']+'$", "VERSION=" + repr(version),
+                                auth.read_text(encoding="utf-8"), flags=re.MULTILINE)
+        if count != 1:
+            raise ValueError("Expected one Mac client version declaration")
+        auth.write_text(source, encoding="utf-8")
         shutil.copyfile(HERE / "macos_platform.py", stage / "macos_platform.py")
         shutil.copyfile(HERE / "bridge_main.py", stage / "__main__.py")
         with ZipFile(dest, "w") as bundle:
