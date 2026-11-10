@@ -9,7 +9,7 @@
       "source": {
         "source": "git-subdir",
         "url": "https://github.com/TTTy920/xyquant-factors.git",
-        "ref": "codex/workbuddy-compat",
+        "ref": "main",
         "path": "./plugins/xyquant-factors"
       },
       "version": "0.3.0-rc.1",
@@ -21,7 +21,7 @@
       "source": {
         "source": "git-subdir",
         "url": "https://github.com/TTTy920/xyquant-factors.git",
-        "ref": "codex/workbuddy-compat",
+        "ref": "main",
         "path": "./plugins/xyquant-factors-macos"
       },
       "version": "0.3.0-rc.1",

@@ -46,7 +46,7 @@ def render(root=ROOT):
         outputs[Path(directory) / "marketplace.json"] = marketplace
     remote_entries = [dict(entry, source={
         "source": "git-subdir", "url": "https://github.com/TTTy920/xyquant-factors.git",
-        "ref": "codex/workbuddy-compat", "path": entry["source"],
+        "ref": "main", "path": entry["source"],
     }) for entry in entries]
     outputs[Path("docs/workbuddy-marketplace.json")] = dict(marketplace, plugins=remote_entries)
     return outputs

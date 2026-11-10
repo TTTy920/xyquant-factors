@@ -13,12 +13,12 @@ class WorkBuddyPackageTests(unittest.TestCase):
     def test_shipped_catalog_contains_complete_existing_payloads(self):
         self.assertEqual(package.check(), {"plugins": 2, "metadata_files": 9})
 
-    def test_remote_catalog_fetches_complete_plugins_from_the_compatibility_branch(self):
+    def test_remote_catalog_fetches_complete_plugins_from_the_shared_main_branch(self):
         catalog = package.render()[Path("docs/workbuddy-marketplace.json")]
         for entry in catalog["plugins"]:
             source = entry["source"]
             self.assertEqual(source["source"], "git-subdir")
-            self.assertEqual(source["ref"], "codex/workbuddy-compat")
+            self.assertEqual(source["ref"], "main")
             self.assertEqual(source["path"], "./plugins/" + entry["name"])
             self.assertNotIn("#", source["url"])
 
