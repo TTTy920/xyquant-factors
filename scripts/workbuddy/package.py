@@ -44,6 +44,11 @@ def render(root=ROOT):
     marketplace = dict(name=catalog["name"], owner={"name": "XYQuant"}, plugins=entries)
     for directory in (".codebuddy-plugin", ".claude-plugin"):
         outputs[Path(directory) / "marketplace.json"] = marketplace
+    remote_entries = [dict(entry, source={
+        "source": "git-subdir", "url": "https://github.com/TTTy920/xyquant-factors.git",
+        "ref": "codex/workbuddy-compat", "path": entry["source"],
+    }) for entry in entries]
+    outputs[Path("docs/workbuddy-marketplace.json")] = dict(marketplace, plugins=remote_entries)
     return outputs
 
 
