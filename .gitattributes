@@ -7,6 +7,9 @@ plugins/xyquant-factors/bin/*.sha256 -text
 requirements-build.lock -text
 docs/licenses/** -text
 plugins/xyquant-factors/docs/licenses/** -text
+plugins/*/skills/**/*.md text eol=lf
+plugins/*/skills/**/*.py text eol=lf
+plugins/*/skills/**/*.yaml text eol=lf
 *.exe binary
 # Unified-diff context lines for empty lines contain a single required space.
 scripts/macos/*.patch whitespace=-blank-at-eol
