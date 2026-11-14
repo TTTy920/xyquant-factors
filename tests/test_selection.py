@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
-PATH = Path(__file__).resolve().parents[1] / 'plugins/xyquant/skills/strategy-attribution/scripts/attribute.py'
+PATH = Path(__file__).resolve().parents[1] / 'disabled-skills/strategy-attribution/scripts/attribute.py'
 spec = importlib.util.spec_from_file_location('local_selection', PATH)
 selection = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(selection)

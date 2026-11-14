@@ -37,8 +37,9 @@ class PackageTest(unittest.TestCase):
             self.assertEqual(portable["type"], "streamable-http")
             self.assertEqual(portable["url"], servers["xyquant"]["url"])
             skills = {s.parent.name for s in (pkg / "skills").glob("*/SKILL.md")}
-            self.assertTrue({"factor-download", "barra-attribution", "strategy-attribution"} <= skills)
-            script = pkg / "skills/barra-attribution/scripts/attribute.py"
+            self.assertEqual(skills, {"factor-download"})
+            self.assertFalse(any("barra-attribution" in name or "strategy-attribution" in name for name in archive.namelist()))
+            script = ROOT / "disabled-skills/barra-attribution/scripts/attribute.py"
             factors = ("Size", "Beta", "Momentum", "ResidualVolatility", "NonlinearSize", "BookToPrice", "Liquidity", "EarningsYield", "Growth", "Leverage")
             data = dict(holdings=[{"日期":"2026-09", "股票代码":"000001.SZ", "持仓比例":0.5}],
                         stock_exposures=[{"月份":"2026-09", "股票代码":"000001.SZ", **dict.fromkeys(factors, 2)}],

@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "xyquant",
-  "version": "0.4.0-rc.2",
-  "description": "查询已授权的量化因子和策略资料，将因子数据下载到当前项目，在本地计算 Barra 风格归因和策略选股归因。",
+  "version": "0.4.0-rc.3",
+  "description": "查询已授权的量化因子和策略资料，并将因子数据下载到当前项目。",
   "author": {
     "name": "XYQuant"
   },
@@ -12,13 +12,11 @@
     "com.openai": {
       "interface": {
         "displayName": "xyquant",
-        "shortDescription": "因子下载、策略查询与本地归因",
+        "shortDescription": "因子下载与策略查询",
         "developerName": "XYQuant",
         "category": "Productivity",
         "defaultPrompt": [
-          "查一下波动率相关因子有哪些，可以查询哪些日期。",
-          "解释指定策略某月这只股票入选或落选的原因。",
-          "用我的本地月末持仓、个股暴露和因子收益做 Barra 归因。"
+          "查一下波动率相关因子有哪些，可以查询哪些日期。"
         ]
       }
     }
