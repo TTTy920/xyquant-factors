@@ -1,6 +1,6 @@
 ---
 name: factor-download
-description: 通过 XYQuant MCP 查询通用因子、Barra风格数据和策略研究资料，预览与下载Barra数据，或创建通用因子导出任务。
+description: 通过 XYQuant MCP 查询通用因子、Barra风格数据和策略研究资料，预览因子并沿用MCP授权下载到本地项目。
 ---
 
 # 因子与策略资料
@@ -21,11 +21,11 @@ description: 通过 XYQuant MCP 查询通用因子、Barra风格数据和策略�
 
 1. 确定因子、首尾日期、所需股票范围和实际项目目录。如果用户要求全市场，使用账号可见的全量范围。为本次请求生成 UUID，以它作为 `request_id` 调用 `create_export`。提交响应丢失时先以同一 `request_id` 调用 `get_export`。确需重试创建时复用原编号与原条件。
 2. 保存返回的 `id`。使用 `get_export(job_id=...)` 等待 ready，按建议间隔或每 5 秒查询。请求编号和任务编号二选一。临时网络错误有限退避重试，过期或失败时说明原因。要找回最近的任务，单独调用 `get_export(recent=true)`，最多返回当前账号的 20 条记录。
-3. 用户要保存到项目时，查看当前 `get_export` 的参数。若提供 `include_download`，在文件就绪后调用 `get_export(job_id=..., include_download=true)`，取得含短期下载凭据的任务对象。向 [本地下载脚本](scripts/download.py) 的标准输入传入该 JSON 对象，作为数据安全序列化，不将返回值拼入可执行代码。用宿主提供的不回显输入或进程 stdin，不把凭据写入文件、日志、聊天回复或命令行参数。使用当前宿主可用的 Python 3.9+ 解释器，Windows 可用 `py -3`。
+3. 用户要保存到项目时，在文件就绪后调用 `get_export(job_id=..., include_download=true)`，取得含五分钟内有效的单文件下载凭据的任务对象。该步骤沿用当前 MCP 授权，无需再次网页登录。向 [本地下载脚本](scripts/download.py) 的标准输入传入该 JSON 对象，作为数据安全序列化，不将返回值拼入可执行代码。用宿主提供的不回显输入或进程 stdin，不把凭据写入文件、日志、聊天回复或命令行参数。使用当前宿主可用的 Python 3.9+ 解释器，Windows 可用 `py -3`。
 
    ```text
    python3 "<Skill目录>/scripts/download.py" save --project "<当前项目的绝对路径>"
    python3 "<Skill目录>/scripts/download.py" status --project "<当前项目的绝对路径>" --job "<任务编号>"
    ```
 4. 保持本地任务运行直至结束。脚本将文件保存到 `downloads/factors/<任务编号>/`，按字节数和 SHA-256 核验。只在返回 ready 时报告实际绝对路径、大小和校验值。临时网络故障会有限重试。中断或凭据到期时，用同一任务重新取下载凭据后再运行；已有的相同文件会复用。
-5. 用户选择浏览器、客户端无法执行脚本或当前服务未提供下载凭据时，使用同一账号打开[因子网站](https://47.103.215.251/factors/)的「最近导出」下载已有任务。此时向用户说明文件需在浏览器中保存。授权不足时说明缺少的权限。
+5. 如果当前客户端仍显示旧参数列表，先刷新 MCP 连接或更新插件；不要因缺少 `include_download` 就要求用户网页登录。MCP 返回授权失效时按客户端提示重新连接；缺少 `factors:download` 时说明需补充该连接的下载权限。用户主动选择网页或运行环境无法执行本地脚本时，可打开[因子网站](https://47.103.215.251/factors/)的「最近导出」下载已有任务；网页有独立的登录会话。
