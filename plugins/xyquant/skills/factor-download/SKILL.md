@@ -1,6 +1,6 @@
 ---
 name: factor-download
-description: 通过 XYQuant MCP 查询授权范围内的因子、策略原理、因子值与净值，导出完整因子文件并校验后保存到当前研究项目。
+description: 通过 XYQuant MCP 查询授权范围内的通用因子、策略展示资料与团队介绍，导出完整因子文件并校验后保存到当前研究项目。
 ---
 
 # 因子与策略资料
@@ -10,9 +10,10 @@ description: 通过 XYQuant MCP 查询授权范围内的因子、策略原理、
 ## 查询
 
 - 通用因子库使用 `query_factor_catalog`。省略参数可查看目录和总数，用 `search` 搜索，用 `factor` 读取单个因子的定义、覆盖和授权日期。`preview_factor` 预览指定因子、日期和股票，最多 50 行。全市场统计使用完整导出。日期用 YYYY-MM-DD，股票用含交易所后缀的代码，例如 000001.SZ。
-- 策略知识使用 `query_strategy_knowledge`。用 `search` 找到策略，再把返回的 `strategy_id` 传给同一工具读取选股原理。查询某只股票的策略因子值时，向 `get_strategy_factor_value` 提供同一策略标识和股票代码。直接回答原理或股票、日期和数值，内部标识和维护信息仅用于调用。
-- 策略介绍、表现及净值使用 `query_strategy_research`。先搜索目录，再使用目录返回的 strategy_id。净值分页时固定 version、按 next_offset 翻页。遇到 version_changed 时从第一页重查。保留原表名称、统计期间及空值。展示目录和选股原理目录各用其返回的标识。
-- 查询研究团队或团队分工使用 `get_research_team`。省略 `search` 查看团队名单，提供关键词可检索姓名或研究方向。
+- 策略介绍、表现及净值使用 `query_strategy_research`，默认 `dataset="strategies"`。先搜索目录，再使用目录返回的 strategy_id。净值分页时固定 version、按 next_offset 翻页。遇到 version_changed 时从第一页重查。保留原表名称、统计期间及空值。
+- 查询研究团队或团队分工使用 `query_strategy_research(dataset="team")`。省略 `search` 查看团队名单，提供关键词可检索姓名或研究方向。该入口只读取展示工作簿资料，不提供策略个股因子值。
+- Barra 暴露与现成因子收益率使用 `query_barra_data`，股票日收益、历史中信行业和交易日期使用 `query_stock_data`。组合收益归因使用 `portfolio-attribution` Skill；本 Skill 的通用因子查询与下载流程保持原样。
+
 
 ## 导出与下载
 

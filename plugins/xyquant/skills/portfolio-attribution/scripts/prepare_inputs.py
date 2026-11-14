@@ -21,12 +21,13 @@ def plan(holdings, benchmark, calendar, start, end, frequency):
         require(set(starts) <= available, '缺少有效期初持仓快照', kind=kind,
                 dates=[str(x.date()) for x in starts if x not in available])
         codes.update(rows.loc[rows.date.isin(starts), 'stock_code'])
-    query = {'dataset': 'bundle', 'frequency': frequency, 'start': str(periods[0][0].date()),
-             'end': str(periods[-1][1].date()), 'codes': sorted(codes) if len(codes)<=4000 else [],
-             'request_id': str(uuid.uuid4())}
+    common = {'dataset': 'bundle', 'start': str(periods[0][0].date()),
+              'end': str(periods[-1][1].date()), 'codes': sorted(codes) if len(codes)<=4000 else []}
+    stock_query = {**common, 'request_id': str(uuid.uuid4())}
+    barra_query = {**common, 'frequency': frequency, 'request_id': str(uuid.uuid4())}
     if len(starts)<=1000:
-        query['exposure_dates'] = [str(d.date()) for d in starts]
-    return {'request': query, 'stock_count': len(codes),
+        barra_query['exposure_dates'] = [str(d.date()) for d in starts]
+    return {'requests': {'query_stock_data': stock_query, 'query_barra_data': barra_query}, 'stock_count': len(codes),
             'periods': [[str(a.date()), str(b.date())] for a, b in periods]}
 
 

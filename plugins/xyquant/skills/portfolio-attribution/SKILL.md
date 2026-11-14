@@ -17,14 +17,14 @@ description: 通过 XYQuant MCP 读取服务器公共数据，在本地根据客
 
 ## 取数与本地执行
 
-1. 用 get_attribution_data(dataset="catalog") 核对服务器数据类别和频率。需要股票日收益、十风格暴露、现成因子收益率和历史行业；原包示例数据不能补缺口。
-2. 用同一个工具的 dataset="calendar"，传请求起止日期，取得从日收益率派生的交易日期。该响应仅用于本地规划，直接传给规划脚本标准输入，不另存日历文件：
+1. 分别用 query_barra_data(dataset="catalog") 和 query_stock_data(dataset="catalog") 核对服务器数据类别。Barra 工具提供十风格暴露与现成因子收益率，基础数据工具提供股票日收益与历史行业；原包示例数据不能补缺口。
+2. 用 query_stock_data(dataset="calendar")，传请求起止日期，取得从日收益率派生的交易日期。该响应仅用于本地规划，直接传给规划脚本标准输入，不另存日历文件：
    ```text
    python <Skill绝对路径>/scripts/prepare_inputs.py --holdings <客户持仓> --benchmark-holdings <客户基准权重> --start YYYY-MM-DD --end YYYY-MM-DD --frequency monthly
    ```
-   标准输入为工具的 calendar 响应 JSON。输出 request 只包含股票、日期等公共数据选择条件，不含权重和净值。
-3. 按规划结果的 request 调用 get_attribution_data。保留 request_id；重试同一取数请求沿用 UUID。返回任务编号后，用同一个工具仅传 job_id 查询，直到 ready。失败时说明实际缺口，不虚构取数成功。
-4. 向本地下载脚本的标准输入传入 ready 任务 JSON，保存并校验公共数据：
+   标准输入为工具的 calendar 响应 JSON。输出 requests 包含 query_stock_data 和 query_barra_data 两组取数参数，只含股票、日期等公共数据选择条件，不含权重和净值。
+3. 按 requests 中的两组参数分别调用 query_stock_data 和 query_barra_data。两组各保留自己的 request_id，重试同一组时沿用原 UUID。返回任务编号后，分别用创建任务的工具仅传 job_id 查询，直到两个任务均 ready。失败时说明实际缺口，不虚构取数成功。
+4. 向本地下载脚本的标准输入传入 {"query_stock_data": <基础数据ready任务>, "query_barra_data": <Barra ready任务>} JSON 对象，保存、校验两份公共数据并生成本地统一配置：
    ```text
    python <Skill绝对路径>/scripts/download_data.py --project <已有本地项目绝对路径>
    ```
@@ -36,7 +36,7 @@ description: 通过 XYQuant MCP 读取服务器公共数据，在本地根据客
    有实际复权净值增加 --nav <本地净值文件>。明确 Barra 或 Brinson 时只运行对应方法；泛称收益归因时运行 both。客户文字作为独立参数，不拼成 shell 代码。
 6. 读取本次 report.md 和 metadata.json，按 [对话报告](references/conversation-report.md) 在对话中交付文字、数字表格和结论。Excel为补充附件。partial_success 只交付完整成功的方法，并说明另一方法失败原因。
 
-没有 get_attribution_data 时，说明数据入口尚不可用，不改用已撤下的服务器归因工具，也不使用本地旧样本或模型口算代替。
+缺少 query_stock_data 或 query_barra_data 时，说明相应数据入口尚不可用，不改用已撤下的服务器归因工具，也不使用本地旧样本或模型口算代替。
 
 ## 净值分支与原计算口径
 

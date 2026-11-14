@@ -16,7 +16,7 @@ CSV、XLSX 或 Parquet。日期为 YYYY-MM-DD，股票代码保留前导零和�
 
 ## MCP只提供公共数据
 
-唯一新增工具为 get_attribution_data，具有 catalog、calendar、bundle 和 job_id 查询模式。股票代码与日期可作为取数条件，客户持仓权重、净值、组合名称、归因方法及运行参数不属于工具输入。
+公共数据分为 query_barra_data 和 query_stock_data 两个工具。两者支持 catalog、bundle 和 job_id 查询；前者还可单独导出 exposures 或 factor_returns，后者支持 calendar，以及单独导出 stock_returns 或 industry。股票代码与日期可作为取数条件，客户持仓权重、净值、组合名称、归因方法及运行参数不属于工具输入。
 
 | 数据 | 服务器来源 | 本地用途 |
 | --- | --- | --- |
@@ -29,7 +29,7 @@ CSV、XLSX 或 Parquet。日期为 YYYY-MM-DD，股票代码保留前导零和�
 
 原 Skill 包的 market、exposures、industry、calendar、策略和基准等数据不进入生产取数源。
 
-calendar 模式仅返回从股票日收益率读取的日期数组，规划脚本通过标准输入接收。bundle 导出 stock_returns.parquet、exposures.parquet、factor_returns.parquet、industry.parquet 和 data.json。没有日历文件、持仓文件或净值文件。股票日收益表保留请求前后62个自然日范围内的实际交易日期，以便原周期判断确认边界；不会生成未来交易日。
+query_stock_data 的 calendar 模式仅返回从股票日收益率读取的日期数组，规划脚本通过标准输入接收。该工具的 bundle 导出 stock_returns.parquet、industry.parquet 和 data.json；query_barra_data 的 bundle 导出 exposures.parquet、factor_returns.parquet 和 data.json。本地下载脚本核验两个任务的股票与日期范围一致后，生成统一输入配置。没有日历文件、持仓文件或净值文件。股票日收益表保留请求前后62个自然日范围内的实际交易日期，以便原周期判断确认边界；不会生成未来交易日。
 
 | 导出表 | 字段 |
 | --- | --- |
@@ -44,6 +44,6 @@ calendar 模式仅返回从股票日收益率读取的日期数组，规划脚�
 
 ## 本地执行
 
-Python 3.10+，依赖见 requirements.txt。data.json 仅引用同一已校验下载目录的公共数据表。本地 InputStore 从 stock_returns.date 取交易日历，读取客户持仓及基准文件，继续使用原有计算函数；有实际净值时增加独立差额分支。
+Python 3.10+，依赖见 requirements.txt。最终 data.json 仅引用这两份已校验下载数据中的公共表，不改变任何数据值。本地 InputStore 从 stock_returns.date 取交易日历，读取客户持仓及基准文件，继续使用原有计算函数；有实际净值时增加独立差额分支。
 
 本次生产工作流使用 --input-config，不使用旧 Skill 的样本目录。保留的 --data-root 和内部 WLS 代码仅用于旧接口兼容与公式测试，不进入本次 MCP 取数工作流。没有有效公共数据时停止并说明，不自动转用样本数据。
