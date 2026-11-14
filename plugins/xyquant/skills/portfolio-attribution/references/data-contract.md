@@ -16,6 +16,8 @@ CSV、XLSX 或 Parquet。日期为 YYYY-MM-DD，股票代码保留前导零和�
 
 ## MCP只提供公共数据
 
+Barra工具另支持 `factors` 筛选风格及 `preview=true` 直接返回最多50行原始数值。单独选因子的导出列使用英文风格名称；因子收益率列映射随包提供。归因工作流仍不传 `factors`，使用完整十风格数据；单表ready任务也可由本地下载脚本单独保存，不能当作完整归因输入。
+
 公共数据分为 query_barra_data 和 query_stock_data 两个工具。两者支持 catalog、bundle 和 job_id 查询；前者还可单独导出 exposures 或 factor_returns，后者支持 calendar，以及单独导出 stock_returns 或 industry。股票代码与日期可作为取数条件，客户持仓权重、净值、组合名称、归因方法及运行参数不属于工具输入。
 
 | 数据 | 服务器来源 | 本地用途 |

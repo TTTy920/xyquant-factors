@@ -23,6 +23,8 @@
 
 组合收益归因使用 `portfolio-attribution`：客户提供组合持仓及权重、所选基准的历史成分权重，实际净值可选；未提供净值时按原有持仓算法重建收益。风格暴露和现成因子收益率通过 `query_barra_data` 获取，股票日收益和历史行业通过 `query_stock_data` 获取，交易日历由日收益率日期提取。持仓及净值留在本地，归因在本地执行，不重新计算因子收益率。
 
+Barra数据支持直接数值预览和单因子导出：在 `query_barra_data` 中设置 `factors=["Size"]`，加 `preview=true` 可查看少量数值，提供 `request_id` 则创建完整文件导出。不传 `factors` 时保留原来的整组数据格式，组合归因计算不变。
+
 开发阶段暂时停用 `barra-attribution` 和 `strategy-attribution`，当前插件加载 `factor-download` 和 `portfolio-attribution`。
 
 通用因子的目录、预览和导出四个工具保留原样；策略与团队介绍统一使用 `query_strategy_research`，市场信号继续使用 `query_market_signals`。科技策略知识及策略个股因子值接口开发阶段暂不开放。

@@ -31,6 +31,18 @@ def download(job, project, tool=None):
         raise ValueError('请取得该数据任务的有效下载凭据')
     if type(job.get('bytes')) is not int or not 0<job['bytes']<=1024**3 or not re.fullmatch(r'[a-f0-9]{64}', job.get('sha256', '')):
         raise ValueError('数据文件信息无效')
+    tool = tool or (job.get('tool') if job.get('tool') in GROUP_FILES else None)
+    expected = GROUP_FILES[tool] if tool else FILES
+    if tool:
+        if job.get('tool') != tool:
+            raise ValueError('数据任务与取数工具不匹配')
+        if 'datasets' in job:
+            datasets = job['datasets']
+            if (not isinstance(datasets, list) or not 1 <= len(datasets) <= 2
+                    or any(type(name) is not str or name+'.parquet' not in GROUP_FILES[tool] for name in datasets)
+                    or len(set(datasets)) != len(datasets)):
+                raise ValueError('数据任务类别无效')
+            expected = {'data.json', *[name+'.parquet' for name in datasets]}
     project = Path(project)
     if not project.is_absolute() or not project.is_dir():
         raise ValueError('请指定已有本地项目的绝对路径')
@@ -60,9 +72,6 @@ def download(job, project, tool=None):
         finally:
             if pending is not None:
                 pending.unlink(missing_ok=True)
-    expected = GROUP_FILES[tool] if tool else FILES
-    if tool and job.get('tool') != tool:
-        raise ValueError('数据任务与取数工具不匹配')
     with zipfile.ZipFile(target) as archive:
         if set(archive.namelist())!=expected or len(archive.infolist())!=len(expected) or sum(x.file_size for x in archive.infolist())>2*1024**3:
             raise ValueError('公共数据包的文件集合无效')
@@ -81,12 +90,19 @@ def download(job, project, tool=None):
 def save(jobs, project):
     if jobs.get('status') == 'ready':
         folder, _ = download(jobs, project)
+        if jobs.get('tool') in GROUP_FILES:
+            with zipfile.ZipFile(folder/'attribution-data.zip') as archive:
+                files = {name: str(folder/name) for name in sorted(archive.namelist())}
+            return {'status': 'ready', 'output_dir': str(folder), 'files': files}
         return {'status': 'ready', 'input_config': str(folder/'data.json')}
     if set(jobs) != set(GROUP_FILES):
         raise ValueError('请提供股票基础数据和Barra两个就绪任务')
     sources = {tool: download(jobs[tool], project, tool) for tool in GROUP_FILES}
     stock_folder, stock = sources['query_stock_data']
     barra_folder, barra = sources['query_barra_data']
+    if (set(stock['files']) != GROUP_FILES['query_stock_data']-{'data.json'}
+            or set(barra['files']) != GROUP_FILES['query_barra_data']-{'data.json'}):
+        raise ValueError('归因需要完整的基础数据和Barra数据包')
     for key in ['start', 'end', 'codes']:
         if stock.get('query', {}).get(key) != barra.get('query', {}).get(key):
             raise ValueError('两个数据任务的日期或股票范围不一致')

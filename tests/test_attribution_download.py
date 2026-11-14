@@ -20,11 +20,13 @@ class GroupedDownloadTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.project = Path(self.temp.name)
 
-    def job(self, tool, number, start='2024-12-31', extra=None):
+    def job(self, tool, number, start='2024-12-31', extra=None, datasets=None):
         jid = str(number)*32
         folder = self.project/'downloads/attribution-data'/jid
         folder.mkdir(parents=True)
         names = download.GROUP_FILES[tool]-{'data.json'}
+        if datasets is not None:
+            names = {name+'.parquet' for name in datasets}
         values = {name: (tool+':'+name).encode() for name in names}
         manifest = {'origin': 'xyquant_server',
                     'query': {'start': start, 'end': '2025-01-31', 'codes': ['000001.SZ'], 'frequency': 'monthly'},
@@ -38,10 +40,12 @@ class GroupedDownloadTests(unittest.TestCase):
             archive.writestr('data.json', json.dumps(manifest))
             if extra: archive.writestr(extra, b'outside')
         content = (folder/'attribution-data.zip').read_bytes()
-        return {'id': jid, 'tool': tool, 'status': 'ready', 'bytes': len(content),
+        result = {'id': jid, 'tool': tool, 'status': 'ready', 'bytes': len(content),
                 'sha256': hashlib.sha256(content).hexdigest(),
                 'download': {'url': download.ORIGIN+'/factors/api/attribution-data/'+jid,
                              'ticket': 'A'*40, 'expires_at': time.time()+600}}
+        if datasets is not None: result['datasets'] = datasets
+        return result
 
     def test_both_groups_combine_and_retries_reuse_checked_data(self):
         jobs = {tool: self.job(tool,i) for i,tool in enumerate(download.GROUP_FILES,1)}
@@ -83,3 +87,22 @@ class GroupedDownloadTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             download.save({'query_stock_data':stock,'query_barra_data':barra},self.project)
         self.assertFalse((self.project/'downloads/attribution-data/combined').exists())
+
+    def test_one_barra_exposure_job_can_be_saved_without_stock_data(self):
+        job = self.job('query_barra_data',1,datasets=['exposures'])
+        result = download.save(job,self.project)
+        self.assertEqual(set(result['files']),{'data.json','exposures.parquet'})
+        self.assertTrue(Path(result['files']['exposures.parquet']).is_file())
+        self.assertNotIn('input_config',result)
+
+    def test_partial_barra_package_is_not_treated_as_complete_attribution_input(self):
+        jobs = {'query_stock_data':self.job('query_stock_data',1),
+                'query_barra_data':self.job('query_barra_data',2,datasets=['factor_returns'])}
+        with self.assertRaisesRegex(ValueError,'需要完整'):
+            download.save(jobs,self.project)
+
+    def test_unknown_export_category_is_rejected(self):
+        job = self.job('query_barra_data',1)
+        job['datasets'] = ['../../outside']
+        with self.assertRaisesRegex(ValueError,'类别无效'):
+            download.save(job,self.project)
