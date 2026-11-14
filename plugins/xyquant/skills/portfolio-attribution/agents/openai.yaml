@@ -1,0 +1,4 @@
+interface:
+  display_name: "组合收益归因"
+  short_description: "通过 MCP 读取服务器公共数据，本地根据持仓完成风格和行业归因，净值可选"
+  default_prompt: "使用 $portfolio-attribution 帮我做组合收益归因。"

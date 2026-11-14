@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "xyquant",
-  "version": "0.4.0-rc.3",
-  "description": "查询已授权的量化因子和策略资料，并将因子数据下载到当前项目。",
+  "version": "0.4.0-rc.4",
+  "description": "查询已授权的量化因子和策略资料，下载因子数据，并在本地完成组合风格与行业收益归因。",
   "author": {
     "name": "XYQuant"
   },
@@ -12,7 +12,7 @@
     "com.openai": {
       "interface": {
         "displayName": "xyquant",
-        "shortDescription": "因子下载与策略查询",
+        "shortDescription": "因子下载、策略查询与组合归因",
         "developerName": "XYQuant",
         "category": "Productivity",
         "defaultPrompt": [

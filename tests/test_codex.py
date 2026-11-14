@@ -47,7 +47,8 @@ class CodexDiscoveryTest(unittest.TestCase):
                 result = send("plugin/read", {"pluginName":"xyquant", "marketplacePath":
                               str(ROOT / ".agents/plugins/marketplace.json")}, 2)["plugin"]
                 self.assertEqual(result["mcpServers"], ["xyquant"])
-                self.assertEqual({"xyquant:factor-download"}, {s["name"] for s in result["skills"]})
+                self.assertEqual({"xyquant:factor-download", "xyquant:portfolio-attribution"},
+                                 {s["name"] for s in result["skills"]})
             finally:
                 proc.terminate()
                 try:
