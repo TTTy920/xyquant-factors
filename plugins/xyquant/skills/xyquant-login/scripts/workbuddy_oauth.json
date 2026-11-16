@@ -1,0 +1,5 @@
+{
+  "client_name": "XYQuant for WorkBuddy (local connector)",
+  "scope": "factors:read factors:export factors:download research:read",
+  "token_endpoint_auth_method": "none"
+}

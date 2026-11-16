@@ -29,6 +29,8 @@ class PackageTest(unittest.TestCase):
                 self.assertEqual(source if isinstance(source, str) else source["path"], "./plugins/xyquant")
                 meta = json.loads((pkg / host / "plugin.json").read_text(encoding="utf-8"))
                 self.assertEqual((meta["name"], meta["version"]), (entries[0]["name"], manifest["version"]))
+                login_skill = pkg / meta["skills"] / "xyquant-login" / "SKILL.md"
+                self.assertTrue(login_skill.is_file(), f"{host} cannot discover xyquant-login")
                 servers = json.loads((pkg / meta["mcpServers"]).read_text())["mcpServers"]
                 self.assertEqual(list(servers), ["xyquant"])
                 self.assertEqual(servers["xyquant"]["url"], "https://47.103.215.251/mcp")
@@ -37,7 +39,7 @@ class PackageTest(unittest.TestCase):
             self.assertEqual(portable["type"], "streamable-http")
             self.assertEqual(portable["url"], servers["xyquant"]["url"])
             skills = {s.parent.name for s in (pkg / "skills").glob("*/SKILL.md")}
-            self.assertEqual(skills, {"factor-download", "portfolio-attribution"})
+            self.assertEqual(skills, {"factor-download", "portfolio-attribution", "xyquant-login"})
             skill_source = ROOT / "plugins/xyquant/skills/portfolio-attribution"
             skill_package = pkg / "skills/portfolio-attribution"
             for source in skill_source.rglob("*"):
@@ -54,3 +56,30 @@ class PackageTest(unittest.TestCase):
             result = json.loads(subprocess.check_output([sys.executable, "-X", "utf8", str(script), str(sample)], encoding="utf-8"))
             self.assertEqual(result["月末组合暴露"][0]["Size"], 1)
             self.assertEqual(result["月度风格收益贡献"][0]["Size"], .01)
+
+    def test_packaged_login_entry_points(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with zipfile.ZipFile(build(Path(tmp))) as archive:
+                archive.extractall(tmp)
+            relative = Path("skills/xyquant-login/scripts")
+            scripts = Path(tmp) / "xyquant" / relative
+            source = ROOT / "plugins/xyquant" / relative
+            for name in (
+                "login.py", "claude_login.py", "codex_direct.py", "xyquant_network.py",
+                "workbuddy_login.py", "workbuddy_probe.py", "workbuddy_oauth.json",
+            ):
+                with self.subTest(helper=name):
+                    self.assertEqual((scripts / name).read_bytes(), (source / name).read_bytes())
+
+            python = [sys.executable, "-X", "utf8"]
+            help_text = subprocess.check_output(
+                [*python, str(scripts / "login.py"), "--help"], encoding="utf-8", timeout=10,
+            )
+            for client in ("codex", "claude", "workbuddy"):
+                self.assertIn(client, help_text)
+            native = subprocess.run(
+                [*python, str(scripts / "workbuddy_login.py"), "--native"],
+                capture_output=True, encoding="utf-8", timeout=10,
+            )
+            self.assertEqual(native.returncode, 3, native.stderr)
+            self.assertIn("https://47.103.215.251/mcp", native.stdout)

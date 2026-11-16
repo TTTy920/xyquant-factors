@@ -1,6 +1,6 @@
 # xyquant
 
-在 Codex、WorkBuddy 或 Claude Code 中查询已授权的因子与策略资料，把选定的数据保存到当前项目，并在本地完成组合风格与行业收益归因。Windows 和 macOS 使用同一份插件。
+在 Codex、WorkBuddy 或 Claude Code 中查询已授权的因子与策略资料，把选定的数据保存到当前项目，并在本地完成组合风格与行业收益归因。Windows、macOS 和 Linux 共用同一份插件包。
 
 ## 安装与授权
 
@@ -9,6 +9,8 @@
 在 Codex 桌面端打开「插件」添加市场后安装。在 WorkBuddy 打开「插件市场」，添加市场来源并安装。Claude Code 可在 `/plugin` 中添加本地仓库目录并安装 `xyquant@xyquant`。解压的插件包本身包含清单、连接配置和全部 Skill。
 
 第一次查询时，按客户端的连接提示打开 XYQuant 网站，使用自己的账号登录并授权，回到客户端继续提问。因子、日期和研究资料的可见范围由该账号的授权决定。运行本地下载脚本需要 Python 3.9 或以上。
+
+插件已内置 [xyquant-login](plugins/xyquant/skills/xyquant-login/SKILL.md)。在使用数据的客户端说“帮我连接 XYQuant”即可；已有授权时可以直接查询。WorkBuddy 桌面用户若遇到 `invalid_target`，可说“用本地连接器授权 XYQuant”。这条可选路径需要 Python 3.9+ 和带 npm/npx 的 Node.js 20.18.1+，首次使用按提示把生成的 `xyquant-local` 配置添加到 WorkBuddy。
 
 组合归因需要 Python 3.10 或以上，先安装 `plugins/xyquant/skills/portfolio-attribution/requirements.txt` 中的依赖。
 
@@ -25,7 +27,7 @@
 
 Barra数据支持直接数值预览和单因子导出：在 `query_barra_data` 中设置 `factors=["Size"]`，加 `preview=true` 可查看少量数值，提供 `request_id` 则创建完整文件导出。不传 `factors` 时保留原来的整组数据格式，组合归因计算不变。
 
-开发阶段暂时停用 `barra-attribution` 和 `strategy-attribution`，当前插件加载 `factor-download` 和 `portfolio-attribution`。
+当前插件加载 `xyquant-login`、`factor-download` 和 `portfolio-attribution`。开发阶段暂时停用 `barra-attribution` 和 `strategy-attribution`。
 
 通用因子保留目录、预览和导出四个工具，`get_export` 增加可选的文件下载凭据；策略与团队介绍统一使用 `query_strategy_research`，市场信号继续使用 `query_market_signals`。科技策略知识及策略个股因子值接口开发阶段暂不开放。
 
