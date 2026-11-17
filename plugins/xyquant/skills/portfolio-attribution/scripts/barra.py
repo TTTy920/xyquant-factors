@@ -32,17 +32,12 @@ def regress(x, returns, caps, eligible, minimum=100, max_drop=.1, condition_limi
         "intercept": float(coef[0]), "weighted_residual_rms": float(np.sqrt(mse))}
 
 
-def attribute(wp, wb, x, returns, caps, eligible, parameters, factor_returns=None):
+def attribute(wp, wb, x, returns, caps, eligible, parameters):
     stocks = wp.index.union(wb.index)
     held = x.reindex(stocks)
     missing = held.index[~np.isfinite(held.to_numpy()).all(axis=1)]
     require(len(missing)==0, "持仓或基准股票风格暴露缺失", stocks=missing.tolist())
-    if factor_returns is None:
-        f, diagnostic = regress(x, returns, caps, eligible, **parameters)
-    else:
-        f = factor_returns.reindex(FACTORS).astype(float)
-        require(np.isfinite(f).all(), "现成因子收益率缺失")
-        diagnostic = {"source": "supplied_factor_returns"}
+    f, diagnostic = regress(x, returns, caps, eligible, **parameters)
     p = wp.to_numpy()@x.reindex(wp.index)[FACTORS].to_numpy()
     b = wb.to_numpy()@x.reindex(wb.index)[FACTORS].to_numpy()
     detail = pd.DataFrame({"factor": FACTORS, "portfolio_exposure": p, "benchmark_exposure": b,

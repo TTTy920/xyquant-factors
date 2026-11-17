@@ -1,51 +1,50 @@
-# 本地输入与服务器公共数据
+# 部署和共享数据
 
-## 客户文件留在本地
+Python 3.10+，安装 `requirements.txt`。插件只附计算代码；原始数据通过 `query_stock_data(dataset="attribution_bundle")` 下载到客户的本地项目，先按Skill入口检查可复用缓存。数据下载之后计算不依赖网络，客户持仓和权重不上传。两种方法使用同一个下载快照，不混合其他数据版本或现成因子收益率。
 
-CSV、XLSX 或 Parquet。日期为 YYYY-MM-DD，股票代码保留前导零和交易所后缀。
+通过 `entry.py` 执行时用 `--data-root` 指定下载返回的数据根，也可使用 `ATTRIBUTION_DATA_ROOT`。结果用 `--output-root` 写入项目目录。下面保留原版数据契约与计算说明；服务器数据快照已完成格式准备，日常归因不运行迁移脚本。
 
-| 文件 | 字段 | 要求 |
-| --- | --- | --- |
-| 策略持仓，必需 | date/日期、stock_code/股票代码、weight/权重/持仓比例 | 一日一股一行；非负有限数；权重可为小数、百分数字符串或统一单位的持仓金额 |
-| 基准成分权重，必需 | 与持仓相同 | 客户按所选基准提供每期实际期初快照；不使用原 Skill 附带的基准样本 |
-| 实际净值，可选 | date/日期、nav/净值/组合净值/复权净值 | 正数、日期唯一；采用含分红再投资的可比净值，包含每期初末值，不向前填充 |
+## 清单和格式
 
-持仓为该日期收盘后适用于下一期的快照。自然月最后一天或周日标记可在同一周期内映射到最后交易日，其他日期不移动。缺整期持仓不填充，不据月末持仓伪造日/周持仓。
+`data/catalog.json` 的 `schema_version` 为1，所有路径相对数据根，不允许越界。`calendar` 为完整交易日历；`portfolios`、`benchmarks` 为名称到 `path/frequencies/aliases` 的映射。`market` 与 `exposures` 为按年保存的文件路径列表；`snapshots` 和 `industry` 为单个路径。不要直接把不兼容表追加进清单。
 
-沿用原版：显式现金行 CASH、现金、CNY 剔除，股票部分按总额归一化；不支持负权重，零股票权重不参与。实际净值与股票部分口径的不同进入独立净值差额，不修改行业或风格贡献公式。
+所有输入使用 Parquet + Zstandard，无损保留 float64。按日期/股票列读取，逐年文件无日期重叠，不把同一批数据复制给两个引擎。
 
-## MCP只提供公共数据
+| 数据 | 列与规则 |
+|---|---|
+| calendar | date，完整交易日期，升序且无重复；需覆盖请求前后周期，不以周末自行推断节假日 |
+| market/YYYY.parquet | date, stock_code, return, float_cap, eligible；日简单收益小数、原始流通市值、期初回归合格标记。eligible为可空int8，仅0/1/空，空与0不同。保留全市场股票，不局限持仓并集 |
+| exposures/YYYY.parquet | date, stock_code，以及 Size/Beta/Momentum/ResidualVolatility/NonlinearSize/BookToPrice/Liquidity/EarningsYield/Growth/Leverage；日度原始模型暴露，不填零、不重新标准化 |
+| weights/portfolio_*.parquet | date, stock_code, weight；仅非零正股票权重，原始频率，不伪造高频持仓 |
+| weights/benchmark_*.parquet | 同上，日度基准权重，不保存周/月副本 |
+| weights/snapshots.parquet | date, kind, name, valid, total, cash；kind为portfolio/benchmark。记录每期是否真实可用、原始股票权重合计和剔除现金合计。缺失整期必须标无效或无记录，不能解释为零持仓 |
+| industry/monthly.parquet | date, stock_code, industry；月度非空历史分类。运行时仅按股票向前填充到期初，不回填未来、不插值 |
 
-Barra工具另支持 `factors` 筛选风格及 `preview=true` 直接返回最多50行原始数值。单独选因子的导出列使用英文风格名称；因子收益率列映射随包提供。归因工作流仍不传 `factors`，使用完整十风格数据；单表ready任务也可由本地下载脚本单独保存，不能当作完整归因输入。
+股票代码保留交易所后缀和前导零；每表日期/股票唯一。稀疏权重行合计必须等于快照total，total>0才可归因。权重是该日期收盘后适用于下一期间的快照。现金不进入股票归因。非有限值和负权重不可用。
 
-公共数据分为 query_barra_data 和 query_stock_data 两个工具。两者支持 catalog、bundle 和 job_id 查询；前者还可单独导出 exposures 或 factor_returns，后者支持 calendar，以及单独导出 stock_returns 或 industry。股票代码与日期可作为取数条件，客户持仓权重、净值、组合名称、归因方法及运行参数不属于工具输入。
+周/月股票收益按完整交易日序列连乘，任一日缺失传播为区间缺失。不用现成周/月因子收益，也不持久保存聚合收益副本。停牌、退市、换股等缺口需要数据维护方按明确口径修复，不能由归因脚本猜测。Barra对全市场回归样本的缺失按剔除阈值诊断，组合/基准持有股票缺收益或暴露仍严格报错。
 
-| 数据 | 服务器来源 | 本地用途 |
-| --- | --- | --- |
-| 个股十风格暴露 | 服务器已有十个 HDF5 | 期初组合及基准暴露 |
-| 月频因子收益 | 服务器已有月频工作簿 | 本期风格收益贡献 |
-| 日/周频因子收益 | 用户 wang.zip 中相应工作簿 | 对应频率的风格贡献 |
-| 个股日收益 | 用户 wang.zip 的日收益率.csv | 区间收益、组合重建净值、Brinson |
-| 历史中信行业 | 用户 wang.zip 的中信行业.csv | 期初历史行业分类 |
-| 交易日期 | 从同一日收益率数据的日期读取 | 完整周期和期初末对齐；不单独准备文件 |
+## 迁移和验证
 
-原 Skill 包的 market、exposures、industry、calendar、策略和基准等数据不进入生产取数源。
+`scripts/merge_legacy_data.py` 只用于一次性从原两个 Skill 的CSV数据目录准备共享Parquet：
 
-query_stock_data 的 calendar 模式仅返回从股票日收益率读取的日期数组，规划脚本通过标准输入接收。该工具的 bundle 导出 stock_returns.parquet、industry.parquet 和 data.json；query_barra_data 的 bundle 导出 exposures.parquet、factor_returns.parquet 和 data.json。本地下载脚本核验两个任务的股票与日期范围一致后，生成统一输入配置。没有日历文件、持仓文件或净值文件。股票日收益表保留请求前后62个自然日范围内的实际交易日期，以便原周期判断确认边界；不会生成未来交易日。
+```sh
+python scripts/merge_legacy_data.py --barra-data /old/barra/data --brinson-data /old/brinson/data --destination /new/portfolio-attribution/data
+```
 
-| 导出表 | 字段 |
-| --- | --- |
-| stock_returns.parquet | date、stock_code、return，小数日简单收益，空值保留 |
-| exposures.parquet | date、stock_code、十个英文风格列，不重新标准化 |
-| factor_returns.parquet | date、源工作簿原始数字列；data.json 明确十风格列映射 |
-| industry.parquet | date、stock_code、industry，保留请求股票此前历史分类，向前填充仅在本地执行 |
+输出目录必须为空；输入只读。重叠有限值必须精确相同，否则停止。CSV采用round-trip浮点解析，避免默认解析产生尾数差异。迁移按表取日期/股票并集，不用未来数据填缺失；逐列回读校验Parquet值，原始float64不降精度，输出SHA-256、来源和重叠检查写入 `migration_manifest.json`。十个风格合在一个年度面板，日期/股票轴不再重复十份；股票代码采用字典编码。
 
-十风格为 Size、Beta、Momentum、ResidualVolatility、NonlinearSize、BookToPrice、Liquidity、EarningsYield、Growth、Leverage，沿用原生成代码列1–10的对应关系。日/周表为0–10，月表为0–40；仅提取十风格，不把截距和行业列混入。更换来源时由维护方确认列映射和模型口径。
+数据更新时应由部署数据流水线维护完整日历、年度面板、权重及快照，不将今天的合格股票池回填历史。单次任务使用的输入文件须保持不变，脚本前后检查指纹。
 
-所有公共数值按原值导出为 float64，不在服务器计算因子收益、组合收益、暴露加权、归因或累计连接。行业不在服务器填补，缺失股票值不填零。用户请求中包含未知股票或日期时，保持缺失，由本地原有规则报出具体缺口。
+## 运行和结果
 
-## 本地执行
+```sh
+python scripts/entry.py inventory --data-root <本地数据根>
+python scripts/entry.py run --source preset --data-root <本地数据根> --method both --portfolio "300增强" --benchmark "沪深300" --start 2025-01-01 --end 2025-02-28 --frequency monthly
+```
 
-Python 3.10+，依赖见 requirements.txt。最终 data.json 仅引用这两份已校验下载数据中的公共表，不改变任何数据值。本地 InputStore 从 stock_returns.date 取交易日历，读取客户持仓及基准文件，继续使用原有计算函数；有实际净值时增加独立差额分支。
+stdout为JSON。完成状态可为success或partial_success；共同数据缺失或所有方法失败时退出码2并在stderr给出JSON错误。输出包括 `归因结果.xlsx`、`report.md`、`summary.md`、`metadata.json`，每次单独目录。`report.md` 是面向对话框的完整分析，包括总体收益、分期表现、行业贡献、风格暴露、数值解释、结论及适用范围；Excel保留全量明细，summary仅用于内部速览。数字底层为小数，报告收益率用%，贡献用百分点。默认不生成PDF或图像文件。`partial_success` 只交付完整跑通的方法，不混用各方法不同的样本区间。
 
-本次生产工作流使用 --input-config，不使用旧 Skill 的样本目录。保留的 --data-root 和内部 WLS 代码仅用于旧接口兼容与公式测试，不进入本次 MCP 取数工作流。没有有效公共数据时停止并说明，不自动转用样本数据。
+回归参数 `regression.minimum` 默认100且至少12，`max_drop` 默认0.1，`condition_limit` 默认1e10。需回归秩11、样本足够、条件数稳定；参数是质量检查，不保证经济有效性。
+
+旧Brinson严格按自然月末日期排除不完整月，而统一版依据交易日历实际首末交易日判断，例如截止某月最后交易日且日历有下月确认时可以计算完整月。累计统一使用基准增长递推连接；Barra算术累计只作为辅助列。相比旧Barra直接读取周/月收益，统一版从日收益复利聚合，个别因停牌或缺失处理不同而产生差异需在数据诊断中明确。
