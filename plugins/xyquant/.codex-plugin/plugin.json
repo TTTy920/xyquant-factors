@@ -1,7 +1,7 @@
 {
   "name": "xyquant",
-  "version": "0.4.0-rc.11",
-  "description": "查询已授权的量化因子和策略资料，下载因子数据，并在本地完成组合风格与行业收益归因。",
+  "version": "0.4.0-rc.12",
+  "description": "查询已授权的量化因子和策略资料，下载数据，并在本地完成因子RankIC测试与组合收益归因。",
   "author": {
     "name": "XYQuant"
   },
@@ -10,7 +10,7 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "xyquant",
-    "shortDescription": "因子下载、策略查询与组合归因",
+    "shortDescription": "因子下载、RankIC测试与组合归因",
     "developerName": "XYQuant",
     "category": "Productivity",
     "defaultPrompt": [

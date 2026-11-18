@@ -39,12 +39,14 @@ class PackageTest(unittest.TestCase):
             self.assertEqual(portable["type"], "streamable-http")
             self.assertEqual(portable["url"], servers["xyquant"]["url"])
             skills = {s.parent.name for s in (pkg / "skills").glob("*/SKILL.md")}
-            self.assertEqual(skills, {"factor-download", "portfolio-attribution", "xyquant-login"})
+            self.assertEqual(skills, {"factor-download", "portfolio-attribution", "xyquant-login", "factor-rankic"})
             skill_source = ROOT / "plugins/xyquant/skills/portfolio-attribution"
             skill_package = pkg / "skills/portfolio-attribution"
             for source in skill_source.rglob("*"):
                 if source.is_file() and "__pycache__" not in source.parts:
                     self.assertEqual((skill_package / source.relative_to(skill_source)).read_bytes(), source.read_bytes())
+            self.assertTrue((pkg / "skills/factor-rankic/rankic_entry.py").is_file())
+            self.assertFalse(any(name.endswith((".pqt", ".parquet")) for name in archive.namelist()))
             self.assertFalse(any("barra-attribution" in name or "strategy-attribution" in name for name in archive.namelist()))
             script = ROOT / "disabled-skills/barra-attribution/scripts/attribute.py"
             factors = ("Size", "Beta", "Momentum", "ResidualVolatility", "NonlinearSize", "BookToPrice", "Liquidity", "EarningsYield", "Growth", "Leverage")
