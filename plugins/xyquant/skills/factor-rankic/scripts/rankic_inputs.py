@@ -80,27 +80,51 @@ def _check_links(path):
 
 
 class SourceFiles:
-    """One full hash per shared file per run, with before/after snapshot checks."""
+    """Cache digests; recheck linked files and metadata-only changes by content."""
     def __init__(self):
         self.records = {}
 
     @staticmethod
     def _signature(path):
         info = path.stat()
-        return (info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_ino)
+        return (info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_ino,
+                info.st_dev, info.st_nlink)
+
+    @staticmethod
+    def _content_identity(signature):
+        # Adding/removing a hard link changes ctime and link count, not contents.
+        return signature[0], signature[1], signature[3], signature[4]
+
+    def _checked_record(self, path):
+        original, digest = self.records[path]
+        current = self._signature(path)
+        if self._content_identity(current) != self._content_identity(original):
+            raise DataContractError('source snapshot changed during calculation')
+        # Linked data can be written through another path. Rehash even when its
+        # metadata is unchanged; ctime is a creation timestamp on some systems.
+        if current != original or current[5] > 1:
+            actual = _hash_file(path)
+            after = self._signature(path)
+            _check_links(path)
+            if self._content_identity(current) != self._content_identity(after) or actual != digest:
+                raise DataContractError('source snapshot changed during calculation')
+            current = after
+            self.records[path] = (current, digest)
+        return current, digest
 
     def verify(self, path, expected_hash=None, expected_bytes=None):
         path = path.absolute()
         _check_links(path)
         before = self._signature(path)
         if path in self.records:
-            original, digest = self.records[path]
-            if before != original:
-                raise DataContractError('source snapshot changed during calculation')
+            before, digest = self._checked_record(path)
         else:
             digest = _hash_file(path)
-            if before != self._signature(path):
+            after = self._signature(path)
+            _check_links(path)
+            if self._content_identity(before) != self._content_identity(after):
                 raise DataContractError('source snapshot changed during calculation')
+            before = after
             self.records[path] = (before, digest)
         if expected_hash is not None and expected_hash != digest:
             raise DataContractError('source hash mismatch')
@@ -109,10 +133,9 @@ class SourceFiles:
         return dict(sha256=digest, bytes=before[0])
 
     def assert_unchanged(self):
-        for path, (before, _) in self.records.items():
+        for path in self.records:
             _check_links(path)
-            if before != self._signature(path):
-                raise DataContractError('source snapshot changed during calculation')
+            self._checked_record(path)
 
 
 def _canonical_schema(schema, role):

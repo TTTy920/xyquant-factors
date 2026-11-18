@@ -1,8 +1,12 @@
 """Current server contracts, hourly cache and customer factor adaptation."""
 import copy
+from concurrent.futures import ThreadPoolExecutor
+import errno
 import hashlib
 import json
+import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -17,6 +21,7 @@ import rankic_data as download
 from rankic_store import Store
 from rankic_engine import Parameters, calculate
 from rankic_factor import prepare
+from rankic_inputs import SourceFiles
 from rankic_workflow import assessment
 from test_rankic_store import make_catalog
 
@@ -63,6 +68,71 @@ class ServerAdapterTests(unittest.TestCase):
         with self.assertRaises(ValueError):prepare(self.source,p,'f',self.project)
         self.catalog['cache_expires_at']=time.time()-1;self.write_catalog()
         with self.assertRaises(ValueError):prepare(self.source,p,'f',self.project)
+
+    def factor_file(self):
+        path=self.project/'user.csv'
+        path.write_text('date,stock_code,value\n2025-01-03,000001.SZ,3\n2025-01-03,000002.SZ,2\n2025-01-03,600000.SH,1\n')
+        return path
+
+    def shared_names(self):
+        entries=[self.catalog['calendar'],*self.catalog['market']['files']]
+        if 'provenance' in self.catalog:entries.append(self.catalog['provenance'])
+        return [item['path'] for item in entries]
+
+    def require_hardlinks(self):
+        probe=self.project/'link-probe'
+        try:os.link(self.source/'calendar.pqt',probe)
+        except OSError:self.skipTest('filesystem does not support hard links')
+        finally:probe.unlink(missing_ok=True)
+
+    def test_parallel_tasks_share_files_without_invalidating_an_open_calculation(self):
+        self.require_hardlinks()
+        factor=self.factor_file();original_factor=factor.read_bytes()
+        originals={name:(self.source/name).read_bytes() for name in self.shared_names()}
+        store=Store(self.source);parameters=Parameters('test','2025-01-03','2025-01-03','weekly','all_a',min_stocks=3)
+        with store.bundle(parameters) as active:
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                tasks=list(pool.map(lambda i:prepare(self.source,factor,'input'+str(i),self.project),range(4)))
+            self.assertEqual(len({task['data_root'] for task in tasks}),4)
+            for i,task in enumerate(tasks):
+                root=Path(task['data_root'])
+                for name,content in originals.items():
+                    self.assertTrue(os.path.samefile(self.source/name,root/name))
+                    self.assertEqual((root/name).read_bytes(),content)
+                self.assertFalse(os.path.samefile(self.source/'catalog.json',root/'catalog.json'))
+                self.assertEqual(self.calculate(root,'input'+str(i))['summary']['mean_rank_ic'],-1.)
+            factor_outputs=[Path(t['data_root'])/'factors/input/2025.pqt' for t in tasks]
+            self.assertFalse(os.path.samefile(factor_outputs[0],factor_outputs[1]))
+            active.assert_unchanged()
+            shutil.rmtree(tasks[0]['data_root'])
+            active.assert_unchanged()
+            result=calculate(parameters,active.calendar,active,calendar_through=active.calendar_through,price_through=active.price_through)
+            self.assertEqual(result['summary']['mean_rank_ic'],1.)
+        self.assertEqual(factor.read_bytes(),original_factor)
+
+    def test_unsupported_hardlinks_fall_back_to_independent_copies(self):
+        with patch('rankic_factor.os.link',side_effect=OSError(errno.EXDEV,'different filesystems')):
+            task=prepare(self.source,self.factor_file(),'input',self.project)
+        for name in self.shared_names():
+            target=Path(task['data_root'])/name
+            self.assertFalse(os.path.samefile(self.source/name,target))
+            self.assertEqual((self.source/name).read_bytes(),target.read_bytes())
+        self.assertEqual(self.calculate(task['data_root'],'input')['summary']['mean_rank_ic'],-1.)
+        self.assertEqual(self.calculate(self.source)['summary']['mean_rank_ic'],1.)
+
+    def test_shared_content_changes_are_detected_even_with_preserved_mtime(self):
+        self.require_hardlinks()
+        task=prepare(self.source,self.factor_file(),'input',self.project)
+        path=self.source/'market/2025.pqt';alias=Path(task['data_root'])/'market/2025.pqt'
+        records=SourceFiles();records.verify(path)
+        before=path.stat()
+        with alias.open('r+b') as stream:
+            byte=stream.read(1);stream.seek(0);stream.write(bytes([byte[0]^1]))
+        os.utime(alias,ns=(before.st_atime_ns,before.st_mtime_ns))
+        self.assertEqual(path.stat().st_size,before.st_size)
+        self.assertEqual(path.stat().st_mtime_ns,before.st_mtime_ns)
+        with self.assertRaisesRegex(ValueError,'changed'):records.verify(path)
+        with self.assertRaisesRegex(ValueError,'changed'):records.assert_unchanged()
 
     def bundle(self):
         files={p.relative_to(self.source).as_posix():p.read_bytes() for p in self.source.rglob('*') if p.is_file()}

@@ -3,6 +3,7 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import time
@@ -64,7 +65,10 @@ def prepare(data_root, factor_file, factor_name, project, source='user'):
             original = store.path(entry['path'])
             store.source_files.verify(original,entry['sha256'],entry['bytes'])
             target=folder/entry['path'];target.parent.mkdir(parents=True,exist_ok=True)
-            shutil.copyfile(original,target)
+            try:
+                os.link(original,target)
+            except OSError:
+                shutil.copy2(original,target)
         entries=[]
         for year, group in frame.groupby(frame['date'].dt.year):
             name=f'factors/input/{year}.pqt';path=folder/name;path.parent.mkdir(parents=True,exist_ok=True)

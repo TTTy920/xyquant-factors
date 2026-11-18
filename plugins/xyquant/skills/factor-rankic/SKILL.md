@@ -49,6 +49,8 @@ python3 -I -B <Skill绝对路径>/rankic_entry.py factor prepare --data-root <�
 
 因子库文件改为 `--source factor_library`。使用返回的新data_root，保留原始因子SHA和基础市场快照。随附因子直接使用基础包data_root和目录返回的名称，不运行适配器。
 
+任务目录中的基础资料优先使用硬链接，与下载目录共用同一份文件；硬链接失败时才复制。基础资料只用于读取，用户因子和任务清单另行生成，不写回下载的数据。
+
 ## 计算与交付
 
 生成只含parameters和data_root的任务JSON，结构见 [数据契约](references/data-contract.md)，然后实际执行：
