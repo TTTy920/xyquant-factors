@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path, PurePosixPath
 import re
 import shutil
@@ -62,12 +63,16 @@ def check(project, version, manifest_sha256):
     if not root.exists():
         return {'status': 'missing', 'data_version': version}
     manifest = manifest_value((root / 'original-data.json').read_bytes(), version, manifest_sha256)
+    expiry = manifest.get('expires_at')
+    if type(expiry) not in (int, float) or not math.isfinite(expiry) or expiry <= time.time():
+        return {'status': 'expired', 'data_version': version,
+                'message': '数据包已过期，请重新查询服务器目录并下载当前版本'}
     for name, spec in manifest['files'].items():
         path = root / name
         if not path.is_file() or path.stat().st_size != spec['bytes'] or digest(path) != spec['sha256']:
             raise ValueError('本地原版数据校验失败：' + name)
     return {'status': 'ready', 'data_version': version, 'data_root': str(root),
-            'manifest_sha256': manifest_sha256}
+            'manifest_sha256': manifest_sha256, 'expires_at': expiry}
 
 
 def transfer(job, target):
@@ -115,10 +120,15 @@ def save(job, project):
             or job.get('datasets') != ['original_attribution'] or type(job.get('bytes')) is not int
             or not 0 < job['bytes'] <= 1024 ** 3 or not re.fullmatch(r'[a-f0-9]{64}', job.get('sha256', ''))):
         raise ValueError('请提供原版归因数据包的就绪任务')
+    expiry = job.get('expires_at')
+    if type(expiry) not in (int, float) or not math.isfinite(expiry) or expiry <= time.time():
+        raise ValueError('数据包已过期，请重新查询服务器目录并下载当前版本')
     version, expected = job.get('data_version'), job.get('manifest_sha256')
     result = check(project, version, expected)
     if result['status'] == 'ready':
         return result
+    if result['status'] == 'expired':
+        raise ValueError(result['message'])
     folder = cache_folder(project, version, expected)
     folder.mkdir(parents=True, exist_ok=True, mode=0o700)
     archive_path = folder / 'attribution-data.zip'
@@ -131,6 +141,8 @@ def save(job, project):
         if archive.getinfo('original-data.json').file_size > 1024 * 1024:
             raise ValueError('原版数据清单过大')
         manifest = manifest_value(archive.read('original-data.json'), version, expected)
+        if manifest.get('expires_at') != expiry or expiry <= time.time():
+            raise ValueError('数据包已过期或有效期不一致，请重新查询服务器目录')
         names = {'original-data.json', *manifest['files']}
         if (len(archive.infolist()) != len(names) or set(archive.namelist()) != names
                 or any((item.external_attr >> 16) & 0o170000 == 0o120000 for item in archive.infolist())
@@ -149,7 +161,10 @@ def save(job, project):
                 if path.stat().st_size != spec['bytes'] or digest(path) != spec['sha256']:
                     raise ValueError('原版数据文件校验失败：' + name)
             root.rename(folder / 'data')
-    return check(project, version, expected)
+    result = check(project, version, expected)
+    if result['status'] != 'ready':
+        raise ValueError('数据包已过期，请重新查询服务器目录并下载当前版本')
+    return result
 
 
 def main():

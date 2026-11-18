@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 import zipfile
@@ -22,11 +23,12 @@ class OriginalDataDownloadTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.project = Path(self.temp.name)
         self.version = 'original-20261113-0123456789ab'
+        self.expiry = time.time() + 3600
         self.files = {'catalog.json': b'{"schema_version":1}', 'market/2025.parquet': b'exact original bytes'}
 
     def job(self, extra=None):
         manifest = {'origin': 'xyquant_server', 'dataset': 'original_attribution',
-                    'data_version': self.version, 'catalog': 'catalog.json',
+                    'data_version': self.version, 'catalog': 'catalog.json', 'expires_at': self.expiry,
                     'files': {name: {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
                               for name, value in self.files.items()}}
         raw = json.dumps(manifest).encode()
@@ -42,7 +44,7 @@ class OriginalDataDownloadTests(unittest.TestCase):
         return {'id': '1' * 32, 'status': 'ready', 'tool': 'query_stock_data',
                 'datasets': ['original_attribution'], 'data_version': self.version,
                 'bytes': path.stat().st_size, 'sha256': download.digest(path),
-                'manifest_sha256': hashlib.sha256(raw).hexdigest()}
+                'manifest_sha256': hashlib.sha256(raw).hexdigest(), 'expires_at': self.expiry}
 
     def test_downloaded_bytes_and_new_jobs_reuse_one_version_without_http(self):
         job = self.job()
@@ -74,6 +76,31 @@ class OriginalDataDownloadTests(unittest.TestCase):
             download.save({**job, 'datasets': ['stock_returns']}, self.project)
         with self.assertRaisesRegex(ValueError, '清单校验失败'):
             download.save({**job, 'manifest_sha256': 'f' * 64}, self.project)
+
+    def test_expired_cache_is_not_reused_even_when_all_bytes_match(self):
+        job = self.job()
+        result = download.save(job, self.project)
+        with patch.object(download.time, 'time', return_value=self.expiry):
+            self.assertEqual(download.check(self.project, self.version, job['manifest_sha256'])['status'], 'expired')
+            with self.assertRaisesRegex(ValueError, '已过期'):
+                download.save(job, self.project)
+        self.assertTrue(Path(result['data_root']).is_dir())
+
+    def test_new_hour_requires_new_transfer_even_with_same_source_bytes(self):
+        first = self.job();download.save(first, self.project)
+        self.version = 'original-20261113-ffffffffffff';self.expiry += 3600
+        second = self.job()
+        archive = self.project / 'downloads/attribution-original' / self.version / 'attribution-data.zip'
+        content = archive.read_bytes();archive.unlink()
+        with patch.object(download, 'transfer', side_effect=lambda job, path: path.write_bytes(content)) as transfer:
+            result = download.save(second, self.project)
+        transfer.assert_called_once()
+        self.assertEqual(result['data_version'], self.version)
+
+    def test_job_cannot_extend_manifest_lifetime(self):
+        job = self.job()
+        with self.assertRaisesRegex(ValueError, '有效期不一致'):
+            download.save({**job, 'expires_at': self.expiry + 100}, self.project)
 
 
 if __name__ == '__main__':

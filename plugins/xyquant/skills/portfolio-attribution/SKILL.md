@@ -17,17 +17,17 @@ description: 通过XYQuant MCP下载原始数据，在本地按原版全市场�
 
 ## 服务器取数与本地缓存
 
-1. 调用 `query_stock_data(dataset="catalog")`，读取返回的 `original_attribution`。它列出原版数据版本、策略与基准、频率和覆盖日期。策略展示工作簿不是持仓来源。若没有该数据类别，说明需刷新MCP连接或服务器尚未提供，不能换用现成因子收益率凑数。
+1. 每次启动归因先调用 `query_stock_data(dataset="catalog")`，读取本次返回的 `original_attribution`，不要沿用上次对话的目录。服务器按需打包：已授权用户在同一小时内共用一份包，访问不续期；包从生成起有效3600秒，到期停止下载并自动清理，下次请求从当前数据重新打包。目录列出本次数据版本、`expires_at`、策略与基准、频率和覆盖日期。策略展示工作簿不是持仓来源。若没有该数据类别，说明需刷新MCP连接或服务器尚未提供，不能换用现成因子收益率凑数。
 2. 先检查项目已有缓存，版本和清单校验值使用目录实际返回值：
    ```text
    python3 <Skill绝对路径>/scripts/download_original.py status --project <已有项目绝对路径> --data-version <data_version> --manifest-sha256 <manifest_sha256>
    ```
-   返回ready就复用 `data_root`，不重复导出或下载。缺缓存时，以UUID `request_id` 和目录版本调用 `query_stock_data(dataset="attribution_bundle", data_version=..., request_id=...)`；此完整数据包不传日期或股票筛选，保留原版全市场回归样本。网络重试复用原编号。用同工具仅传 `job_id` 查询，按建议或每5秒等待，直到ready/failed。
+   返回ready且未到期时复用 `data_root`。missing或expired时，以UUID `request_id` 和目录版本调用 `query_stock_data(dataset="attribution_bundle", data_version=..., request_id=...)`；此完整数据包不传日期或股票筛选，保留原版全市场回归样本。网络重试复用原编号。用同工具仅传 `job_id` 查询，按建议或每5秒等待，直到ready/failed。
 3. 把ready任务JSON作为数据通过不回显的进程标准输入传给下载脚本：
    ```text
    python3 <Skill绝对路径>/scripts/download_original.py save --project <已有项目绝对路径>
    ```
-   沿用MCP授权，无需再次网页登录。下载凭据不写入文件、日志、聊天或命令行参数。凭据到期时查询同一任务后重试，已过期任务用新请求编号。脚本校验压缩包、清单和逐文件SHA-256，返回可复用的绝对 `data_root`。
+   沿用MCP授权，无需再次网页登录。下载凭据不写入文件、日志、聊天或命令行参数。凭据到期时查询同一任务后重试；数据包/任务到期或版本更新时重新查询目录，再用新版本和新请求编号获取数据。脚本校验压缩包、清单和逐文件SHA-256，返回可复用的绝对 `data_root`。
 
 服务器只提供公开原始数据：股票日收益、流通市值、回归合格标记、十风格暴露、历史行业、原包日历、四个策略及基准权重。数据保持原包格式，GitHub插件包不附行情或持仓数据。客户持仓和权重留在本地，不上传；全市场横截面回归及归因全部在本地运行。本流程不读取现成因子收益率；`query_barra_data` 的独立查询和下载功能仍可使用。
 
@@ -48,7 +48,7 @@ python3 <Skill绝对路径>/scripts/entry.py run --source preset --data-root <da
 python3 <Skill绝对路径>/scripts/entry.py run --source user --holdings <用户持仓绝对路径> --data-root <data_root> --portfolio <组合名称> --benchmark 沪深300 --start YYYY-MM-DD --end YYYY-MM-DD --frequency monthly --method both --output-root <项目内结果目录绝对路径>
 ```
 
-入口把自有持仓转换为原版权重和快照，临时数据位于结果根 `_inputs/`，再调用原版attribute.py。数据格式见 [原版数据约束](references/data-contract.md)。原包策略主要覆盖2025年，市场与暴露至2026-01-30；完整周期也受日历边界限制。先读取下载数据中的 `数据说明.md` 和 `data_quality.json`。部分全年区间有已知收益或暴露缺口，最终以本次运行校验为准；失败时如实报告，不能填零、删除股票重配权重、缩短失败方法区间或切换数据来源。
+入口把自有持仓转换为原版权重和快照，临时数据位于结果根 `_inputs/`，再调用原版attribute.py。数据格式见 [原版数据约束](references/data-contract.md)。覆盖日期以本次目录为准；完整周期也受日历边界限制。先读取下载数据中的 `数据说明.md` 和 `data_quality.json`。部分全年区间有已知收益或暴露缺口，最终以本次运行校验为准；失败时如实报告，不能填零、删除股票重配权重、缩短失败方法区间或切换数据来源。
 
 完成后读取本次report.md、metadata.json及 [对话报告](references/conversation-report.md)，按原版格式在对话中交付分析和表格，Excel作为附件。partial_success只交付完整成功的方法，说明另一方法的缺口。
 
