@@ -19,6 +19,8 @@ Python 3.10+，依赖见 `requirements.txt`；已有兼容环境直接复用。�
 python3 -I -B <Skill绝对路径>/rankic_entry.py <目标> <参数>
 ```
 
+依赖需安装在所选解释器自身的环境中。推荐使用虚拟环境并以该环境的Python运行 `-m pip install -r <Skill绝对路径>/requirements.txt`；隔离入口不会加载 `pip --user` 安装的用户目录，不能通过取消 `-I` 来绕过。
+
 ## 服务器取数与缓存
 
 1. 每次新任务先调用 `query_rankic_data(dataset="catalog")`，读取本次版本、清单SHA和覆盖。包按需生成，所有已授权用户共享1小时，访问不续期；到期自动清理，下次从当前数据重新打包。不能用股票日收益、Barra合格标记或当前存活股票替代本包字段。
