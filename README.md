@@ -14,6 +14,12 @@
 
 组合归因需要 Python 3.10 或以上，先安装 `plugins/xyquant/skills/portfolio-attribution/requirements.txt` 中的依赖。
 
+## 网站入口
+
+[研究网站](https://47.103.215.251/factors/preview/) · [个人空间](https://47.103.215.251/factors/preview/#personal-space) · [因子下载与最近导出](https://47.103.215.251/factors/preview/#factor-download) · [注册账号](https://47.103.215.251/factors/preview/register.html) · [接入说明](https://47.103.215.251/factors/preview/#plugin)
+
+OAuth 连接通过客户端原生入口授权和管理；个人空间用于账号资料、API Key 与因子下载。
+
 ## 使用示例
 
 - “有哪些成交量相关因子？我可以查哪些日期？”
@@ -21,7 +27,7 @@
 - “科技策略按什么原理选股？这只股票在指定月份的策略因子值是多少？”
 - “用我的月末持仓做组合收益归因，基准选沪深300。”
 
-因子数据通过远程 MCP 查询和导出。通用因子下载沿用当前 MCP 授权：`get_export(include_download=true)` 返回仅适用于该文件、五分钟内有效的下载凭据，本地脚本保存并校验文件，无需再次网页登录。下载成功后，客户端会给出经过校验的文件路径。也可以登录[因子网站](https://47.103.215.251/factors/)，在「最近导出」下载同一份文件；网页会话独立管理。
+因子数据通过远程 MCP 查询和导出。通用因子下载沿用当前 MCP 授权：`get_export(include_download=true)` 返回仅适用于该文件、五分钟内有效的下载凭据，本地脚本保存并校验文件，无需再次网页登录。下载成功后，客户端会给出经过校验的文件路径。也可以登录[个人空间的因子下载](https://47.103.215.251/factors/preview/#factor-download)，在「最近导出」下载同一份文件；网页会话独立管理。
 
 组合收益归因使用 `portfolio-attribution`：支持客户自带持仓，或选择300增强、xgb500增强、xgb1000增强、xgb2000增强四个预置策略。原始数据通过 `query_stock_data(dataset="attribution_bundle")` 下载到本地项目，按版本与逐文件校验复用缓存；插件包不附数据。收益重建、全市场横截面WLS因子收益估计、Barra及Brinson均沿用原版计算，不读取现成因子收益率。可选原包四个指数基准，其他基准由客户提供权重。用户文件留在本地；数据覆盖与原始缺口以目录及运行校验为准。
 
