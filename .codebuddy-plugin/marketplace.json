@@ -7,7 +7,7 @@
     {
       "name": "xyquant",
       "source": "./plugins/xyquant",
-      "version": "0.4.0-rc.15",
+      "version": "0.4.0-rc.16",
       "description": "查询已授权的量化因子和策略资料，下载数据，并在本地完成个股持有诊断、因子RankIC测试与组合收益归因。",
       "category": "productivity"
     }

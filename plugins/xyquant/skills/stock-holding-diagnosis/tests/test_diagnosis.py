@@ -31,7 +31,13 @@ VERSION = "original-20261119-0123456789ab"
 
 def parquet(rows):
     stream = BytesIO()
-    pq.write_table(pa.Table.from_pylist(rows), stream)
+    table = pa.Table.from_pylist(rows)
+    # Match live server dates and dictionary-encoded portfolio stock codes.
+    table = table.set_column(table.schema.get_field_index("date"), "date", table["date"].cast(pa.timestamp("ns")))
+    if "stock_code" in table.column_names:
+        table = table.set_column(table.schema.get_field_index("stock_code"), "stock_code",
+                                 table["stock_code"].dictionary_encode())
+    pq.write_table(table, stream)
     return stream.getvalue()
 
 
@@ -125,8 +131,11 @@ class DiagnosisTests(unittest.TestCase):
                "--factor-job", factor["id"], "--factor-sha256", factor["sha256"],
                "--factor-date", DAY.isoformat(), "--attribution-version", VERSION,
                "--manifest-sha256", holding["manifest_sha256"], "--news-stdin"]
-        result = subprocess.run(cmd, input=json.dumps(news), capture_output=True, encoding="utf-8", timeout=30)
-        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        # Exercise normal interpreter shutdown, including Arrow's native cleanup.
+        # A report written to stdout is insufficient if the process never exits.
+        for _ in range(3):
+            result = subprocess.run(cmd, input=json.dumps(news), capture_output=True, encoding="utf-8", timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
         data = json.loads(result.stdout)
         self.assertEqual(data["status"], "success")
         self.assertEqual(data["holding_decision"]["status"], "supports_holding")

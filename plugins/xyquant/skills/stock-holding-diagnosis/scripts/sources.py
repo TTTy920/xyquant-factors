@@ -97,7 +97,7 @@ class AttributionCache:
     def parquet(self, name, columns):
         if not name.endswith(".parquet"):
             raise DataError("归因权重只接受清单中的 Parquet")
-        return pq.read_table(BytesIO(self.read(name)), columns=list(columns)).to_pylist()
+        return pq.ParquetFile(BytesIO(self.read(name))).read(columns=list(columns), use_threads=False).to_pylist()
 
     def strategy(self, name):
         return self.snapshots.get(name, []), self.parquet(self.catalog["portfolios"][name]["path"], WEIGHTS_COLUMNS)

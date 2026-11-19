@@ -139,7 +139,9 @@ def factor_ranks(archive, stock, day):
                 raise DataError("因子压缩包含未预期的 Parquet 文件")
             f = expected[entry.filename]
             with bundle.open(entry) as member:
-                table = pq.read_table(BytesIO(member.read()))
+                # These are individual in-memory files; avoid dataset background
+                # workers that can hang during Arrow shutdown on macOS.
+                table = pq.ParquetFile(BytesIO(member.read())).read(use_threads=False)
             tables[f] = rank_panel(table, stock, day, FACTORS[f])
     if set(tables) != set(FACTORS):
         raise DataError("因子压缩包未包含全部四个因子文件")
