@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "native": {
+    "daily": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 21,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.01778286173951215,
+        "std_rank_ic": 0.1801424701406293,
+        "icir": -0.0987155429012928,
+        "positive_fraction": 0.47619047619047616,
+        "min_valid_stocks": 5143,
+        "mean_valid_stocks": 5148.952380952381,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\540c5c23-3150-4d31-ad21-d06cd772d8a6"
+    },
+    "weekly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 4,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.036195424658190464,
+        "std_rank_ic": 0.2013535138633827,
+        "icir": -0.17976058109792348,
+        "positive_fraction": 0.25,
+        "min_valid_stocks": 5147,
+        "mean_valid_stocks": 5151.0,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\6141a121-44ed-449d-bc49-fb398e157761"
+    },
+    "monthly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.12250841410933927,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5153,
+        "mean_valid_stocks": 5153.0,
+        "max_valid_stocks": 5153
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\194b0da3-0db1-424e-bf8c-aeddf65b2179"
+    },
+    "quarterly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.3545189763971974,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5148,
+        "mean_valid_stocks": 5148.0,
+        "max_valid_stocks": 5148
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\d45c0fca-71be-48f3-abd2-654ebbf099de"
+    }
+  },
+  "relocated": {
+    "daily": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 21,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.01778286173951215,
+        "std_rank_ic": 0.1801424701406293,
+        "icir": -0.0987155429012928,
+        "positive_fraction": 0.47619047619047616,
+        "min_valid_stocks": 5143,
+        "mean_valid_stocks": 5148.952380952381,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true
+    },
+    "weekly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 4,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.036195424658190464,
+        "std_rank_ic": 0.2013535138633827,
+        "icir": -0.17976058109792348,
+        "positive_fraction": 0.25,
+        "min_valid_stocks": 5147,
+        "mean_valid_stocks": 5151.0,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true
+    },
+    "monthly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.12250841410933927,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5153,
+        "mean_valid_stocks": 5153.0,
+        "max_valid_stocks": 5153
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true
+    },
+    "quarterly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.3545189763971974,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5148,
+        "mean_valid_stocks": 5148.0,
+        "max_valid_stocks": 5148
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "catalog_sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62",
+      "baseline_exact_match": true
+    }
+  },
+  "data_roots": [
+    "data/local-reference/market-202001-202610"
+  ],
+  "independent_spreadsheet_recalculation": false,
+  "server_to_report_verified": false,
+  "project_mcp_config_changed": false
+}

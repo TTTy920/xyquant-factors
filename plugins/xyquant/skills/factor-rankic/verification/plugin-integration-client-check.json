@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-18",
+  "scope": "plugin_client_foundation_only",
+  "client_foundation_verified": true,
+  "formal_server_integration_verified": false,
+  "independent_spreadsheet_recalculation": false,
+  "spec_review": "passed",
+  "code_quality_review": "no_confirmed_findings",
+  "review_record": "verification/plugin-integration-client-review.md",
+  "tests": {
+    "total": 191,
+    "passed": 187,
+    "skipped": 4,
+    "seconds": 58.687,
+    "exit_code": 0,
+    "log": "verification/unit-tests-plugin-client-foundation-final.txt",
+    "skip_details": [
+      "test_project_config_contains_only_verified_public_endpoint (test_rankic_download.PublicConfigTests) ... skipped 'project MCP configuration creation was blocked; no configuration change delivered'",
+      "test_entry_file_symlink_is_rejected (test_rankic_entry.EntryTest) ... skipped 'system does not permit synthetic file symlinks'",
+      "test_target_file_symlink_is_rejected (test_rankic_entry.EntryTest) ... skipped 'system does not permit synthetic file symlinks'",
+      "test_symlink_panel_rejected (test_rankic_store.StoreTest) ... skipped 'system does not permit synthetic symlinks'"
+    ]
+  },
+  "replay": {
+    "evidence": "verification/plugin-integration-client-replay.json",
+    "runs": 8,
+    "all_baseline_exact_match": true,
+    "all_access_guards_zero": true,
+    "valid_periods": {
+      "daily": 21,
+      "weekly": 4,
+      "monthly": 1,
+      "quarterly": 1
+    },
+    "status": "partial_success",
+    "unknown_universe_each_period": 348
+  },
+  "server_gate": {
+    "server_origin_rejected": true,
+    "self_asserted_server_scope_rejected": true,
+    "can_create_export": false,
+    "can_run": false
+  },
+  "data_integrity": {
+    "catalog_listed_files_verified": 10,
+    "catalog_listed_bytes": 113570202,
+    "all_sizes_and_sha256_match_unchanged_catalog": true
+  },
+  "plugin": {
+    "directory": "D:/XYQuantPlugin",
+    "branch": "czx",
+    "head_short": "99cb2ba",
+    "worktree_clean": true,
+    "ahead": 1,
+    "changed_by_this_work": false
+  },
+  "workspace": {
+    "git_repository": false,
+    "project_mcp_created": false,
+    "commit": false,
+    "push": false,
+    "production_change": false
+  },
+  "remaining_blockers": [
+    "current_native_tool_schemas_unavailable_in_session",
+    "formal_base_data_contract_not_accepted",
+    "real_factor_export_structure_not_verified",
+    "authorization_version_cache_contract_not_accepted",
+    "secure_host_download_handoff_not_verified",
+    "real_adapter_cache_admission_not_implemented",
+    "real_server_integration_not_tested",
+    "plugin_sync_packaging_release_not_performed"
+  ],
+  "fingerprints": {
+    "rankic_entry.py": {
+      "bytes": 3098,
+      "sha256": "cacb0d7fcf611f62d9f6114a15904763627c004b56453c16ef63045d6ac9e33a"
+    },
+    "scripts/rankic_workflow.py": {
+      "bytes": 9137,
+      "sha256": "bed87b8127569653fbe7901952b92048db079dbe461dbed9bc7a260b4ea5cf37"
+    },
+    "tests/test_rankic_workflow.py": {
+      "bytes": 14346,
+      "sha256": "60e69d64d0e7c6bfd5833cad9bc5c6af7aa6fa1593fdd857812e44997f833f70"
+    },
+    "tests/test_rankic_entry.py": {
+      "bytes": 20733,
+      "sha256": "a7c9bcf56a46b57ffa062d57654b1ca7bae372245d093177cd1f44191450f183"
+    },
+    "verification/verify_catalog.py": {
+      "bytes": 8047,
+      "sha256": "efff85fb8351355fcde65c512c877be56b5b2ceb6a399285671b8239e63c2020"
+    },
+    "examples/server-request-name-only.json": {
+      "bytes": 60,
+      "sha256": "cbfc2e53bbb1b7b6a72fa3a2f3604a4a9353b5d6c9c723b9317b1fe22342267b"
+    },
+    "scripts/rankic_engine.py": {
+      "bytes": 9907,
+      "sha256": "14debb39192fbd75fac3a2f3c0171d3f7d4a2e5212c6e8d9f8664b6ac84784ad"
+    },
+    "scripts/rankic_inputs.py": {
+      "bytes": 20219,
+      "sha256": "c5d123abc76a28bac342b1cdb9797d0efca09e191ed1509520d36438549a5da9"
+    },
+    "scripts/rankic_store.py": {
+      "bytes": 10827,
+      "sha256": "853ee65b2fa038accbbd6661fc23f2b9a5a29f76643de4f85a6526bd3275c347"
+    },
+    "data/local-reference/market-202001-202610/catalog.json": {
+      "bytes": 127088,
+      "sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62"
+    },
+    "verification/hdf-reference-baseline.json": {
+      "bytes": 15285,
+      "sha256": "d9874290b33543b8de4555da4246459ed931ecbe275534a40aea841eff5abe8b"
+    },
+    "verification/unit-tests-plugin-client-foundation-final.txt": {
+      "bytes": 19371,
+      "sha256": "e7c3041d0f794fbc8f2f8ccfc66fbd11f94993c596c0dde8fe5c44afbc9633ed"
+    },
+    "verification/plugin-integration-client-replay.json": {
+      "bytes": 6658,
+      "sha256": "24a9a19e0b7d98c83db079cd2a9e1e1fb83a6f575446c274f42b025355d77c35"
+    }
+  }
+}

@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "purpose": "standalone_offline_rankic_migration",
+  "files": {
+    ".gitignore": {
+      "bytes": 133,
+      "sha256": "7f5e92cbff7d7627295251c0df19910136ef8c90e8f99018a5ed86b47a680711"
+    },
+    "LICENSE": {
+      "bytes": 1077,
+      "sha256": "807a0e46f27e0e039a5e28b6f7940aadccd549177a49051d755f6a0516112cdf"
+    },
+    "MIGRATION.md": {
+      "bytes": 2180,
+      "sha256": "5027a7a8d7b17d1c23c95d8c12891a70a4e4163bd8f2085597be31edb820f39d"
+    },
+    "README.md": {
+      "bytes": 16155,
+      "sha256": "fa0da92bb1bb256e33bca137a6a3cc81c30242921e03bd6915fa6044c734891d"
+    },
+    "SKILL.md": {
+      "bytes": 7959,
+      "sha256": "2104973c8a1f7ac8cbeacaa66dc54b863761e8b894bbb94ef35a86fc444e9842"
+    },
+    "data/local-reference/market-202001-202610/calendar.pqt": {
+      "bytes": 387588,
+      "sha256": "f74b79c0490ae04b68acc73544f28e6936a11ae9dee5639a13de4c8311e42d9b"
+    },
+    "data/local-reference/market-202001-202610/catalog.json": {
+      "bytes": 127088,
+      "sha256": "8e90fc66d80ee60cd9d77b730877d41e9a3b66b0b5a8d1a831df057e6fe8cb62"
+    },
+    "data/local-reference/market-202001-202610/factors/FloatCap/2025.pqt": {
+      "bytes": 1492565,
+      "sha256": "f862ae3b3c7727dcf81c6419172d9da9918ef3d7885eeccba7202480cff8986e"
+    },
+    "data/local-reference/market-202001-202610/market/2020.pqt": {
+      "bytes": 14055584,
+      "sha256": "66ebccd8531dfd5c5e0ebb847777d8604f7841e85869d86502369c476e4366e5"
+    },
+    "data/local-reference/market-202001-202610/market/2021.pqt": {
+      "bytes": 15158470,
+      "sha256": "7966c146072bd304ddcfcbf09dc6146c63097b1146d9cf2472de16bad4bcc56d"
+    },
+    "data/local-reference/market-202001-202610/market/2022.pqt": {
+      "bytes": 16171887,
+      "sha256": "9e7c55e7c0cf79aee02ddb742102470f9528450c465ab79ad3e2822279532a28"
+    },
+    "data/local-reference/market-202001-202610/market/2023.pqt": {
+      "bytes": 16977307,
+      "sha256": "195bdcd996ae168e6d785b9789f1475dc5a2af87526876dbd1b57b33ab2aca3a"
+    },
+    "data/local-reference/market-202001-202610/market/2024.pqt": {
+      "bytes": 17320890,
+      "sha256": "4c29bf7433b83e5ebe95e39453f2928e1d95d55bfd5edc0209541bf4209b3989"
+    },
+    "data/local-reference/market-202001-202610/market/2025.pqt": {
+      "bytes": 17533541,
+      "sha256": "0850812327b2117437101bde8586a458dbc023b1a2dba71cf41ba6abe0b065fb"
+    },
+    "data/local-reference/market-202001-202610/market/2026.pqt": {
+      "bytes": 14449921,
+      "sha256": "eab67e4d5eb1383455e0ffae59009a5f76ee9be28a377f82d92cbb7623666896"
+    },
+    "data/local-reference/market-202001-202610/provenance.json": {
+      "bytes": 22449,
+      "sha256": "573a0eb50bb35a1b4ba29cc0548676a30b891b67362ca174e90010309d678999"
+    },
+    "docs/superpowers/plans/2026-11-18-plugin-client-foundation.md": {
+      "bytes": 10018,
+      "sha256": "e6b3ad0fdcccba2a1d67bbf80c9c56b366fe35b89c02c806f9eaa3421cb0e6a0"
+    },
+    "docs/superpowers/specs/2026-11-18-plugin-integration-design.md": {
+      "bytes": 25787,
+      "sha256": "d41e5db24ac0facc2c227baf1c604caef15d5e21c1694dd78a52fb97cc17daa6"
+    },
+    "examples/floatcap-daily.json": {
+      "bytes": 244,
+      "sha256": "4178150a61ca08e2e88f0b388de2552ac4b21dda14302ee2d2ca4e51b7218e0c"
+    },
+    "examples/floatcap-monthly.json": {
+      "bytes": 246,
+      "sha256": "fa22959414f4272cd52696033a607b0045dd5d13ecf7fde73e51a0017c1255fc"
+    },
+    "examples/floatcap-quarterly.json": {
+      "bytes": 248,
+      "sha256": "611de9fa3c096506af6d24288188f81da706436e31a450f3d08a81bf2ed0d504"
+    },
+    "examples/floatcap-weekly.json": {
+      "bytes": 245,
+      "sha256": "d89ac8075d4fe0789f1cf70f2b4f6c8455831b02735ffa571719a9f9ab1c08bc"
+    },
+    "examples/server-request-name-only.json": {
+      "bytes": 60,
+      "sha256": "cbfc2e53bbb1b7b6a72fa3a2f3604a4a9353b5d6c9c723b9317b1fe22342267b"
+    },
+    "rankic_entry.py": {
+      "bytes": 3098,
+      "sha256": "cacb0d7fcf611f62d9f6114a15904763627c004b56453c16ef63045d6ac9e33a"
+    },
+    "references/data-contract.md": {
+      "bytes": 11680,
+      "sha256": "ce0b14e524f00e9014860912f01e9d653dc04339034f80a13f47dcda67e50c16"
+    },
+    "references/download-workflow.md": {
+      "bytes": 4142,
+      "sha256": "90b8f1ed48231a89b35ce3ee83e8330991adcfe8f0c99fe67f0d5c80dbc1a4ef"
+    },
+    "references/server-integration-status.md": {
+      "bytes": 5808,
+      "sha256": "ce0c94f41ff71c3d463f0fb8b54296d475fa42fc82599dc679a3bc976837bdfe"
+    },
+    "requirements-dev.txt": {
+      "bytes": 34,
+      "sha256": "94e532f6c923a1be4b4e08629bb5a322071a4e87d910a6f972412a20e8c0663d"
+    },
+    "requirements.txt": {
+      "bytes": 63,
+      "sha256": "9b9d4cc0d1be0ebb7141d2e49350cfa3a0f8dd8e104ebeb47ad15f92d40ca5ec"
+    },
+    "scripts/export_reference_listed.py": {
+      "bytes": 13986,
+      "sha256": "aed6ecf5fa3a3d2fc61788070409e1498e0acaef764ec157832bf8450d9b8a33"
+    },
+    "scripts/export_reference_prices.py": {
+      "bytes": 16677,
+      "sha256": "3a272b7a5cd2043476464a282f9aed21a798ed5565f98fe6c63424aa050662d6"
+    },
+    "scripts/prepare_sample.py": {
+      "bytes": 10765,
+      "sha256": "5a6735156ba14892365ab987ab53efbdb663ce541c143384a013466cc2d5d3fc"
+    },
+    "scripts/rankic.py": {
+      "bytes": 3040,
+      "sha256": "2f0e423d19a81423b54ab27654a90d44d15d28e55e33ee09822eb01547f3868b"
+    },
+    "scripts/rankic_archive.py": {
+      "bytes": 9916,
+      "sha256": "4d59c87607f833d3f5c50691976b02e8d261dd2f6eab771bb418a70f0dd821f3"
+    },
+    "scripts/rankic_download.py": {
+      "bytes": 13553,
+      "sha256": "fa9ab3943ac07ce95f9b795c4f0f47b1f991939f7b0d40c8db8b7c7877762eaa"
+    },
+    "scripts/rankic_engine.py": {
+      "bytes": 9907,
+      "sha256": "14debb39192fbd75fac3a2f3c0171d3f7d4a2e5212c6e8d9f8664b6ac84784ad"
+    },
+    "scripts/rankic_inputs.py": {
+      "bytes": 20219,
+      "sha256": "c5d123abc76a28bac342b1cdb9797d0efca09e191ed1509520d36438549a5da9"
+    },
+    "scripts/rankic_report.py": {
+      "bytes": 12442,
+      "sha256": "1d2d3dad2057a33157fc1fcbe6f004f71d28f984066ece7cccd354417b86bed2"
+    },
+    "scripts/rankic_store.py": {
+      "bytes": 10827,
+      "sha256": "853ee65b2fa038accbbd6661fc23f2b9a5a29f76643de4f85a6526bd3275c347"
+    },
+    "scripts/rankic_workflow.py": {
+      "bytes": 9137,
+      "sha256": "bed87b8127569653fbe7901952b92048db079dbe461dbed9bc7a260b4ea5cf37"
+    },
+    "tests/test_rankic.py": {
+      "bytes": 12095,
+      "sha256": "4c2a3f74facd93e48c37c27a857b3a5c72d23faf4e5d5c00c44c3c940ff0ec43"
+    },
+    "tests/test_rankic_download.py": {
+      "bytes": 33370,
+      "sha256": "b1f74d423ab496a9a6c9fdd6590c92a7899a4bca3c3a8239ab8ae13c88658b49"
+    },
+    "tests/test_rankic_entry.py": {
+      "bytes": 20733,
+      "sha256": "a7c9bcf56a46b57ffa062d57654b1ca7bae372245d093177cd1f44191450f183"
+    },
+    "tests/test_rankic_inputs.py": {
+      "bytes": 11806,
+      "sha256": "2af67bf59e0e7211f4ca5947c204d4c4a801d015ca71dd000964a6899b76a0ae"
+    },
+    "tests/test_rankic_listed_extension.py": {
+      "bytes": 11759,
+      "sha256": "606b6396e50d6338c23d13cd1ea3bc89f64b9510133962762b9306a141aa5a7d"
+    },
+    "tests/test_rankic_migration.py": {
+      "bytes": 5298,
+      "sha256": "d351c4a1776e7d0f244b774352dfbb69d624e9b32233b670ced61fbc4e396ad3"
+    },
+    "tests/test_rankic_price_extension.py": {
+      "bytes": 13406,
+      "sha256": "6a4becdf1cc0160600f3a9af415c1d0fc049e44c126d32c723cec7857853f1a6"
+    },
+    "tests/test_rankic_replay.py": {
+      "bytes": 3458,
+      "sha256": "560505f034c7e193ee7b52a538d235b92a53a43b634591a2d89ae3b084b316fc"
+    },
+    "tests/test_rankic_report.py": {
+      "bytes": 10804,
+      "sha256": "18c2b8401abf6b6cf492a983dc6594988bca3135033f7a1299584b7407337475"
+    },
+    "tests/test_rankic_store.py": {
+      "bytes": 15939,
+      "sha256": "6e80a2fef50b032737a8dd366cf5c77062f2ad798f01c3168459bef879cad07b"
+    },
+    "tests/test_rankic_workflow.py": {
+      "bytes": 14346,
+      "sha256": "60e69d64d0e7c6bfd5833cad9bc5c6af7aa6fa1593fdd857812e44997f833f70"
+    },
+    "verification/catalog-migration-check.json": {
+      "bytes": 1324,
+      "sha256": "717f8796b70ee9d14cc6e94bc8093dd3786bef29350837a3d4cb99ca4b99f908"
+    },
+    "verification/catalog-replay-check.json": {
+      "bytes": 5840,
+      "sha256": "a04caff65c32e375bf86f722114c65396854f2c4b7812728ce7a7d796d33e432"
+    },
+    "verification/hdf-reference-baseline.json": {
+      "bytes": 15285,
+      "sha256": "d9874290b33543b8de4555da4246459ed931ecbe275534a40aea841eff5abe8b"
+    },
+    "verification/listed-extension-check.json": {
+      "bytes": 6792,
+      "sha256": "3a940328cfb0be2efc78773391b62d8a3ae2d3d8fb4a28e307c0832b2eb74ec7"
+    },
+    "verification/listed-extension-final-audit.json": {
+      "bytes": 4554,
+      "sha256": "5878a0ca39525a2a9710ac9f6f8ee84c7ef2e1fdbbc2c9630b94f35221a3582f"
+    },
+    "verification/listed-extension-replay-check.json": {
+      "bytes": 6658,
+      "sha256": "d1d2518303d4d5aec6f8790be772d64f6af2c3600d68d0de2355b9d70d33d260"
+    },
+    "verification/migration-check.json": {
+      "bytes": 8165,
+      "sha256": "4cda4c1786a517e317d4889ee8523d11fefe5d20fbfc24b0d597de2cd1d207fd"
+    },
+    "verification/plugin-integration-client-check.json": {
+      "bytes": 4823,
+      "sha256": "68975da35f278331ed6380271c2d0bc9d268baaaf873c0add933ea214fd77535"
+    },
+    "verification/plugin-integration-client-replay.json": {
+      "bytes": 6658,
+      "sha256": "24a9a19e0b7d98c83db079cd2a9e1e1fb83a6f575446c274f42b025355d77c35"
+    },
+    "verification/plugin-integration-client-review.md": {
+      "bytes": 4663,
+      "sha256": "dce66fdd798be3a0a060820764462e09baa282689c3a019bdd67f93808dad2cd"
+    },
+    "verification/price-extension-check.json": {
+      "bytes": 5816,
+      "sha256": "e57c0eec3f30596dec6be8f1dab6a126066173017f4462a2a5adec8257b4ad32"
+    },
+    "verification/unit-tests-listed-extension-final.txt": {
+      "bytes": 282,
+      "sha256": "4915dd5194febafe549afe9a86147002b71b4b626d5a3104d135ea82d70d423e"
+    },
+    "verification/unit-tests-plugin-client-foundation-final.txt": {
+      "bytes": 19371,
+      "sha256": "e7c3041d0f794fbc8f2f8ccfc66fbd11f94993c596c0dde8fe5c44afbc9633ed"
+    },
+    "verification/verify_catalog.py": {
+      "bytes": 8047,
+      "sha256": "efff85fb8351355fcde65c512c877be56b5b2ceb6a399285671b8239e63c2020"
+    }
+  }
+}

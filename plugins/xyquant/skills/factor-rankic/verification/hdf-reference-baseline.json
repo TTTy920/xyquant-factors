@@ -1,0 +1,474 @@
+{
+  "daily": {
+    "status": "partial_success",
+    "summary": {
+      "valid_periods": 21,
+      "invalid_periods": 0,
+      "incomplete_periods": 0,
+      "mean_rank_ic": -0.01778286173951215,
+      "std_rank_ic": 0.1801424701406293,
+      "icir": -0.0987155429012928,
+      "positive_fraction": 0.47619047619047616,
+      "min_valid_stocks": 5143,
+      "mean_valid_stocks": 5148.952380952381,
+      "max_valid_stocks": 5157
+    },
+    "periods": [
+      {
+        "observation_date": "2025-03-03",
+        "exit_date": "2025-03-04",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5396,
+        "n_valid": 5145,
+        "rank_ic": -0.19176250621062726,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 249,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-04",
+        "exit_date": "2025-03-05",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5144,
+        "rank_ic": 0.09189832456225698,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 249,
+        "excluded_price": 4
+      },
+      {
+        "observation_date": "2025-03-05",
+        "exit_date": "2025-03-06",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5396,
+        "n_valid": 5143,
+        "rank_ic": -0.013923286474993215,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 249,
+        "excluded_price": 4
+      },
+      {
+        "observation_date": "2025-03-06",
+        "exit_date": "2025-03-07",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5395,
+        "n_valid": 5143,
+        "rank_ic": 0.030044949987341384,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 249,
+        "excluded_price": 3
+      },
+      {
+        "observation_date": "2025-03-07",
+        "exit_date": "2025-03-10",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5395,
+        "n_valid": 5147,
+        "rank_ic": -0.2050633161942929,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-10",
+        "exit_date": "2025-03-11",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5395,
+        "n_valid": 5147,
+        "rank_ic": -0.005712265392548253,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-11",
+        "exit_date": "2025-03-12",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5147,
+        "rank_ic": -0.11774254713947878,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-12",
+        "exit_date": "2025-03-13",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5147,
+        "rank_ic": 0.0356926145562497,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-13",
+        "exit_date": "2025-03-14",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5147,
+        "rank_ic": -0.006679985567070531,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-14",
+        "exit_date": "2025-03-17",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5149,
+        "rank_ic": -0.15083361478378196,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-17",
+        "exit_date": "2025-03-18",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5149,
+        "rank_ic": -0.12257076899276807,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-18",
+        "exit_date": "2025-03-19",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5398,
+        "n_valid": 5149,
+        "rank_ic": 0.05416546029812994,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 1
+      },
+      {
+        "observation_date": "2025-03-19",
+        "exit_date": "2025-03-20",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5399,
+        "n_valid": 5149,
+        "rank_ic": -0.13677242492737768,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-20",
+        "exit_date": "2025-03-21",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5400,
+        "n_valid": 5148,
+        "rank_ic": 0.04913306131992269,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 4
+      },
+      {
+        "observation_date": "2025-03-21",
+        "exit_date": "2025-03-24",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5400,
+        "n_valid": 5152,
+        "rank_ic": 0.428315600992618,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-24",
+        "exit_date": "2025-03-25",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5401,
+        "n_valid": 5152,
+        "rank_ic": 0.007651930740626615,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 1
+      },
+      {
+        "observation_date": "2025-03-25",
+        "exit_date": "2025-03-26",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5402,
+        "n_valid": 5152,
+        "rank_ic": -0.39044713682437004,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-26",
+        "exit_date": "2025-03-27",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5402,
+        "n_valid": 5152,
+        "rank_ic": 0.17888173786350553,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 2
+      },
+      {
+        "observation_date": "2025-03-27",
+        "exit_date": "2025-03-28",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5404,
+        "n_valid": 5152,
+        "rank_ic": 0.27853242443515425,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 4
+      },
+      {
+        "observation_date": "2025-03-28",
+        "exit_date": "2025-03-31",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5405,
+        "n_valid": 5157,
+        "rank_ic": 0.023864741703499125,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-31",
+        "exit_date": "2025-04-01",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5405,
+        "n_valid": 5157,
+        "rank_ic": -0.2101130904817507,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      }
+    ],
+    "warnings": [
+      "Theoretical close-to-close RankIC; no trading costs or tradeability filters.",
+      "ICIR is not annualized. No neutralization, winsorization or direction reversal.",
+      "Historical universe has unknown membership in the authorized scope; all-A completeness is unverified. See unknown_universe per date.",
+      "Local HDF5 factor: explicitly ignored 1 non-stock axis labels.",
+      "Local HDF5 price: explicitly ignored 1 non-stock axis labels.",
+      "LOCAL REFERENCE ONLY: not proof of server authorization, price semantics, historical-universe completeness or independent exchange-calendar verification."
+    ],
+    "return_range": [
+      "2025-03-03",
+      "2025-04-01"
+    ]
+  },
+  "weekly": {
+    "status": "partial_success",
+    "summary": {
+      "valid_periods": 4,
+      "invalid_periods": 0,
+      "incomplete_periods": 0,
+      "mean_rank_ic": -0.036195424658190464,
+      "std_rank_ic": 0.2013535138633827,
+      "icir": -0.17976058109792348,
+      "positive_fraction": 0.25,
+      "min_valid_stocks": 5147,
+      "mean_valid_stocks": 5151.0,
+      "max_valid_stocks": 5157
+    },
+    "periods": [
+      {
+        "observation_date": "2025-03-07",
+        "exit_date": "2025-03-14",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5395,
+        "n_valid": 5147,
+        "rank_ic": -0.12299678888877223,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-14",
+        "exit_date": "2025-03-21",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5397,
+        "n_valid": 5148,
+        "rank_ic": -0.1210979577677074,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 1
+      },
+      {
+        "observation_date": "2025-03-21",
+        "exit_date": "2025-03-28",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5400,
+        "n_valid": 5152,
+        "rank_ic": 0.2643023736034618,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      },
+      {
+        "observation_date": "2025-03-28",
+        "exit_date": "2025-04-03",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5405,
+        "n_valid": 5157,
+        "rank_ic": -0.16498932557974405,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 0
+      }
+    ],
+    "warnings": [
+      "Theoretical close-to-close RankIC; no trading costs or tradeability filters.",
+      "ICIR is not annualized. No neutralization, winsorization or direction reversal.",
+      "Historical universe has unknown membership in the authorized scope; all-A completeness is unverified. See unknown_universe per date.",
+      "Fewer than 10 valid periods; estimates are unstable, not significance evidence.",
+      "Local HDF5 factor: explicitly ignored 1 non-stock axis labels.",
+      "Local HDF5 price: explicitly ignored 1 non-stock axis labels.",
+      "LOCAL REFERENCE ONLY: not proof of server authorization, price semantics, historical-universe completeness or independent exchange-calendar verification."
+    ],
+    "return_range": [
+      "2025-03-07",
+      "2025-04-03"
+    ]
+  },
+  "monthly": {
+    "status": "partial_success",
+    "summary": {
+      "valid_periods": 1,
+      "invalid_periods": 0,
+      "incomplete_periods": 0,
+      "mean_rank_ic": -0.12250841410933927,
+      "std_rank_ic": null,
+      "icir": null,
+      "positive_fraction": 0.0,
+      "min_valid_stocks": 5153,
+      "mean_valid_stocks": 5153.0,
+      "max_valid_stocks": 5153
+    },
+    "periods": [
+      {
+        "observation_date": "2025-03-31",
+        "exit_date": "2025-04-30",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5405,
+        "n_valid": 5153,
+        "rank_ic": -0.12250841410933927,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 4
+      }
+    ],
+    "warnings": [
+      "Theoretical close-to-close RankIC; no trading costs or tradeability filters.",
+      "ICIR is not annualized. No neutralization, winsorization or direction reversal.",
+      "Historical universe has unknown membership in the authorized scope; all-A completeness is unverified. See unknown_universe per date.",
+      "Fewer than 10 valid periods; estimates are unstable, not significance evidence.",
+      "Sample standard deviation and ICIR are undefined with fewer than two valid periods.",
+      "Local HDF5 factor: explicitly ignored 1 non-stock axis labels.",
+      "Local HDF5 price: explicitly ignored 1 non-stock axis labels.",
+      "LOCAL REFERENCE ONLY: not proof of server authorization, price semantics, historical-universe completeness or independent exchange-calendar verification."
+    ],
+    "return_range": [
+      "2025-03-31",
+      "2025-04-30"
+    ]
+  },
+  "quarterly": {
+    "status": "partial_success",
+    "summary": {
+      "valid_periods": 1,
+      "invalid_periods": 0,
+      "incomplete_periods": 0,
+      "mean_rank_ic": -0.3545189763971974,
+      "std_rank_ic": null,
+      "icir": null,
+      "positive_fraction": 0.0,
+      "min_valid_stocks": 5148,
+      "mean_valid_stocks": 5148.0,
+      "max_valid_stocks": 5148
+    },
+    "periods": [
+      {
+        "observation_date": "2025-03-31",
+        "exit_date": "2025-06-30",
+        "status": "valid",
+        "reason": "",
+        "n_pool": 5405,
+        "n_valid": 5148,
+        "rank_ic": -0.3545189763971974,
+        "unknown_universe": 348,
+        "excluded_authorization": 0,
+        "excluded_factor": 248,
+        "excluded_price": 9
+      }
+    ],
+    "warnings": [
+      "Theoretical close-to-close RankIC; no trading costs or tradeability filters.",
+      "ICIR is not annualized. No neutralization, winsorization or direction reversal.",
+      "Historical universe has unknown membership in the authorized scope; all-A completeness is unverified. See unknown_universe per date.",
+      "Fewer than 10 valid periods; estimates are unstable, not significance evidence.",
+      "Sample standard deviation and ICIR are undefined with fewer than two valid periods.",
+      "Local HDF5 factor: explicitly ignored 1 non-stock axis labels.",
+      "Local HDF5 price: explicitly ignored 1 non-stock axis labels.",
+      "LOCAL REFERENCE ONLY: not proof of server authorization, price semantics, historical-universe completeness or independent exchange-calendar verification."
+    ],
+    "return_range": [
+      "2025-03-31",
+      "2025-06-30"
+    ]
+  }
+}

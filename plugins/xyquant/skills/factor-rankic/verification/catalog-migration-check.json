@@ -1,0 +1,55 @@
+{
+  "roundtrip": {
+    "calendar": true,
+    "factor": true,
+    "price": true,
+    "listed": true
+  },
+  "old_file_fingerprints": {
+    "calendar": {
+      "sha256": "d81cb4689e59e914613b04fed2cdac63b735acbf394eeaca3d1097328e527f5c",
+      "bytes": 679
+    },
+    "factor": {
+      "sha256": "11a9bce57e060c9aaaaf11bb4605df70599b52af1fa4cd13677351d0094d774f",
+      "bytes": 1405596
+    },
+    "price": {
+      "sha256": "f1794a376ccdb2b49c08e055fa51d43ca89b8c8406f6aa4ea2421e201182dd7c",
+      "bytes": 5342573
+    },
+    "listed": {
+      "sha256": "2e81dd6fae6355c39dab45f57123c797b852c03c4905502446e1a47d41e587eb",
+      "bytes": 425313
+    }
+  },
+  "role_coverage": {
+    "calendar": {
+      "rows": 81,
+      "first_date": "2025-03-03",
+      "last_date": "2025-06-30"
+    },
+    "factor": {
+      "rows": 129612,
+      "first_date": "2025-03-03",
+      "last_date": "2025-03-31"
+    },
+    "price": {
+      "rows": 499932,
+      "first_date": "2025-03-03",
+      "last_date": "2025-06-30"
+    },
+    "listed": {
+      "rows": 124362,
+      "first_date": "2025-03-03",
+      "last_date": "2025-03-31"
+    }
+  },
+  "source_files_unchanged": true,
+  "baseline_exact_match": {
+    "daily": true,
+    "weekly": true,
+    "monthly": true,
+    "quarterly": true
+  }
+}

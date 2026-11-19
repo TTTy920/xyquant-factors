@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "native": {
+    "daily": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 21,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.01778286173951215,
+        "std_rank_ic": 0.1801424701406293,
+        "icir": -0.0987155429012928,
+        "positive_fraction": 0.47619047619047616,
+        "min_valid_stocks": 5143,
+        "mean_valid_stocks": 5148.952380952381,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\178966be-d30d-4477-80e8-b5a355b0bf82"
+    },
+    "weekly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 4,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.036195424658190464,
+        "std_rank_ic": 0.2013535138633827,
+        "icir": -0.17976058109792348,
+        "positive_fraction": 0.25,
+        "min_valid_stocks": 5147,
+        "mean_valid_stocks": 5151.0,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\de3da7fc-0bed-4331-ab24-b9a867fa1dba"
+    },
+    "monthly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.12250841410933927,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5153,
+        "mean_valid_stocks": 5153.0,
+        "max_valid_stocks": 5153
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\16804290-134e-41e9-8b72-4276407e3c75"
+    },
+    "quarterly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.3545189763971974,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5148,
+        "mean_valid_stocks": 5148.0,
+        "max_valid_stocks": 5148
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true,
+      "output_dir": "D:\\Desktop\\RankIC测试Skill\\results\\rankic\\2a3b4bba-7214-478b-a9a0-6c0892940029"
+    }
+  },
+  "relocated": {
+    "daily": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 21,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.01778286173951215,
+        "std_rank_ic": 0.1801424701406293,
+        "icir": -0.0987155429012928,
+        "positive_fraction": 0.47619047619047616,
+        "min_valid_stocks": 5143,
+        "mean_valid_stocks": 5148.952380952381,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true
+    },
+    "weekly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 4,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.036195424658190464,
+        "std_rank_ic": 0.2013535138633827,
+        "icir": -0.17976058109792348,
+        "positive_fraction": 0.25,
+        "min_valid_stocks": 5147,
+        "mean_valid_stocks": 5151.0,
+        "max_valid_stocks": 5157
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true
+    },
+    "monthly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.12250841410933927,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5153,
+        "mean_valid_stocks": 5153.0,
+        "max_valid_stocks": 5153
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true
+    },
+    "quarterly": {
+      "status": "partial_success",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.3545189763971974,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5148,
+        "mean_valid_stocks": 5148.0,
+        "max_valid_stocks": 5148
+      },
+      "guards": {
+        "hdf_imports": 0,
+        "forbidden_reads": 0,
+        "network_attempts": 0
+      },
+      "workbook_python_cache_checked": true,
+      "baseline_exact_match": true
+    }
+  },
+  "independent_spreadsheet_recalculation": false,
+  "server_to_report_verified": false,
+  "project_mcp_config_changed": false
+}

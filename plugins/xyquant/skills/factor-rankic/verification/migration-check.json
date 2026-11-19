@@ -1,0 +1,272 @@
+{
+  "checks": {
+    "source_core_unchanged": true,
+    "data_hashes_match": true,
+    "relative_input_paths": true,
+    "local_document_links": true,
+    "all_four_frequencies_exact_match_hdf_baseline": true,
+    "all_four_frequencies_pass_relocated_replay": true,
+    "hdf_imports": 0,
+    "original_project_or_hdf_reads": 0,
+    "network_attempts": 0
+  },
+  "core_script_sha256": {
+    "rankic.py": "92056d784ca20d91e73774d7c7b48d0fba40675acff777aad767119c2e817ed3",
+    "rankic_engine.py": "14debb39192fbd75fac3a2f3c0171d3f7d4a2e5212c6e8d9f8664b6ac84784ad",
+    "rankic_inputs.py": "99538a9048097be190f9cf872fb251165cf2c241d5a96d1f468cdd5f81147a37",
+    "rankic_report.py": "41ce8c114be122029a1da8ffd3a866ce018967b704074badb89a6f2009cf45e0"
+  },
+  "runs": {
+    "daily": {
+      "status": "partial_success",
+      "valid_periods": 21,
+      "return_range": [
+        "2025-03-03",
+        "2025-04-01"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/f0e32811-6153-4895-b8e1-ce87bffe6d50",
+      "summary": {
+        "valid_periods": 21,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.01778286173951215,
+        "std_rank_ic": 0.1801424701406293,
+        "icir": -0.0987155429012928,
+        "positive_fraction": 0.47619047619047616,
+        "min_valid_stocks": 5143,
+        "mean_valid_stocks": 5148.952380952381,
+        "max_valid_stocks": 5157
+      }
+    },
+    "weekly": {
+      "status": "partial_success",
+      "valid_periods": 4,
+      "return_range": [
+        "2025-03-07",
+        "2025-04-03"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/6ca97a67-3e37-42fe-82aa-f0b89d934b3c",
+      "summary": {
+        "valid_periods": 4,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.036195424658190464,
+        "std_rank_ic": 0.2013535138633827,
+        "icir": -0.17976058109792348,
+        "positive_fraction": 0.25,
+        "min_valid_stocks": 5147,
+        "mean_valid_stocks": 5151.0,
+        "max_valid_stocks": 5157
+      }
+    },
+    "monthly": {
+      "status": "partial_success",
+      "valid_periods": 1,
+      "return_range": [
+        "2025-03-31",
+        "2025-04-30"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/6204faf1-620b-40fe-a265-659413e8c316",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.12250841410933927,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5153,
+        "mean_valid_stocks": 5153.0,
+        "max_valid_stocks": 5153
+      }
+    },
+    "quarterly": {
+      "status": "partial_success",
+      "valid_periods": 1,
+      "return_range": [
+        "2025-03-31",
+        "2025-06-30"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/002d4538-aae5-4c90-816b-b0854a315af0",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.3545189763971974,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5148,
+        "mean_valid_stocks": 5148.0,
+        "max_valid_stocks": 5148
+      }
+    }
+  },
+  "relocated_runs": {
+    "daily": {
+      "status": "partial_success",
+      "valid_periods": 21,
+      "return_range": [
+        "2025-03-03",
+        "2025-04-01"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/01ceaee4-6256-4a6c-b823-7f848c0586c2",
+      "summary": {
+        "valid_periods": 21,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.01778286173951215,
+        "std_rank_ic": 0.1801424701406293,
+        "icir": -0.0987155429012928,
+        "positive_fraction": 0.47619047619047616,
+        "min_valid_stocks": 5143,
+        "mean_valid_stocks": 5148.952380952381,
+        "max_valid_stocks": 5157
+      }
+    },
+    "weekly": {
+      "status": "partial_success",
+      "valid_periods": 4,
+      "return_range": [
+        "2025-03-07",
+        "2025-04-03"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/6a8488f9-908b-4939-b078-a98894575cef",
+      "summary": {
+        "valid_periods": 4,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.036195424658190464,
+        "std_rank_ic": 0.2013535138633827,
+        "icir": -0.17976058109792348,
+        "positive_fraction": 0.25,
+        "min_valid_stocks": 5147,
+        "mean_valid_stocks": 5151.0,
+        "max_valid_stocks": 5157
+      }
+    },
+    "monthly": {
+      "status": "partial_success",
+      "valid_periods": 1,
+      "return_range": [
+        "2025-03-31",
+        "2025-04-30"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/780299b1-9618-4f01-9f73-f6a0d8bf2e3b",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.12250841410933927,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5153,
+        "mean_valid_stocks": 5153.0,
+        "max_valid_stocks": 5153
+      }
+    },
+    "quarterly": {
+      "status": "partial_success",
+      "valid_periods": 1,
+      "return_range": [
+        "2025-03-31",
+        "2025-06-30"
+      ],
+      "unknown_membership_counts": [
+        348
+      ],
+      "baseline_exact_match": true,
+      "runtime_guards": {
+        "hdf_imports": [],
+        "blocked_source_reads": [],
+        "network_attempts": []
+      },
+      "output_dir": "results/rankic/09090992-3ff7-4c2d-a0e6-23e0cd2aafbd",
+      "summary": {
+        "valid_periods": 1,
+        "invalid_periods": 0,
+        "incomplete_periods": 0,
+        "mean_rank_ic": -0.3545189763971974,
+        "std_rank_ic": null,
+        "icir": null,
+        "positive_fraction": 0.0,
+        "min_valid_stocks": 5148,
+        "mean_valid_stocks": 5148.0,
+        "max_valid_stocks": 5148
+      }
+    }
+  },
+  "runtime": {
+    "python": "3.10.11",
+    "environment": "standalone .venv; no original-project runtime"
+  },
+  "limitations": [
+    "All-A historical membership is unknown for 348 codes per observation; partial_success preserved.",
+    "Source price/calendar semantics are local reference only, not server acceptance.",
+    "Excel formulas have Python caches; independent spreadsheet-engine recalculation not performed."
+  ]
+}

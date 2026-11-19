@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "origin": "local_reference",
+  "requested": {
+    "start": "2020-01-01",
+    "end": "2026-10-31"
+  },
+  "source": {
+    "filename": "复权收盘价.hdf5",
+    "sha256": "2673cba412fdd9ac5d87ceeb4e42b0f25b096c512af4bb8d872ba9198118876b",
+    "bytes": 267773592,
+    "format": "hdf5",
+    "axes_sha256": "4ee63779477dc69fe37fce53e22ca9a02f3046785906b8277312b3e17e8148a0",
+    "mtime_ns": 1794970307274092900,
+    "date_encoding": "unix_seconds",
+    "timezone": "UTC+08:00",
+    "ignored_non_stock_columns": 1
+  },
+  "original_catalog_sha256": "cc7a67961831c372788c9df5d367bf23b113fb6450a7f727445dc0a770ba0eb7",
+  "excluded_labels": [
+    "T00018.SH"
+  ],
+  "years": [
+    {
+      "year": 2020,
+      "price_rows": 1499796,
+      "market_rows": 1499796,
+      "listed_rows": 0,
+      "original_price_overlap_rows": 0,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2020.pqt",
+        "bytes": 13909313,
+        "sha256": "3393b59c312d705bf233a585588cc0ac3369d97ddb0385aa545cd3d08cba3804",
+        "rows": 1499796,
+        "first_date": "2020-01-02",
+        "last_date": "2020-12-31",
+        "year": 2020
+      }
+    },
+    {
+      "year": 2021,
+      "price_rows": 1499796,
+      "market_rows": 1499796,
+      "listed_rows": 0,
+      "original_price_overlap_rows": 0,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2021.pqt",
+        "bytes": 14999616,
+        "sha256": "8f57c400df6f451d23bb0f6de37e205dbc0b2f6f257f97277172a4037ba0dec8",
+        "rows": 1499796,
+        "first_date": "2021-01-04",
+        "last_date": "2021-12-31",
+        "year": 2021
+      }
+    },
+    {
+      "year": 2022,
+      "price_rows": 1493624,
+      "market_rows": 1493624,
+      "listed_rows": 0,
+      "original_price_overlap_rows": 0,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2022.pqt",
+        "bytes": 16010151,
+        "sha256": "00e51bc18f3232cdbbef3149d0b68cb6e0041d20e878c7cbc81d4ed10b2fac40",
+        "rows": 1493624,
+        "first_date": "2022-01-04",
+        "last_date": "2022-12-30",
+        "year": 2022
+      }
+    },
+    {
+      "year": 2023,
+      "price_rows": 1493624,
+      "market_rows": 1493624,
+      "listed_rows": 0,
+      "original_price_overlap_rows": 0,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2023.pqt",
+        "bytes": 16822062,
+        "sha256": "8c6c5c7c2c1b9be896e591e7edb15e18fdb0437b3880ae436afce92f9508c00c",
+        "rows": 1493624,
+        "first_date": "2023-01-03",
+        "last_date": "2023-12-29",
+        "year": 2023
+      }
+    },
+    {
+      "year": 2024,
+      "price_rows": 1493624,
+      "market_rows": 1493624,
+      "listed_rows": 0,
+      "original_price_overlap_rows": 0,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2024.pqt",
+        "bytes": 17169034,
+        "sha256": "6339537ab5534d3d5b6ea0dc513c86d83b43900c7d5065906f98fcbf2dbb1198",
+        "rows": 1493624,
+        "first_date": "2024-01-02",
+        "last_date": "2024-12-31",
+        "year": 2024
+      }
+    },
+    {
+      "year": 2025,
+      "price_rows": 1499796,
+      "market_rows": 1499796,
+      "listed_rows": 124362,
+      "original_price_overlap_rows": 499932,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2025.pqt",
+        "bytes": 17396997,
+        "sha256": "0bd5310144ae3187459d2068aaecdcf2677619a22a6c94f6e6bfdaa6e30be54b",
+        "rows": 1499796,
+        "first_date": "2025-01-02",
+        "last_date": "2025-12-31",
+        "year": 2025
+      }
+    },
+    {
+      "year": 2026,
+      "price_rows": 1222056,
+      "market_rows": 1222056,
+      "listed_rows": 0,
+      "original_price_overlap_rows": 0,
+      "price_roundtrip_exact": true,
+      "listed_roundtrip_exact": true,
+      "presence_roundtrip_exact": true,
+      "file": {
+        "path": "market/2026.pqt",
+        "bytes": 14340404,
+        "sha256": "32a241b7b2ee65997d79addbd5152320aba1876f7440e5afa2575911ba285875",
+        "rows": 1222056,
+        "first_date": "2026-01-05",
+        "last_date": "2026-10-30",
+        "year": 2026
+      }
+    }
+  ],
+  "independent_exchange_calendar_verified": false,
+  "server_to_report_verified": false,
+  "calendar": {
+    "rows": 1653,
+    "first_date": "2020-01-02",
+    "last_date": "2026-10-30",
+    "complete_from": "2020-01-01",
+    "complete_through": "2026-10-31"
+  },
+  "price_coverage": {
+    "rows": 10202316,
+    "first_date": "2020-01-02",
+    "last_date": "2026-10-30"
+  },
+  "listed_coverage": {
+    "first_date": "2025-03-03",
+    "last_date": "2025-03-31",
+    "rows": 124362
+  },
+  "original_calendar_unchanged": true,
+  "original_prices_unchanged": true,
+  "original_listed_unchanged": true,
+  "factor_files_unchanged": true,
+  "factor_files": [
+    {
+      "factor_id": "FloatCap",
+      "path": "factors/FloatCap/2025.pqt",
+      "bytes": 1492565,
+      "sha256": "f862ae3b3c7727dcf81c6419172d9da9918ef3d7885eeccba7202480cff8986e",
+      "rows": 129612,
+      "first_date": "2025-03-03",
+      "last_date": "2025-03-31",
+      "year": 2025
+    }
+  ],
+  "source_files_unchanged": true
+}

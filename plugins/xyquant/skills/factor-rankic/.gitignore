@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+results/
+downloads/
+verification/backups/
+.rankic-*/
+*.part
+*.lock
+.env
+.env.*
+.claude/settings.local.json

@@ -1,0 +1,11 @@
+{
+  "parameters": {
+    "factor_name": "流通市值",
+    "start": "2025-03-01",
+    "end": "2025-03-31",
+    "frequency": "monthly",
+    "pool": "all_a",
+    "min_stocks": 20
+  },
+  "data_root": "../data/local-reference/market-202001-202610"
+}
