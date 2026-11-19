@@ -1,6 +1,6 @@
 # xyquant
 
-在 Codex、WorkBuddy 或 Claude Code 中查询已授权的因子与策略资料，把选定的数据保存到当前项目，并在本地完成因子RankIC测试、组合风格与行业收益归因。Windows、macOS 和 Linux 共用同一份插件包。
+在 Codex、WorkBuddy 或 Claude Code 中查询已授权的因子与策略资料，把选定的数据保存到当前项目，并在本地完成个股持有诊断、因子RankIC测试、组合风格与行业收益归因。Windows、macOS 和 Linux 共用同一份插件包。
 
 ## 安装与授权
 
@@ -12,7 +12,7 @@
 
 插件已内置 [xyquant-login](plugins/xyquant/skills/xyquant-login/SKILL.md)。在使用数据的客户端说“帮我连接 XYQuant”即可；已有授权时可以直接查询。WorkBuddy 桌面用户若遇到 `invalid_target`，可说“用本地连接器授权 XYQuant”。这条可选路径需要 Python 3.9+ 和带 npm/npx 的 Node.js 20.18.1+，首次使用按提示把生成的 `xyquant-local` 配置添加到 WorkBuddy。
 
-组合归因和RankIC测试需要 Python 3.10 或以上，依赖分别位于 `portfolio-attribution/requirements.txt` 和 `factor-rankic/requirements.txt`，均在 `plugins/xyquant/skills/` 下。
+个股诊断、组合归因和RankIC测试需要 Python 3.10 或以上，依赖分别位于 `stock-holding-diagnosis/requirements.txt`、`portfolio-attribution/requirements.txt` 和 `factor-rankic/requirements.txt`，均在 `plugins/xyquant/skills/` 下。
 
 ## 网站入口
 
@@ -25,6 +25,7 @@ OAuth 连接通过客户端原生入口授权和管理；个人空间用于账�
 - “有哪些成交量相关因子？我可以查哪些日期？”
 - “把 ROE_TTM 在 2026 年 9 月、所有已授权股票的数据下载到当前项目。”
 - “科技策略按什么原理选股？这只股票在指定月份的策略因子值是多少？”
+- “用 XYQuant 诊断一下 600519.SH，看看四因子排名、策略持仓变化和近期新闻。”
 - “用我的月末持仓做组合收益归因，基准选沪深300。”
 - “用随附FloatCap因子做2025年3月的周频RankIC测试，股票池为全A。”
 
@@ -36,7 +37,9 @@ Barra数据支持直接数值预览和单因子导出：在 `query_barra_data` �
 
 RankIC测试使用 `factor-rankic`：支持用户自带因子文件、因子库下载文件，以及明确选择的随附因子。基础价格、历史在市、日历和随附因子通过 `query_rankic_data` 获取，采用按需打包、固定1小时共享、到期清理的规则。因子适配、日/周/月/季频RankIC统计和Excel报告在本地完成，用户文件不上传，数据不进入插件包。
 
-当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution` 和 `factor-rankic`。开发阶段暂时停用 `barra-attribution` 和 `strategy-attribution`。
+个股持有诊断使用 `stock-holding-diagnosis`：通过现有 MCP 获取 ROE_TTM、EP_TTM、CloseTrend_240D_Reg、Amount_20D_Avg 四个因子的同日授权截面，以及四个预置策略的持仓和快照，在本地计算单只 A 股的因子排名与两期持仓变化。近期新闻由客户端联网核实，在对话中交付判断依据、因子排名、历史持仓参考和新闻影响。持仓缓存沿用固定 1 小时有效期，具体覆盖日期以实时目录为准；新闻和历史持仓不参与四因子打分。
+
+当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic` 和 `stock-holding-diagnosis`。开发阶段暂时停用 `barra-attribution` 和 `strategy-attribution`。
 
 通用因子保留目录、预览和导出四个工具，`get_export` 增加可选的文件下载凭据；策略与团队介绍统一使用 `query_strategy_research`，市场信号继续使用 `query_market_signals`。科技策略知识及策略个股因子值接口开发阶段暂不开放。
 
@@ -48,6 +51,8 @@ RankIC测试使用 `factor-rankic`：支持用户自带因子文件、因子库�
 python3 -m unittest discover -s tests
 python3 -m pip install -r plugins/xyquant/skills/factor-rankic/requirements.txt h5py
 python3 -B scripts/test_rankic.py
+python3 -m pip install -r plugins/xyquant/skills/stock-holding-diagnosis/requirements.txt
+python3 -B -m unittest discover -s plugins/xyquant/skills/stock-holding-diagnosis/tests
 python3 scripts/package.py
 ```
 
