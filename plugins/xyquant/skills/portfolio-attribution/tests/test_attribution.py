@@ -151,8 +151,8 @@ class DataAndWorkflowTests(unittest.TestCase):
 
     def test_invalid_frequency_and_negative_dates(self):
         with self.assertRaises(DataError):schedule(self.dates,pd.Timestamp("2025-02-01"),pd.Timestamp("2025-01-01"),"monthly")
-        cat=json.loads((self.root/"catalog.json").read_text());cat["portfolios"]["P"]["frequencies"]=["monthly"]
-        (self.root/"catalog.json").write_text(json.dumps(cat))
+        cat=json.loads((self.root/"catalog.json").read_text(encoding="utf-8"));cat["portfolios"]["P"]["frequencies"]=["monthly"]
+        (self.root/"catalog.json").write_text(json.dumps(cat),encoding="utf-8")
         with self.assertRaises(DataError):Store(self.root).resolve("portfolios","P","weekly")
 
     def cli(self,method="both"):
