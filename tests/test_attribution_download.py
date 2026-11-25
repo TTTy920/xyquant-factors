@@ -22,7 +22,7 @@ class GroupedDownloadTests(unittest.TestCase):
 
     def job(self, tool, number, start='2024-12-31', extra=None, datasets=None):
         jid = str(number)*32
-        folder = self.project/'downloads/attribution-data'/jid
+        folder = self.project/'xyquant-data/mcp-cache/attribution/public'/jid
         folder.mkdir(parents=True)
         names = download.GROUP_FILES[tool]-{'data.json'}
         if datasets is not None:
@@ -83,10 +83,10 @@ class GroupedDownloadTests(unittest.TestCase):
     def test_corrupt_cached_archive_never_becomes_an_input_config(self):
         stock = self.job('query_stock_data',1)
         barra = self.job('query_barra_data',2)
-        (self.project/'downloads/attribution-data'/stock['id']/'attribution-data.zip').write_bytes(b'corrupted')
+        (self.project/'xyquant-data/mcp-cache/attribution/public'/stock['id']/'attribution-data.zip').write_bytes(b'corrupted')
         with self.assertRaises(ValueError):
             download.save({'query_stock_data':stock,'query_barra_data':barra},self.project)
-        self.assertFalse((self.project/'downloads/attribution-data/combined').exists())
+        self.assertFalse((self.project/'xyquant-data/mcp-cache/attribution/public/combined').exists())
 
     def test_one_barra_exposure_job_can_be_saved_without_stock_data(self):
         job = self.job('query_barra_data',1,datasets=['exposures'])

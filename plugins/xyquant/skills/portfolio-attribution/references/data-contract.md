@@ -1,19 +1,19 @@
 # 部署和共享数据
 
-Python 3.10+，安装 `requirements.txt`。插件只附计算代码；原始数据通过 `query_stock_data(dataset="attribution_bundle")` 下载到客户的本地项目，每次启动先查询服务器当前版本，只在包的1小时有效期内复用校验通过的本地缓存。到期重新取数；已开始的本地计算使用下载完成的同一快照。数据下载之后计算不依赖网络，客户持仓和权重不上传。两种方法使用同一个下载快照，不混合其他数据版本或现成因子收益率。
+Python 3.10+，安装 `requirements.txt`。正式入口 `entry.py` 从 `xyquant-data/inputs/datasets/` 的扁平清单固定所有非持仓数据：`trading-calendar/calendar.parquet`、`attribution-market/YYYY.parquet`、`barra-exposures/YYYY.parquet` 和 `industry-classification/monthly.parquet`。行情等缺失时不回退。MCP `attribution_bundle` 或本地持仓只提供组合权重、基准权重和快照。下载后本地计算，客户持仓不上传。
 
-通过 `entry.py` 执行时用 `--data-root` 指定下载返回的数据根，也可使用 `ATTRIBUTION_DATA_ROOT`。结果用 `--output-root` 写入项目目录。下面保留原版数据契约与计算说明；服务器数据快照已完成格式准备，日常归因不运行迁移脚本。
+`--data-root`（或 `ATTRIBUTION_DATA_ROOT`）只指向项目内持仓输入的目录；不改变基础数据路径。自有持仓和基准权重放在 `xyquant-data/inputs/holdings/`；结果默认写入 `xyquant-data/results/portfolio-attribution/`，`--output-root` 只允许该目录内路径。
 
 ## 清单和格式
 
-`data/catalog.json` 的 `schema_version` 为1，所有路径相对数据根，不允许越界。`calendar` 为完整交易日历；`portfolios`、`benchmarks` 为名称到 `path/frequencies/aliases` 的映射。`market` 与 `exposures` 为按年保存的文件路径列表；`snapshots` 和 `industry` 为单个路径。不要直接把不兼容表追加进清单。
+持仓 `catalog.json` 中 `portfolios`、`benchmarks` 为名称到 `path/frequencies/aliases` 的映射，`snapshots` 是单个路径；其他键不作为市场输入。扁平基础数据由每个目录的 `manifest.json` 校验，报告记录实际哈希。
 
 所有输入使用 Parquet + Zstandard，无损保留 float64。按日期/股票列读取，逐年文件无日期重叠，不把同一批数据复制给两个引擎。
 
 | 数据 | 列与规则 |
 |---|---|
 | calendar | date，完整交易日期，升序且无重复；需覆盖请求前后周期，不以周末自行推断节假日 |
-| market/YYYY.parquet | date, stock_code, return, float_cap, eligible；日简单收益小数、原始流通市值、期初回归合格标记。eligible为可空int8，仅0/1/空，空与0不同。保留全市场股票，不局限持仓并集 |
+| attribution-market/YYYY.parquet | date, stock_code, return, float_cap；日简单收益小数及原始流通市值。没有 `eligible` 列，Barra 对期初暴露完整且市值为正的全市场股票建候选池，再剔除当期无收益的股票 |
 | exposures/YYYY.parquet | date, stock_code，以及 Size/Beta/Momentum/ResidualVolatility/NonlinearSize/BookToPrice/Liquidity/EarningsYield/Growth/Leverage；日度原始模型暴露，不填零、不重新标准化 |
 | weights/portfolio_*.parquet | date, stock_code, weight；仅非零正股票权重，原始频率，不伪造高频持仓 |
 | weights/benchmark_*.parquet | 同上，日度基准权重，不保存周/月副本 |
@@ -26,7 +26,7 @@ Python 3.10+，安装 `requirements.txt`。插件只附计算代码；原始数�
 
 ## 迁移和验证
 
-`scripts/merge_legacy_data.py` 只用于一次性从原两个 Skill 的CSV数据目录准备共享Parquet：
+`scripts/merge_legacy_data.py` 是旧包复算时的开发工具，不用于正式入口：
 
 ```sh
 python scripts/merge_legacy_data.py --barra-data /old/barra/data --brinson-data /old/brinson/data --destination /new/portfolio-attribution/data

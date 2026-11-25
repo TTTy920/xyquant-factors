@@ -1,6 +1,6 @@
 # xyquant
 
-在 Codex、WorkBuddy 或 Claude Code 中查询已授权的因子与策略资料，把选定的数据保存到当前项目，并在本地完成个股持有诊断、因子RankIC测试、组合风格与行业收益归因。Windows、macOS 和 Linux 共用同一份插件包。
+在 Codex、WorkBuddy 或 Claude Code 中查询已授权的因子与策略资料，把选定的数据保存到当前项目，并在本地完成个股持有诊断、因子RankIC测试、多因子合成、组合风格与行业收益归因。Windows、macOS 和 Linux 共用同一份插件包。
 
 ## 安装与授权
 
@@ -12,7 +12,7 @@
 
 插件已内置 [xyquant-login](plugins/xyquant/skills/xyquant-login/SKILL.md)。在使用数据的客户端说“帮我连接 XYQuant”即可；已有授权时可以直接查询。WorkBuddy 桌面用户若遇到 `invalid_target`，可说“用本地连接器授权 XYQuant”。这条可选路径需要 Python 3.9+ 和带 npm/npx 的 Node.js 20.18.1+，首次使用按提示把生成的 `xyquant-local` 配置添加到 WorkBuddy。
 
-个股诊断、组合归因和RankIC测试需要 Python 3.10 或以上，依赖分别位于 `stock-holding-diagnosis/requirements.txt`、`portfolio-attribution/requirements.txt` 和 `factor-rankic/requirements.txt`，均在 `plugins/xyquant/skills/` 下。
+四个业务 Skill 需要 Python 3.10 或以上，各自依赖位于 `plugins/xyquant/skills/<名称>/requirements.txt`。
 
 ## 网站入口
 
@@ -25,34 +25,41 @@ OAuth 连接通过客户端原生入口授权和管理；个人空间用于账�
 - “有哪些成交量相关因子？我可以查哪些日期？”
 - “把 ROE_TTM 在 2026 年 9 月、所有已授权股票的数据下载到当前项目。”
 - “科技策略按什么原理选股？这只股票在指定月份的策略因子值是多少？”
-- “用 XYQuant 诊断一下 600519.SH，看看四因子排名、策略持仓变化和近期新闻。”
+- “用 XYQuant 诊断一下 600519.SH，看看四因子排名和策略持仓变化。”
 - “用我的月末持仓做组合收益归因，基准选沪深300。”
-- “用随附FloatCap因子做2025年3月的周频RankIC测试，股票池为全A。”
+- “用我的因子文件做2025年3月的周频RankIC测试，股票池为全A。”
+- “把 ROE_TTM 和 EP_TTM 等权合成，查看指定日期的综合分数。”
 
 因子数据通过远程 MCP 查询和导出。通用因子下载沿用当前 MCP 授权：`get_export(include_download=true)` 返回仅适用于该文件、五分钟内有效的下载凭据，本地脚本保存并校验文件，无需再次网页登录。下载成功后，客户端会给出经过校验的文件路径。也可以登录[个人空间的因子下载](https://47.103.215.251/factors/preview/#factor-download)，在「最近导出」下载同一份文件；网页会话独立管理。
 
-组合收益归因使用 `portfolio-attribution`：支持客户自带持仓，或选择300增强、xgb500增强、xgb1000增强、xgb2000增强四个预置策略。原始数据通过 `query_stock_data(dataset="attribution_bundle")` 下载到本地项目，服务器按需打包并在生成后保留1小时，所有已授权用户复用有效包，访问不延长有效期；到期自动清理，下一次请求按当前数据重新打包。本地缓存仅在当前版本有效期内复用并逐文件校验；插件包不附数据。收益重建、全市场横截面WLS因子收益估计、Barra及Brinson均沿用原版计算，不读取现成因子收益率。可选原包四个指数基准，其他基准由客户提供权重。用户文件留在本地；数据覆盖与原始缺口以目录及运行校验为准。
+组合收益归因使用 `portfolio-attribution`：支持客户自带持仓，或选择300增强、xgb500增强、xgb1000增强、xgb2000增强四个预置策略。策略和基准权重、快照通过 `query_stock_data(dataset="attribution_bundle")` 取得，本地缓存按服务端声明的有效期校验。市场收益、市值、Barra暴露、行业和日历从项目基础数据目录读取。Barra 使用期初十个风格完整、流通市值为正的股票构建回归样本；Brinson 分析行业配置和选择贡献。计算和报告交付在本地完成。
 
-Barra数据支持直接数值预览和单因子导出：在 `query_barra_data` 中设置 `factors=["Size"]`，加 `preview=true` 可查看少量数值，提供 `request_id` 则创建完整文件导出。不传 `factors` 时保留原来的整组数据格式，组合归因计算不变。
+RankIC测试使用 `factor-rankic`：因子可以来自用户文件或 MCP 授权导出；复权价格、交易日历和历史在市状态来自项目基础数据目录。按日、周、月、季频计算，在本地交付 `report.md`、`rankic.xlsx` 和 `metadata.json`。
 
-RankIC测试使用 `factor-rankic`：支持用户自带因子文件、因子库下载文件，以及明确选择的随附因子。基础价格、历史在市、日历和随附因子通过 `query_rankic_data` 获取，采用按需打包、固定1小时共享、到期清理的规则。因子适配、日/周/月/季频RankIC统计和Excel报告在本地完成，用户文件不上传，数据不进入插件包。
+个股持有诊断使用 `stock-holding-diagnosis`：通过现有 MCP 获取 ROE_TTM、EP_TTM、CloseTrend_240D_Reg、Amount_20D_Avg 四个因子的同日授权截面，以及四个预置策略的持仓和快照。在本地计算单只 A 股的因子排名与两期持仓变化，交付判断依据、因子排名、策略持仓三部分。
 
-个股持有诊断使用 `stock-holding-diagnosis`：通过现有 MCP 获取 ROE_TTM、EP_TTM、CloseTrend_240D_Reg、Amount_20D_Avg 四个因子的同日授权截面，以及四个预置策略的持仓和快照，在本地计算单只 A 股的因子排名与两期持仓变化。近期新闻由客户端联网核实，在对话中交付判断依据、因子排名、历史持仓参考和新闻影响。持仓缓存沿用固定 1 小时有效期，具体覆盖日期以实时目录为准；新闻和历史持仓不参与四因子打分。
+多因子合成使用 `factor-synthesis`：用户指定2–10个因子，按因子方向计算同日共同样本的分位分数，支持等权、手动权重、历史RankIC均值或RankICIR权重。在本地交付 `scores.csv`、`report.md` 和 `metadata.json`。历史权重需要可比且覆盖足够历史期数的RankIC结果。
 
-当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic` 和 `stock-holding-diagnosis`。开发阶段暂时停用 `barra-attribution` 和 `strategy-attribution`。
+## 基础数据与本地目录
+
+四个业务 Skill 将缓存、用户输入和结果放在项目的 `xyquant-data/` 内。基础数据严格读取 `xyquant-data/inputs/datasets/<数据集>/` 下的文件及对应 `manifest.json`：`adjusted-prices`、`trading-calendar`、`listed-history`、`attribution-market`、`barra-exposures`、`industry-classification`。具体计算按需要读取其中的数据集。
+
+当前发布包含四个业务 Skill 及其本地数据读取接口。六套基础数据的 MCP 授权导出和自动落盘尚待接入；依赖它们的计算需要先具备已校验的本地文件。因子查询、导出和既有持仓取数继续使用现有 MCP。数据文件、用户输入和授权凭据不进入插件包。
+
+通用因子下载保存在 `downloads/factors/`；四个业务 Skill 使用自己的 `xyquant-data/mcp-cache/` 缓存。客户端应按对应 Skill 的接收命令保存下载任务。
+
+当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic`、`stock-holding-diagnosis` 和 `factor-synthesis`。
 
 通用因子保留目录、预览和导出四个工具，`get_export` 增加可选的文件下载凭据；策略与团队介绍统一使用 `query_strategy_research`，市场信号继续使用 `query_market_signals`。科技策略知识及策略个股因子值接口开发阶段暂不开放。
 
 ## 维护
 
-启用的 Skill 放在 `plugins/xyquant/skills/<名称>/` 中。暂时停用的 Skill 和本次替换的旧版归因 Skill 完整保存在仓库根目录的 `disabled-skills/`，不进入插件包；以后移回原位置即可恢复。插件入口在 `plugins/xyquant/`，各客户端的市场清单位于仓库根目录。
+启用的 Skill 放在 `plugins/xyquant/skills/<名称>/` 中。公共数据模块位于插件根目录，业务下载辅助代码位于 `plugins/xyquant/shared/`。归档 Skill 位于仓库根目录的 `disabled-skills/`，不进入插件包；本次替换前的三个完整 Skill 位于 `disabled-skills/czx-pre-replacement-20261125/`。
 
 ```sh
-python3 -m unittest discover -s tests
-python3 -m pip install -r plugins/xyquant/skills/factor-rankic/requirements.txt h5py
-python3 -B scripts/test_rankic.py
-python3 -m pip install -r plugins/xyquant/skills/stock-holding-diagnosis/requirements.txt
-python3 -B -m unittest discover -s plugins/xyquant/skills/stock-holding-diagnosis/tests
+python3 -m pip install -r plugins/xyquant/skills/factor-rankic/requirements.txt -r plugins/xyquant/skills/factor-synthesis/requirements.txt -r plugins/xyquant/skills/portfolio-attribution/requirements.txt -r plugins/xyquant/skills/stock-holding-diagnosis/requirements.txt
+python3 -B -m unittest discover -s tests
+python3 -B -m unittest discover -s plugins/xyquant/skills/portfolio-attribution/tests
 python3 scripts/package.py
 ```
 

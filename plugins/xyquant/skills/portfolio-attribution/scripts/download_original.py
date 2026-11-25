@@ -15,6 +15,10 @@ import zipfile
 
 from download_data import NoRedirect, ORIGIN
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from xyquant_data import ORIGINAL_CACHE, check_kind, data_path
+sys.path.pop(0)
+
 
 def digest(path):
     value = hashlib.sha256()
@@ -24,7 +28,7 @@ def digest(path):
     return value.hexdigest()
 
 
-def cache_folder(project, version, manifest_sha256):
+def cache_folder(project, version, manifest_sha256, *, create=False):
     project = Path(project)
     if not project.is_absolute() or not project.is_dir():
         raise ValueError('请指定已有本地项目的绝对路径')
@@ -32,7 +36,7 @@ def cache_folder(project, version, manifest_sha256):
         raise ValueError('原版数据版本无效')
     if not re.fullmatch(r'[a-f0-9]{64}', manifest_sha256 or ''):
         raise ValueError('原版数据清单校验值无效')
-    return project / 'downloads/attribution-original' / version
+    return data_path(project, (*ORIGINAL_CACHE, version), create=create)
 
 
 def manifest_value(content, version, expected):
@@ -60,15 +64,16 @@ def manifest_value(content, version, expected):
 def check(project, version, manifest_sha256):
     folder = cache_folder(project, version, manifest_sha256)
     root = folder / 'data'
-    if not root.exists():
+    if not check_kind(root, directory=True):
         return {'status': 'missing', 'data_version': version}
+    data_path(project, (*ORIGINAL_CACHE, version, 'data'), root / 'original-data.json', directory=False)
     manifest = manifest_value((root / 'original-data.json').read_bytes(), version, manifest_sha256)
     expiry = manifest.get('expires_at')
     if type(expiry) not in (int, float) or not math.isfinite(expiry) or expiry <= time.time():
         return {'status': 'expired', 'data_version': version,
                 'message': '数据包已过期，请重新查询服务器目录并下载当前版本'}
     for name, spec in manifest['files'].items():
-        path = root / name
+        path = data_path(project, (*ORIGINAL_CACHE, version, 'data'), root / name, directory=False)
         if not path.is_file() or path.stat().st_size != spec['bytes'] or digest(path) != spec['sha256']:
             raise ValueError('本地原版数据校验失败：' + name)
     return {'status': 'ready', 'data_version': version, 'data_root': str(root),
@@ -129,10 +134,9 @@ def save(job, project):
         return result
     if result['status'] == 'expired':
         raise ValueError(result['message'])
-    folder = cache_folder(project, version, expected)
-    folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+    folder = cache_folder(project, version, expected, create=True)
     archive_path = folder / 'attribution-data.zip'
-    if archive_path.exists():
+    if check_kind(archive_path, directory=False):
         if archive_path.stat().st_size != job['bytes'] or digest(archive_path) != job['sha256']:
             raise ValueError('已有数据包与本次任务不一致')
     else:

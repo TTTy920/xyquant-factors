@@ -1,8 +1,10 @@
 import argparse
+from hashlib import sha256
 import json
 import os
 from pathlib import Path
 import subprocess
+import shutil
 import sys
 import tempfile
 import unittest
@@ -67,6 +69,18 @@ class CalculationTests(unittest.TestCase):
         with self.assertRaises(DataError):barra.regress(x,pd.Series(.01,index=x.index),pd.Series(1.,index=x.index),pd.Series(1,index=x.index))
         rng=np.random.default_rng(2);x[:]=rng.normal(size=(120,10));x.iloc[:20,0]=np.nan
         with self.assertRaises(DataError):barra.regress(x,pd.Series(.01,index=x.index),pd.Series(1.,index=x.index),pd.Series(1,index=x.index))
+
+    def test_new_barra_sample_is_selected_without_eligible_flag(self):
+        rng=np.random.default_rng(33)
+        x=pd.DataFrame(rng.normal(size=(130,10)),columns=FACTORS)
+        caps=pd.Series(1e8,index=x.index)
+        y=.002+x@np.arange(10)*.001
+        x.loc[0,FACTORS[0]]=np.nan
+        caps.loc[1]=0
+        y.loc[2]=np.nan
+        coeff,diag=barra.regress(x,y,caps,None)
+        self.assertEqual((diag["eligible_count"],diag["sample_count"],diag["dropped_count"]),(128,127,1))
+        np.testing.assert_allclose(coeff,np.arange(10)*.001,atol=1e-14)
 
     def test_brinson_known_allocation_selection(self):
         wp=pd.Series({"A":.3,"B":.7});wb=pd.Series({"A":.2,"C":.8})
@@ -142,9 +156,50 @@ class DataAndWorkflowTests(unittest.TestCase):
         with self.assertRaises(DataError):Store(self.root).resolve("portfolios","P","weekly")
 
     def cli(self,method="both"):
-        cmd=[sys.executable,str(SCRIPTS/"attribute.py"),"run","--data-root",str(self.root),"--output-root",str(Path(self.temp.name)/"outputs"),
+        cmd=[sys.executable,str(SCRIPTS/"attribute.py"),"run","--legacy-replay","--data-root",str(self.root),"--output-root",str(Path(self.temp.name)/"outputs"),
              "--method",method,"--portfolio","P","--benchmark","B","--start","2025-01-01","--end","2025-01-31","--frequency","monthly"]
         return subprocess.run(cmd,capture_output=True,encoding="utf-8",env=dict(os.environ,PYTHONUTF8="1"))
+
+    def test_official_cli_only_uses_flat_market_and_will_not_read_legacy_market(self):
+        project=Path(self.temp.name).resolve()
+        shell=project/"xyquant-data"
+        weights=shell/"inputs/holdings/preset"
+        shutil.copytree(self.root,weights)
+        datasets=shell/"inputs/datasets"
+        setup={"trading-calendar":("trading-calendar-v1","calendar.parquet","calendar.parquet"),
+               "industry-classification":("industry-monthly-v1","industry.parquet","monthly.parquet"),
+               "attribution-market":("attribution-market-no-eligible-v1","market.parquet",None),
+               "barra-exposures":("barra-exposures-v1","exposures.parquet",None)}
+        for ds,(contract,raw,name) in setup.items():
+            folder=datasets/ds
+            folder.mkdir(parents=True)
+            frame=pd.read_parquet(self.root/raw).drop(columns="eligible",errors="ignore")
+            groups=[(name,frame)] if name else [(f"{y}.parquet",f) for y,f in frame.groupby(frame.date.dt.year)]
+            files={}
+            for filename,rows in groups:
+                parquet=folder/filename
+                rows.to_parquet(parquet,index=False)
+                files[filename]={"bytes":parquet.stat().st_size,"sha256":sha256(parquet.read_bytes()).hexdigest()}
+            manifest={"schema_version":1,"dataset_id":ds,"version":"test-v1","contract":contract,"source":"fixture",
+                      "known_gaps":[],"published_date":"2025-02-10","files":files,
+                      "coverage":{"start":frame.date.min().date().isoformat(),"end":frame.date.max().date().isoformat()}}
+            (folder/"manifest.json").write_text(json.dumps(manifest),encoding="utf-8")
+        cmd=[sys.executable,"-B",str(SCRIPTS/"entry.py"),"run","--project",str(project),"--data-root",str(weights),
+             "--source","preset","--portfolio","P","--benchmark","B","--start","2025-01-01","--end","2025-01-31",
+             "--frequency","monthly","--method","both"]
+        result=subprocess.run(cmd,capture_output=True,encoding="utf-8",timeout=30)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        report=json.loads(result.stdout)
+        self.assertEqual(set(report["successful_methods"]),{"barra","brinson"})
+        m=json.loads((Path(report["output_dir"])/"metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual(set(m["foundation_datasets"]),set(setup))
+        outside={Path(p["path"]).name for p in m["source_files"] if not Path(p["path"]).is_relative_to(datasets)}
+        self.assertEqual(outside,{"catalog.json","portfolio.parquet","benchmark.parquet","snapshots.parquet"})
+        self.assertEqual(m["barra_sample_policy"],"full_market_valid_start_exposures_and_cap")
+        (datasets/"attribution-market/2025.parquet").unlink()
+        missing=subprocess.run(cmd,capture_output=True,encoding="utf-8",timeout=30)
+        self.assertEqual(missing.returncode,2)
+        self.assertIn("inputs/datasets/attribution-market",json.loads(missing.stderr)["message"])
 
     def test_cli_both_excel_and_consistent_reconciliation(self):
         p=self.cli();self.assertEqual(p.returncode,0,p.stderr);result=json.loads(p.stdout)

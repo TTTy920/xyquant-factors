@@ -2,8 +2,13 @@
 from pathlib import Path
 import hashlib
 import json
+import sys
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from xyquant_flat import Dataset
+sys.path.pop(0)
 
 FACTORS = ["Size", "Beta", "Momentum", "ResidualVolatility", "NonlinearSize", "BookToPrice",
            "Liquidity", "EarningsYield", "Growth", "Leverage"]
@@ -49,14 +54,24 @@ def schedule(calendar, start, end, frequency):
 
 
 class Store:
-    def __init__(self, root):
+    def __init__(self, root, *, flat_project=None, holdings_only=False):
         self.root = Path(root).resolve()
         self.sources = {}
         p = self.path("catalog.json")
         self.catalog = json.loads(p.read_text(encoding="utf-8-sig"))
         require(self.catalog.get("schema_version") == 1, "不支持的数据清单版本")
         self.sources[str(p)] = fingerprint(p)
-        self.calendar = pd.DatetimeIndex(self.read(self.catalog["calendar"])["date"])
+        self.flat_project = flat_project
+        self.foundation = {}
+        if not holdings_only:
+            calendar = (self.read_flat(self.dataset("trading-calendar"))
+                        if flat_project is not None else self.read(self.catalog["calendar"]))
+            self.calendar = pd.DatetimeIndex(calendar["date"])
+
+    def dataset(self, name):
+        dataset = Dataset(self.flat_project, name)
+        self.foundation[name] = dataset.pin()
+        return dataset
 
     def path(self, relative):
         p = (self.root / relative).resolve()
@@ -65,9 +80,17 @@ class Store:
         return p
 
     def read(self, relative, start=None, end=None, columns=None):
-        p = self.path(relative)
-        require(p.suffix == ".parquet", "统一数据层只读取 Parquet", path=str(relative))
+        return self.read_path(self.path(relative), start, end, columns)
+
+    def read_flat(self, dataset, name=None, start=None, end=None, columns=None):
+        path, expected = dataset.file(name)
+        return self.read_path(path, start, end, columns, expected)
+
+    def read_path(self, p, start=None, end=None, columns=None, expected=None):
+        require(p.suffix == ".parquet", "统一数据层只读取 Parquet", path=str(p))
         before = fingerprint(p)
+        if expected is not None:
+            require(all(before[k] == expected[k] for k in ("bytes", "sha256")), "inputs/datasets 文件校验失败", path=str(p))
         if str(p) in self.sources:
             require(before == self.sources[str(p)], "运行期间源文件发生变化", path=str(p))
         filters = []
@@ -91,6 +114,13 @@ class Store:
         require(len(f)>0, "请求范围没有面板数据")
         return f
 
+    def flat_panel(self, dataset, start, end, columns):
+        files = dataset.years(start.date().isoformat(), end.date().isoformat())
+        frames = [self.read_flat(dataset, name, start, end, ["date", "stock_code", *columns]) for name in files]
+        frame = pd.concat(frames, ignore_index=True)
+        require(len(frame) > 0 and not frame.duplicated(["date", "stock_code"]).any(), "基础数据面板为空或日期/股票重复")
+        return frame
+
     def resolve(self, kind, requested, frequency):
         entries = self.catalog[kind]
         target = str(requested).strip().casefold()
@@ -111,8 +141,11 @@ class Store:
         low, high = self.periods[0][0], self.periods[-1][1]
         self.snapshots = self.read(self.catalog["snapshots"], low, high)
         self.holdings = {"portfolio": self.read(ps["path"], low, high), "benchmark": self.read(bs["path"], low, high)}
-        market_columns = ["return", "float_cap", "eligible"] if barra else ["return"]
-        self.market = self.panel(self.catalog["market"], low, high, market_columns)
+        market_columns = ["return", "float_cap"] if barra else ["return"]
+        if self.flat_project is not None:
+            self.market = self.flat_panel(self.dataset("attribution-market"), low, high, market_columns)
+        else:
+            self.market = self.panel(self.catalog["market"], low, high, market_columns + (["eligible"] if barra else []))
         require(set(self.calendar[(self.calendar>=low)&(self.calendar<=high)]).issubset(set(self.market.date)),
                 "日收益面板缺少交易日")
         self.daily_returns = self.market.pivot(index="date", columns="stock_code", values="return").astype(float)
@@ -120,12 +153,20 @@ class Store:
         self.method_errors = {}
         if barra:
             try:
-                self.exposures = self.panel(self.catalog["exposures"], low, high, FACTORS)
+                self.exposures = (self.flat_panel(self.dataset("barra-exposures"), low, self.periods[-1][0], FACTORS)
+                                  if self.flat_project is not None else self.panel(self.catalog["exposures"], low, high, FACTORS))
             except (DataError, KeyError, ValueError) as e:
                 self.method_errors["barra"] = {"message": str(e), "details": getattr(e,"details",{})}
         if brinson:
             try:
-                self.industry = self.read(self.catalog["industry"], end=high)
+                if self.flat_project is not None:
+                    industry = self.dataset("industry-classification")
+                    require(industry.start <= low.date().isoformat(), "历史行业未覆盖首个期初")
+                    last = pd.Timestamp(industry.end).to_period("M") + 1
+                    require(self.periods[-1][0].to_period("M") <= last, "历史行业截至日期过早，不能用旧分类填补")
+                    self.industry = self.read_flat(industry, end=high)
+                else:
+                    self.industry = self.read(self.catalog["industry"], end=high)
                 require(not self.industry.duplicated(["date", "stock_code"]).any(), "行业日期/股票重复")
                 g = self.industry.pivot(index="date", columns="stock_code", values="industry").replace("", np.nan)
                 targets = pd.DatetimeIndex([p[0] for p in self.periods])
@@ -156,7 +197,7 @@ class Store:
         x = f[f.date==date].set_index("stock_code")[FACTORS].astype(float)
         m = self.market[self.market.date==date].set_index("stock_code")
         require(len(x)>0 and len(m)>0, "缺少期初风格或市场快照", date=str(date.date()))
-        return x, m.float_cap.astype(float), m.eligible.astype(float)
+        return x, m.float_cap.astype(float), m.eligible.astype(float) if self.flat_project is None else None
 
     def verify_unchanged(self):
         for p, fp in self.sources.items():

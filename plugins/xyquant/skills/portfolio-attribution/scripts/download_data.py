@@ -10,6 +10,10 @@ import time
 import urllib.request
 import zipfile
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from xyquant_data import PUBLIC_CACHE, check_kind, data_path
+sys.path.pop(0)
+
 ORIGIN = 'https://47.103.215.251'
 FILES = {'data.json', 'stock_returns.parquet', 'industry.parquet', 'exposures.parquet', 'factor_returns.parquet'}
 GROUP_FILES = {
@@ -46,10 +50,9 @@ def download(job, project, tool=None):
     project = Path(project)
     if not project.is_absolute() or not project.is_dir():
         raise ValueError('请指定已有本地项目的绝对路径')
-    folder = project/'downloads'/'attribution-data'/jid
-    folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+    folder = data_path(project, (*PUBLIC_CACHE, jid), create=True)
     target = folder/'attribution-data.zip'
-    if target.exists():
+    if check_kind(target, directory=False):
         if hashlib.sha256(target.read_bytes()).hexdigest()!=job['sha256']:
             raise ValueError('已有缓存与本次数据不一致')
     else:
@@ -75,6 +78,8 @@ def download(job, project, tool=None):
     with zipfile.ZipFile(target) as archive:
         if set(archive.namelist())!=expected or len(archive.infolist())!=len(expected) or sum(x.file_size for x in archive.infolist())>2*1024**3:
             raise ValueError('公共数据包的文件集合无效')
+        for name in expected:
+            check_kind(folder / name, directory=False)
         archive.extractall(folder)
     manifest = json.loads((folder/'data.json').read_text())
     if manifest.get('origin')!='xyquant_server':
@@ -114,8 +119,7 @@ def save(jobs, project):
     if barra.get('factor_returns') != {frequency: 'factor_returns.parquet'}:
         raise ValueError('因子收益率频率或路径无效')
     identity = json.dumps({tool: {'id': jobs[tool]['id'], 'sha256': jobs[tool]['sha256']} for tool in sorted(jobs)}, sort_keys=True).encode()
-    folder = Path(project)/'downloads'/'attribution-data'/'combined'/hashlib.sha256(identity).hexdigest()[:32]
-    folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+    folder = data_path(project, (*PUBLIC_CACHE, 'combined', hashlib.sha256(identity).hexdigest()[:32]), create=True)
     config = {'schema_version': 1, 'origin': 'xyquant_server',
               'market': str(stock_folder/'stock_returns.parquet'), 'industry': str(stock_folder/'industry.parquet'),
               'exposures': str(barra_folder/'exposures.parquet'),
@@ -123,9 +127,10 @@ def save(jobs, project):
               'factor_columns': barra['factor_columns'], 'calendar': 'derived from stock_returns.date'}
     target = folder/'data.json'
     text = json.dumps(config, ensure_ascii=False, indent=2)+'\n'
-    if target.exists() and target.read_text(encoding='utf-8') != text:
+    exists = check_kind(target, directory=False)
+    if exists and target.read_text(encoding='utf-8') != text:
         raise ValueError('已有本地数据配置与本次任务不一致')
-    if not target.exists():
+    if not exists:
         with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=folder, delete=False) as stream:
             stream.write(text);pending = Path(stream.name)
         pending.replace(target)

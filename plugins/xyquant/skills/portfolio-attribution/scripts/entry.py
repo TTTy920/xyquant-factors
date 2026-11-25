@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Select user or preset holdings, then invoke the unmodified original engine."""
+"""Select user or preset holdings; load all other market data from inputs/datasets."""
 import argparse
 import copy
 import json
@@ -13,6 +13,11 @@ import uuid
 import numpy as np
 import pandas as pd
 from data_store import Store, DataError, FREQUENCIES, fingerprint, require
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from xyquant_data import ATTRIBUTION_RESULTS, HOLDINGS_INPUTS, data_path
+from xyquant_catalog import relative
+sys.path.pop(0)
 
 BASE = Path(__file__).resolve().parents[1]
 CASH = {"CNY", "CASH", "现金"}
@@ -67,26 +72,25 @@ def read_weights(path, kind, name):
 
 
 def local_data(args):
-    base = Store(args.data_root)
+    base = Store(args.data_root, holdings_only=True)
     if args.source == "preset" and not args.benchmark_holdings:
         return base.root, {"source": "preset"}
     frequency = FREQUENCIES.get(args.frequency)
     require(frequency is not None, "频率仅支持日、周、月")
-    catalog = copy.deepcopy(base.catalog)
+    catalog = {key: copy.deepcopy(base.catalog[key]) for key in ("schema_version", "snapshots", "portfolios", "benchmarks")}
     replacements = []
     if args.source == "user":
         replacements.append(("portfolio", args.portfolio, args.holdings))
     if args.benchmark_holdings:
         replacements.append(("benchmark", args.benchmark, args.benchmark_holdings))
     converted = [(kind, name, *read_weights(path, kind, name)) for kind, name, path in replacements]
-    root = Path(args.output_root).expanduser().resolve() / "_inputs" / uuid.uuid4().hex
-    root.mkdir(parents=True, mode=0o700)
-    shared = {catalog["calendar"], catalog["industry"], *catalog["market"], *catalog["exposures"]}
+    root = data_path(args.project, ATTRIBUTION_RESULTS, args.output_root / "_inputs" / uuid.uuid4().hex, create=True)
+    shared = set()
     for key in ("portfolios", "benchmarks"):
         shared.update(value["path"] for value in catalog[key].values())
-    for relative in sorted(shared):
-        source = base.path(relative)
-        target = root / relative
+    for name in sorted(shared):
+        source = base.path(name)
+        target = root.joinpath(*relative(name))
         target.parent.mkdir(parents=True, exist_ok=True)
         try:
             os.link(source, target)
@@ -95,13 +99,14 @@ def local_data(args):
     snapshots = base.read(catalog["snapshots"])
     sources = []
     for kind, name, weights, new_snapshots, origin in converted:
-        relative = "weights/user_" + kind + ".parquet"
-        weights.to_parquet(root / relative, index=False, compression="zstd")
+        name_path = "weights/user_" + kind + ".parquet"
+        (root / "weights").mkdir(exist_ok=True)
+        weights.to_parquet(root / name_path, index=False, compression="zstd")
         key = "portfolios" if kind == "portfolio" else "benchmarks"
-        catalog[key] = {name: {"path": relative, "frequencies": [frequency], "aliases": []}}
+        catalog[key] = {name: {"path": name_path, "frequencies": [frequency], "aliases": []}}
         snapshots = pd.concat([snapshots.loc[snapshots.kind != kind], new_snapshots], ignore_index=True)
         sources.append({"kind": kind, **origin})
-    target = root / catalog["snapshots"]
+    target = root.joinpath(*relative(catalog["snapshots"]))
     target.parent.mkdir(parents=True, exist_ok=True)
     snapshots.to_parquet(target, index=False, compression="zstd")
     (root / "catalog.json").write_text(json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -116,8 +121,10 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     for command in ("inventory", "run"):
         p = sub.add_parser(command)
+        p.add_argument("--project", type=Path, default=Path.cwd(), help="project containing xyquant-data (default: current directory)")
         p.add_argument("--data-root", default=os.environ.get("ATTRIBUTION_DATA_ROOT"),
-                       required=not bool(os.environ.get("ATTRIBUTION_DATA_ROOT")))
+                       required=not bool(os.environ.get("ATTRIBUTION_DATA_ROOT")),
+                       help="source of portfolio/benchmark holdings and snapshots only")
         if command == "run":
             p.add_argument("--source", choices=["user", "preset"], required=True)
             for field in ("portfolio", "benchmark", "start", "end", "frequency"):
@@ -125,7 +132,7 @@ def main():
             p.add_argument("--holdings")
             p.add_argument("--benchmark-holdings")
             p.add_argument("--method", choices=["barra", "brinson", "both"], default="both")
-            p.add_argument("--output-root", default=str(Path.cwd() / "outputs" / "attribution-original"))
+            p.add_argument("--output-root", help="optional subdirectory of xyquant-data/results/portfolio-attribution")
     args = parser.parse_args()
     if args.command == "run":
         if args.source == "user" and not args.holdings:
@@ -134,16 +141,23 @@ def main():
             parser.error("source=preset 不接收 --holdings；自带持仓请用 source=user")
     try:
         info = None
+        args.data_root = data_path(args.project, (), args.data_root)
         if args.command == "run":
             require(bool(args.portfolio.strip()) and bool(args.benchmark.strip()), "组合与基准名称不能为空")
+            for field in ("holdings", "benchmark_holdings"):
+                path = getattr(args, field)
+                if path:
+                    setattr(args, field, data_path(args.project, HOLDINGS_INPUTS, path, directory=False))
+            args.output_root = data_path(args.project, ATTRIBUTION_RESULTS, args.output_root, create=True)
             data, info = local_data(args)
         else:
-            data = Path(args.data_root).expanduser().resolve()
-        cmd = [sys.executable, str(BASE / "scripts" / "attribute.py"), args.command, "--data-root", str(data)]
+            data = args.data_root
+        cmd = [sys.executable, "-X", "utf8", str(BASE / "scripts" / "attribute.py"), args.command,
+               "--data-root", str(data), "--flat-project", str(args.project.resolve())]
         if args.command == "run":
             for key in ("portfolio", "benchmark", "start", "end", "frequency", "method", "output_root"):
                 cmd += ["--" + key.replace("_", "-"), str(getattr(args, key))]
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
         if result.returncode == 0 and info is not None:
             reply = json.loads(result.stdout)
             reply["input_source"] = info
@@ -159,4 +173,6 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     sys.exit(main())

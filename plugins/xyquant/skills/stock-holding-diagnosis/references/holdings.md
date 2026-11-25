@@ -16,10 +16,10 @@
 
 ## 在已下载数据之外传入目录日期
 
-`--context-stdin` 接收一个无凭据 JSON 对象，可同时给新闻和持仓目录。`holdings_catalog` 使用本次 `query_stock_data(dataset="catalog")` 返回的 `original_attribution` 中这三个字段：`data_version`、`manifest_sha256`、`portfolios`。每个 `portfolios` 项只保留 `name`、`first_date`、`last_date`、`frequencies`。`news` 格式见 [新闻证据](news.md)，缺一项可省略该项。
+`--context-stdin` 只接收无凭据的 MCP 持仓目录，不能附加 `news`。`holdings_catalog` 使用本次 `query_stock_data(dataset="catalog")` 返回的 `original_attribution` 中这三个字段：`data_version`、`manifest_sha256`、`portfolios`。每个 `portfolios` 项只保留 `name`、`first_date`、`last_date`、`frequencies`。
 
 ```text
-{"holdings_catalog": {"data_version": "...", "manifest_sha256": "...", "portfolios": [...]}, "news": {...}}
+{"holdings_catalog": {"data_version": "...", "manifest_sha256": "...", "portfolios": [...]}}
 ```
 
 版本和清单如已通过命令行传入，目录元数据须与之相符。历史查询不会把截止日之后的目录末期当可用快照；如果目录覆盖跨过截止日而无文件，只报不能确认截止日前的最后一期。目录日期或零条可用记录都不改变四因子持有判断。

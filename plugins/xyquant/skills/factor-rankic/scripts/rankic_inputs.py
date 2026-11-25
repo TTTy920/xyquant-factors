@@ -63,188 +63,78 @@ def _parquet_row_groups(parquet, date_column, selected_dates):
     return groups
 
 
-def validate_origin(origin, server_contract=None):
-    if origin not in ('local_reference', 'xyquant_server'):
-        raise DataContractError('origin must be local_reference or xyquant_server')
-    if origin == 'xyquant_server' and server_contract != 'rankic-data-v1':
-        # A hash or caller-provided verified flag is not server-contract acceptance.
-        raise DataContractError('server RankIC data contract is not verified in this release; local reference only')
-
-
-def _check_links(path):
-    import stat
-    for part in (path, *path.parents):
-        info = part.lstat()
-        if part.is_symlink() or getattr(info, 'st_file_attributes', 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
-            raise DataContractError('source path links are not permitted')
-
-
-class SourceFiles:
-    """Cache digests; recheck linked files and metadata-only changes by content."""
-    def __init__(self):
-        self.records = {}
-
-    @staticmethod
-    def _signature(path):
-        info = path.stat()
-        return (info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_ino,
-                info.st_dev, info.st_nlink)
-
-    @staticmethod
-    def _content_identity(signature):
-        # Adding/removing a hard link changes ctime and link count, not contents.
-        return signature[0], signature[1], signature[3], signature[4]
-
-    def _checked_record(self, path):
-        original, digest = self.records[path]
-        current = self._signature(path)
-        if self._content_identity(current) != self._content_identity(original):
-            raise DataContractError('source snapshot changed during calculation')
-        # Linked data can be written through another path. Rehash even when its
-        # metadata is unchanged; ctime is a creation timestamp on some systems.
-        if current != original or current[5] > 1:
-            actual = _hash_file(path)
-            after = self._signature(path)
-            _check_links(path)
-            if self._content_identity(current) != self._content_identity(after) or actual != digest:
-                raise DataContractError('source snapshot changed during calculation')
-            current = after
-            self.records[path] = (current, digest)
-        return current, digest
-
-    def verify(self, path, expected_hash=None, expected_bytes=None):
-        path = path.absolute()
-        _check_links(path)
-        before = self._signature(path)
-        if path in self.records:
-            before, digest = self._checked_record(path)
-        else:
-            digest = _hash_file(path)
-            after = self._signature(path)
-            _check_links(path)
-            if self._content_identity(before) != self._content_identity(after):
-                raise DataContractError('source snapshot changed during calculation')
-            before = after
-            self.records[path] = (before, digest)
-        if expected_hash is not None and expected_hash != digest:
-            raise DataContractError('source hash mismatch')
-        if expected_bytes is not None and expected_bytes != before[0]:
-            raise DataContractError('source size mismatch')
-        return dict(sha256=digest, bytes=before[0])
-
-    def assert_unchanged(self):
-        for path in self.records:
-            _check_links(path)
-            self._checked_record(path)
-
-
-def _canonical_schema(schema, role):
-    import pyarrow as pa
-    expected = {'date': pa.timestamp('ns')}
-    if role != 'calendar':
-        expected['stock_code'] = pa.string()
-    if role in ('price', 'listed'):
-        expected.update(adj_close=pa.float64(), listed=pa.int8(),
-                        price_present=pa.bool_(), listed_present=pa.bool_())
-    elif role == 'factor':
-        expected['value'] = pa.float64()
-    for name, dtype in expected.items():
-        if name not in schema.names:
-            raise DataContractError('canonical schema is missing required columns')
-        actual = schema.field(name).type
-        if pa.types.is_dictionary(actual):
-            actual = actual.value_type
-        if actual != dtype:
-            raise DataContractError('canonical schema has an invalid column type')
-
-
 class _Table:
-    """Stream selected annual shards into an indexed, temporary date cache."""
-    def __init__(self, paths, spec, role, selected_dates, cache_dir, stack, source_files):
-        self.source_files = source_files
+    """Stream CSV/Parquet once into an indexed, temporary, selected-date cache."""
+    def __init__(self, path, spec, role, selected_dates, cache_dir, stack, mcp_scope=None):
+        self.path = path
+        self.before = path.stat()
+        self.info = {'format': spec['format'], 'sha256': _hash_file(path)}
+        expected_hash = spec.get('sha256')
+        if expected_hash is not None and expected_hash != self.info['sha256']:
+            raise DataContractError('source hash mismatch')
         value_key = {'factor': 'value', 'price': 'adj_close', 'listed': 'listed'}.get(role)
         keys = ['date'] + (['stock_code', value_key] if value_key else [])
-        presence = spec.get('presence_column')
-        presence_columns = [presence, 'listed_present' if role == 'price' else 'price_present'] if presence else []
-        keys += presence_columns
         mapping = spec.get('columns', {})
         columns = [mapping.get(key, key) for key in keys]
         if len(set(columns)) != len(columns):
             raise DataContractError('columns mapping must be one-to-one')
+        self.info['input_schema_sha256'] = hashlib.sha256(json.dumps(columns, ensure_ascii=True).encode()).hexdigest()
         self.db = sqlite3.connect(str(cache_dir / (role + '.sqlite')))
         stack.callback(self.db.close)
         self.db.execute('CREATE TABLE data (date TEXT, stock_code TEXT, value REAL, PRIMARY KEY(date, stock_code))')
-        self.db.execute('CREATE TABLE raw_keys (date TEXT, stock_code TEXT, PRIMARY KEY(date, stock_code))')
-        all_dates, file_info = set(), []
-        for path, entry in paths:
-            if selected_dates is not None and 'year' in entry and not any(
-                    d.startswith(str(entry['year']) + '-') for d in selected_dates):
-                continue
-            info = source_files.verify(path, entry.get('sha256'), entry.get('bytes'))
-            if 'year' in entry:
-                info.update({k: entry[k] for k in ('year', 'rows', 'first_date', 'last_date')})
-            file_info.append(info)
-            if spec['format'] == 'csv':
-                batches = pd.read_csv(path, dtype={columns[0]: 'string', **({columns[1]: 'string'} if value_key else {})},
-                                      chunksize=100000, encoding='utf-8-sig')
-                stack.callback(batches.close)
-            elif spec['format'] == 'parquet':
-                import pyarrow.parquet as pq
-                parquet = pq.ParquetFile(path)
-                stack.callback(parquet.close)
-                if not set(columns).issubset(parquet.schema_arrow.names):
-                    raise DataContractError('missing required columns')
-                if spec.get('canonical'):
-                    _canonical_schema(parquet.schema_arrow, role)
-                if 'rows' in entry and parquet.metadata.num_rows != entry['rows']:
-                    raise DataContractError('source rows mismatch')
-                row_groups = _parquet_row_groups(parquet, columns[0], selected_dates)
-                batches = (batch.to_pandas() for batch in parquet.iter_batches(
-                    batch_size=100000, columns=columns, row_groups=row_groups))
+        if spec['format'] == 'csv':
+            batches = pd.read_csv(path, dtype={columns[0]: 'string', **({columns[1]: 'string'} if value_key else {})},
+                                  chunksize=100000, encoding='utf-8-sig')
+            stack.callback(batches.close)
+        elif spec['format'] == 'parquet':
+            import pyarrow as pa
+            import pyarrow.parquet as pq
+            parquet = pq.ParquetFile(path)
+            stack.callback(parquet.close)
+            if not set(columns).issubset(parquet.schema_arrow.names):
+                raise DataContractError('missing required columns')
+            if mcp_scope is not None:
+                schema = parquet.schema_arrow
+                dt, cd, alpha = (schema.field(column).type for column in columns)
+                text = lambda t: pa.types.is_string(t) or pa.types.is_large_string(t)
+                if (len(schema) != 3 or not (pa.types.is_date(dt) or text(dt)
+                        or (pa.types.is_timestamp(dt) and dt.tz is None)) or not text(cd)
+                        or not (pa.types.is_floating(alpha) or pa.types.is_integer(alpha))):
+                    raise DataContractError('unexpected MCP factor Parquet schema')
+            row_groups = _parquet_row_groups(parquet, columns[0], selected_dates)
+            # MCP exports may mark date/stock_cd as a pandas MultiIndex. The
+            # RankIC contract reads these as the physical Parquet columns.
+            batches = (batch.to_pandas(ignore_metadata=True) for batch in parquet.iter_batches(
+                batch_size=100000, columns=columns, row_groups=row_groups))
+        else:
+            raise DataContractError('unsupported table format')
+        all_dates = set()
+        for frame in batches:
+            if not set(columns).issubset(frame.columns):
+                raise DataContractError('missing required columns')
+            frame = frame[columns].copy()
+            frame.columns = keys
+            frame['date'] = frame['date'].map(_canonical_date)
+            if mcp_scope is not None:
+                if not frame['date'].between(mcp_scope['start'], mcp_scope['end']).all():
+                    raise DataContractError('factor export contains dates outside the request')
+                if mcp_scope['codes'] and not frame['stock_code'].map(normalize_code).isin(mcp_scope['codes']).all():
+                    raise DataContractError('factor export contains stocks outside the request')
+            if selected_dates is not None:
+                frame = frame[frame['date'].isin(selected_dates)]
+            if value_key:
+                frame['stock_code'] = frame['stock_code'].map(normalize_code)
+                values = pd.to_numeric(frame[value_key], errors='raise').astype(float)
+                records = ((d, c, float(v)) for d, c, v in zip(frame['date'], frame['stock_code'], values))
             else:
-                raise DataContractError('unsupported table format')
-            for frame in batches:
-                if not set(columns).issubset(frame.columns):
-                    raise DataContractError('missing required columns')
-                frame = frame[columns].copy()
-                frame.columns = keys
-                frame['date'] = frame['date'].map(_canonical_date)
-                if 'year' in entry and not frame['date'].str.startswith(str(entry['year']) + '-').all():
-                    raise DataContractError('annual panel contains dates outside its declared year')
-                if spec.get('canonical') and not frame['date'].between(entry['first_date'], entry['last_date']).all():
-                    raise DataContractError('source dates exceed declared file coverage')
-                if selected_dates is not None:
-                    frame = frame[frame['date'].isin(selected_dates)]
-                if value_key:
-                    frame['stock_code'] = frame['stock_code'].map(normalize_code)
-                if presence:
-                    for column in presence_columns:
-                        if not pd.api.types.is_bool_dtype(frame[column].dtype) or frame[column].isna().any():
-                            raise DataContractError('presence flags must be non-null booleans')
-                    if not frame[presence_columns].any(axis=1).all():
-                        raise DataContractError('market rows must have at least one present source role')
-                    flags = frame[presence]
-                    if frame.loc[~flags, value_key].notna().any():
-                        raise DataContractError('absent role keys cannot hide a present value')
-                    try:
-                        self.db.executemany('INSERT INTO raw_keys VALUES (?, ?)',
-                                            zip(frame['date'], frame['stock_code']))
-                    except sqlite3.IntegrityError as exc:
-                        raise DataContractError('duplicate date/security keys') from exc
-                    frame = frame[flags]
-                if value_key:
-                    values = pd.to_numeric(frame[value_key], errors='raise').astype(float)
-                    records = ((d, c, float(v)) for d, c, v in zip(frame['date'], frame['stock_code'], values))
-                else:
-                    records = ((d, '', 0.0) for d in frame['date'])
-                try:
-                    self.db.executemany('INSERT INTO data VALUES (?, ?, ?)', records)
-                except sqlite3.IntegrityError as exc:
-                    raise DataContractError('duplicate date/security keys') from exc
-                all_dates.update(frame['date'])
+                records = ((d, '', 0.0) for d in frame['date'])
+            try:
+                self.db.executemany('INSERT INTO data VALUES (?, ?, ?)', records)
+            except sqlite3.IntegrityError as exc:
+                raise DataContractError('duplicate date/security keys') from exc
+            all_dates.update(frame['date'])
         self.db.commit()
         self.dates = sorted(all_dates)
-        self.info = dict(format=spec['format'], files=file_info) if 'files' in spec else dict(format=spec['format'], **file_info[0])
         self.assert_unchanged()
 
     def at(self, day):
@@ -255,7 +145,9 @@ class _Table:
         return dict(self.info)
 
     def assert_unchanged(self):
-        self.source_files.assert_unchanged()
+        after = self.path.stat()
+        if (after.st_size, after.st_mtime_ns) != (self.before.st_size, self.before.st_mtime_ns):
+            raise DataContractError('source snapshot changed during calculation')
 
 
 class _HDF:
@@ -301,6 +193,9 @@ class _HDF:
                      'bytes': self.before.st_size, 'mtime_ns': self.before.st_mtime_ns,
                      'date_encoding': 'unix_seconds', 'timezone': spec['timezone'],
                      'ignored_non_stock_columns': len(raw_codes) - len(self.codes)}
+        self.info['input_schema_sha256'] = hashlib.sha256(json.dumps(
+            [self.info['date_encoding'], self.info['timezone'], spec.get('ignore_non_stock_labels') is True]
+        ).encode()).hexdigest()
         if spec.get('sha256'):
             self.info['sha256'] = _hash_file(path)
             if self.info['sha256'] != spec['sha256']:
@@ -325,21 +220,23 @@ class _HDF:
 
 
 class DataBundle:
-    def __init__(self, manifest, parameters, base_dir, *, source_files=None):
+    def __init__(self, manifest, parameters, base_dir, *, scratch=None, check_source=None, mcp_factor=None):
         self.stack = ExitStack()
-        self.source_files = source_files if source_files is not None else SourceFiles()
-        self.catalog_info = manifest.get('catalog')
-        self.scope_kind = manifest.get('scope_kind', 'local_reference')
         try:
-            self._load(manifest, parameters, Path(base_dir))
+            self._load(manifest, parameters, Path(base_dir), scratch, check_source, mcp_factor)
         except Exception:
             self.stack.close()
             raise
 
-    def _load(self, data, p, base_dir):
+    def _load(self, data, p, base_dir, scratch, check_source, mcp_factor):
         self.origin = data.get('origin')
-        validate_origin(self.origin, data.get('server_contract'))
-        if data.get('factor_name') != p.factor_name:
+        if self.origin not in ('local_reference', 'xyquant_server'):
+            raise DataContractError('origin must be local_reference or xyquant_server')
+        if self.origin == 'xyquant_server':
+            # No server contract has been independently accepted for this release.
+            # Caller-supplied booleans/hashes are not proof of origin or acceptance.
+            raise DataContractError('server RankIC data contract is not verified in this release; local reference only')
+        if mcp_factor is None and data.get('factor_name') != p.factor_name:
             raise DataContractError('factor identity does not match the request')
         for key in ('snapshot_id', 'adjustment_id'):
             value = data.get(key)
@@ -359,17 +256,21 @@ class DataBundle:
         self.price_through = iso_date(data['price']['price_through'])
         if self.calendar_from > p.start or self.calendar_through < p.end:
             raise DataContractError('calendar does not cover the observation range')
-        self.cache_dir = Path(self.stack.enter_context(tempfile.TemporaryDirectory(prefix='xyquant-rankic-')))
+        self.cache_dir = Path(self.stack.enter_context(tempfile.TemporaryDirectory(prefix='xyquant-rankic-', dir=scratch)))
         self.readers = {}
+        self.factor_export = None
 
         def load(role, selected_dates=None):
+            if role == 'factor' and mcp_factor is not None:
+                path, spec, self.factor_export = mcp_factor
+                self.readers[role] = _Table(path, spec, role, selected_dates, self.cache_dir, self.stack,
+                                            mcp_scope=self.factor_export)
+                return self.readers[role]
             spec = data[role]
-            if spec.get('format') == 'hdf5':
-                reader = _HDF((base_dir / spec['path']).resolve(), spec, role, self.stack)
-            else:
-                entries = spec.get('files', [spec])
-                paths = [(base_dir / item['path'], item) for item in entries]
-                reader = _Table(paths, spec, role, selected_dates, self.cache_dir, self.stack, self.source_files)
+            path = base_dir / spec['path']
+            path = check_source(role, path) if check_source else path.resolve()
+            reader = (_HDF(path, spec, role, self.stack) if spec.get('format') == 'hdf5' else
+                      _Table(path, spec, role, selected_dates, self.cache_dir, self.stack))
             self.readers[role] = reader
             return reader
 
@@ -388,7 +289,9 @@ class DataBundle:
             ignored = reader.metadata().get('ignored_non_stock_columns', 0)
             if ignored:
                 self.warnings.append(f'Local HDF5 {role}: explicitly ignored {ignored} non-stock axis labels.')
-        if self.origin == 'local_reference':
+        if self.factor_export is not None:
+            self.warnings.append('MCP FACTOR VALUES ONLY. Local reference prices, calendar and applicable historical-universe data are not verified server inputs.')
+        else:
             self.warnings.append('LOCAL REFERENCE ONLY: not proof of server authorization, price semantics, historical-universe completeness or independent exchange-calendar verification.')
 
     def factor_at(self, day):
@@ -405,18 +308,17 @@ class DataBundle:
 
     def metadata(self):
         result = dict(origin=self.origin, snapshot_id=self.snapshot_id, adjustment_id=self.adjustment_id,
-                      calendar_from=self.calendar_from, calendar_through=self.calendar_through,
-                      price_through=self.price_through, scope_kind=self.scope_kind,
-                      scope_stock_count=len(self.authorized_codes),
-                      scope_exchange_counts={exchange: sum(code.endswith('.' + exchange) for code in self.authorized_codes)
-                                             for exchange in ('SH', 'SZ', 'BJ')},
-                      sources={role: reader.metadata() for role, reader in self.readers.items()})
-        if self.catalog_info is not None:
-            result['catalog'] = self.catalog_info
+                    calendar_from=self.calendar_from, calendar_through=self.calendar_through,
+                    price_through=self.price_through, authorized_stock_count=len(self.authorized_codes),
+                    authorized_scope_sha256=hashlib.sha256('\n'.join(sorted(self.authorized_codes)).encode()).hexdigest(),
+                    authorized_exchange_counts={exchange: sum(code.endswith('.' + exchange) for code in self.authorized_codes)
+                                                for exchange in ('SH', 'SZ', 'BJ')},
+                    sources={role: reader.metadata() for role, reader in self.readers.items()})
+        if self.factor_export is not None:
+            result['factor_export'] = self.factor_export
         return result
 
     def assert_unchanged(self):
-        self.source_files.assert_unchanged()
         for reader in self.readers.values():
             reader.assert_unchanged()
 

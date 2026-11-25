@@ -14,7 +14,10 @@ import brinson
 from report import build_report
 from data_store import Store, DataError, require, FREQUENCIES
 
-BASE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from xyquant_data import ATTRIBUTION_RESULTS, DATA_DIR
+sys.path.pop(0)
+
 LINK = "C_t=(1+Rb_t)*C_previous+Vp_previous*c_t"
 LABELS = {"date":"期末日期","period_start":"期初日期","portfolio_return":"组合重建收益","benchmark_return":"基准重建收益",
           "active_return":"重建超额收益","factor":"风格因子","industry":"行业","allocation":"行业配置贡献",
@@ -51,14 +54,16 @@ def execute(args):
         raise DataError("日期格式需为 YYYY-MM-DD") from e
     require(start<=end,"起始日期晚于结束日期")
     methods = ["barra","brinson"] if args.method=="both" else [args.method]
-    s = Store(args.data_root)
+    s = Store(args.data_root, flat_project=getattr(args,"flat_project",None))
     s.prepare(args.portfolio,args.benchmark,start,end,frequency,barra="barra" in methods,brinson="brinson" in methods)
     errors = s.method_errors.copy()
     details={m:[] for m in methods}
     diagnostics=[]
     periods=[]
     weight_diagnostics=[]
-    params = {"minimum":100,"max_drop":.1,"condition_limit":1e10,**s.catalog.get("regression",{})}
+    params = {"minimum":100,"max_drop":.1,"condition_limit":1e10}
+    if s.flat_project is None:
+        params.update(s.catalog.get("regression",{}))
     require(params["minimum"]>=12 and 0<=params["max_drop"]<=1 and params["condition_limit"]>=1,"回归校验参数无效")
     for t0,t1 in s.periods:
         date=str(t1.date())
@@ -145,6 +150,9 @@ def execute(args):
               "industry":"monthly classifications forward-filled per stock to period start; never backward-filled",
               "scope":"normalized long-only equity sleeve, beginning-period static holdings, excluding cash/trading/fees",
               "regression":params,"source_files":list(s.sources.values()),"created_at":datetime.now(timezone.utc).isoformat()}
+    if s.flat_project is not None:
+        metadata["foundation_datasets"] = s.foundation
+        metadata["barra_sample_policy"] = "full_market_valid_start_exposures_and_cap" if "barra" in methods else None
     summary=["# 组合收益归因", "",f"组合：{s.portfolio}；基准：{s.benchmark}；频率：{frequency}。",
              f"有效交易期间：{used[0].date()} 至 {used[-1].date()}，共{len(periods)}期；期初快照：{s.periods[0][0].date()}。", "",
              f"组合重建累计收益{pr*100:.3f}%，基准{br*100:.3f}%，两者相差{(pr-br)*100:+.3f}个百分点。"]
@@ -199,17 +207,24 @@ def main():
     sub=parser.add_subparsers(dest="command",required=True)
     for cmd in ["inventory","run"]:
         p=sub.add_parser(cmd)
-        p.add_argument("--data-root",default=os.environ.get("ATTRIBUTION_DATA_ROOT",str(BASE/"data")))
+        p.add_argument("--data-root",default=os.environ.get("ATTRIBUTION_DATA_ROOT"),required=not bool(os.environ.get("ATTRIBUTION_DATA_ROOT")))
+        sources=p.add_mutually_exclusive_group()
+        sources.add_argument("--flat-project",type=Path,help=argparse.SUPPRESS)
+        sources.add_argument("--legacy-replay",action="store_true",help=argparse.SUPPRESS)
         if cmd=="run":
             for key in ["portfolio","benchmark","start","end","frequency"]:
                 p.add_argument("--"+key,required=True)
             p.add_argument("--method",choices=["barra","brinson","both"],default="both")
-            p.add_argument("--output-root",default=os.environ.get("ATTRIBUTION_OUTPUT_ROOT",str(BASE/"outputs")))
+            p.add_argument("--output-root",default=os.environ.get("ATTRIBUTION_OUTPUT_ROOT",str(Path.cwd().joinpath(DATA_DIR, *ATTRIBUTION_RESULTS))))
     args=parser.parse_args()
+    args.flat_project = None if args.legacy_replay else args.flat_project or Path.cwd()
     try:
         if args.command=="inventory":
-            s=Store(args.data_root)
+            s=Store(args.data_root,flat_project=args.flat_project)
             result={"data_root":str(s.root),"catalog":s.catalog,"calendar_start":str(s.calendar.min().date()),"calendar_end":str(s.calendar.max().date())}
+            if s.flat_project is not None:
+                result["catalog"] = {key: s.catalog[key] for key in ("portfolios", "benchmarks", "snapshots")}
+                result["foundation_datasets"] = s.foundation
         else:
             result=execute(args)
         print(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False))

@@ -2,3 +2,5 @@ numpy>=1.24,<3
 pandas>=2.0,<3
 pyarrow>=12,<25
 openpyxl>=3.1,<4
+# Optional read-only local HDF5 reference adapter; CSV/Parquet need no h5py.
+h5py>=3.10,<4

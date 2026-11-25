@@ -1,27 +1,19 @@
 """Accept an authorized MCP job via private stdin or a one-shot OpenCode loopback."""
 import argparse
-from hmac import compare_digest
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import math
 import os
 from pathlib import Path
 import re
-import secrets
 import sys
 import tempfile
 import time
 
 from diagnosis import FACTORS, MAX_FACTOR_BYTES, DataError, iso_date
-from xyquant_cache import attribution_download, factor_download
+from xyquant_cache import MAX_JOB_BYTES, attribution_download, factor_download, receive_job
 
 
-MAX_JOB_BYTES = 64 * 1024
 HOLDINGS_DOWNLOAD_ERRORS = {
-    "数据下载失败，请重新查询任务状态和下载凭据": "holdings_http",
-    "数据下载连接失败，请保留任务编号后重试": "holdings_network",
-    "数据包已过期，请重新查询服务器目录并下载当前版本": "holdings_expired",
-    "数据包已过期或有效期不一致，请重新查询服务器目录": "holdings_expired",
     "归因数据下载失败，请重新查询任务状态和下载凭据": "holdings_http",
     "归因数据下载连接失败，请保留任务编号后重试": "holdings_network",
     "数据下载超过声明大小": "holdings_archive_size",
@@ -97,77 +89,7 @@ def transfer(kind, project, job_id, raw):
 
 
 def receive(project, kind, job_id, wait_seconds):
-    local_token = secrets.token_hex(32)
-
-    class Handler(BaseHTTPRequestHandler):
-        def setup(self):
-            self.request.settimeout(3)
-            super().setup()
-
-        def log_message(self, *_):
-            pass
-
-        def log_error(self, *_):
-            pass
-
-        def reply(self, status, data):
-            raw = json.dumps(data, ensure_ascii=True).encode("ascii")
-            self.send_response(status)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(raw)))
-            self.send_header("Cache-Control", "no-store")
-            self.end_headers()
-            self.wfile.write(raw)
-
-        def do_POST(self):
-            if (self.path != "/mcp-job" or self.headers.get("Host") != f"127.0.0.1:{self.server.server_port}"
-                    or "Origin" in self.headers or "Transfer-Encoding" in self.headers
-                    or not compare_digest(self.headers.get("X-XYQuant-Local", "").encode("latin-1"), local_token.encode("ascii"))):
-                self.reply(403, {"status": "refused"})
-                return
-            self.server.result = {"status": "failed", "code": "invalid_request"}
-            lengths = self.headers.get_all("Content-Length", [])
-            if len(lengths) != 1 or not lengths[0].isascii() or not lengths[0].isdigit() or len(lengths[0]) > 6:
-                self.reply(400, self.server.result)
-                return
-            size = int(lengths[0])
-            if self.headers.get_content_type() != "application/json" or not 0 < size <= MAX_JOB_BYTES:
-                self.reply(400, self.server.result)
-                return
-            try:
-                raw = self.rfile.read(size)
-            except (TimeoutError, OSError):
-                return
-            if len(raw) != size:
-                return
-            try:
-                job = json.loads(raw)
-                if not isinstance(job, dict) or job.get("id") != job_id or job.get("status") != "ready":
-                    raise ValueError
-            except (ValueError, RecursionError):
-                self.server.result = {"status": "failed", "code": "invalid_job"}
-                self.reply(422, self.server.result)
-                return
-            try:
-                # Return before potentially downloading hundreds of MB. The local exit
-                # status, not this acknowledgement, is the completion signal.
-                self.reply(202, {"status": "accepted"})
-            except OSError:
-                pass
-            self.server.result = transfer(kind, project, job_id, raw)
-
-    class LocalServer(HTTPServer):
-        def handle_error(self, *_):
-            pass  # never dump request-derived exceptions
-
-    with LocalServer(("127.0.0.1", 0), Handler) as server:
-        server.timeout = 0.5
-        server.result = None
-        print(json.dumps({"status": "listening", "port": server.server_port, "local_nonce": local_token}), flush=True)
-        deadline = time.monotonic() + wait_seconds
-        while server.result is None and time.monotonic() < deadline:
-            server.handle_request()
-        return server.result or {"status": "failed", "code": "receive_timeout"}
+    return receive_job(job_id, wait_seconds, lambda raw: transfer(kind, project, job_id, raw))
 
 
 def main():

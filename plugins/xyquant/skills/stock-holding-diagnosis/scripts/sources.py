@@ -4,7 +4,7 @@ from hashlib import sha256
 from io import BytesIO
 import json
 import math
-from pathlib import Path, PurePosixPath
+from pathlib import PurePosixPath
 import re
 import time
 from zipfile import BadZipFile
@@ -47,8 +47,8 @@ def factor_archive(project, job, digest, day):
     if (state.get("status") != "ready" or state.get("job_id") != job or state.get("sha256") != digest
             or type(state.get("total")) is not int or not 0 < state["total"] <= MAX_FACTOR_BYTES):
         raise DataError("因子缓存未就绪或与 MCP 任务不匹配")
-    path = Path(state["path"])
-    if path.parent != folder or path.suffix != ".zip":
+    path = factor_download.state_target(folder, state)
+    if path.suffix != ".zip":
         raise DataError("因子缓存须为同一任务的四因子 ZIP")
     return local_bytes(path, MAX_FACTOR_BYTES, state["total"], digest)
 

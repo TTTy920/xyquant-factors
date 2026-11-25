@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "xyquant",
-  "version": "0.4.0-rc.16",
-  "description": "查询已授权的量化因子和策略资料，下载数据，并在本地完成个股持有诊断、因子RankIC测试与组合收益归因。",
+  "version": "0.4.0-rc.17",
+  "description": "查询已授权的量化因子和策略资料，下载数据，并在本地完成个股持有诊断、因子RankIC测试、多因子合成与组合收益归因。",
   "author": {
     "name": "XYQuant"
   },
@@ -12,12 +12,13 @@
     "com.openai": {
       "interface": {
         "displayName": "xyquant",
-        "shortDescription": "因子下载、个股诊断、RankIC与组合归因",
+        "shortDescription": "量化因子、合成评分与组合研究",
         "developerName": "XYQuant",
         "category": "Productivity",
         "defaultPrompt": [
           "查一下波动率相关因子有哪些，可以查询哪些日期。"
-        ]
+        ],
+        "longDescription": "查询已授权的量化因子和策略资料，下载数据，并在本地完成个股持有诊断、因子RankIC测试、多因子合成与组合收益归因。"
       }
     }
   }

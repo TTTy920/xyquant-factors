@@ -139,8 +139,6 @@ def factor_ranks(archive, stock, day):
                 raise DataError("因子压缩包含未预期的 Parquet 文件")
             f = expected[entry.filename]
             with bundle.open(entry) as member:
-                # These are individual in-memory files; avoid dataset background
-                # workers that can hang during Arrow shutdown on macOS.
                 table = pq.ParquetFile(BytesIO(member.read())).read(use_threads=False)
             tables[f] = rank_panel(table, stock, day, FACTORS[f])
     if set(tables) != set(FACTORS):
@@ -219,8 +217,8 @@ def main(argv=None):
     parser.add_argument("--manifest-sha256")
     parser.add_argument("--strategy", choices=STRATEGIES, action="append", help="repeatable; default all four")
     stdin = parser.add_mutually_exclusive_group()
-    stdin.add_argument("--news-stdin", action="store_true", help="read optional public news evidence JSON from stdin")
-    stdin.add_argument("--context-stdin", action="store_true", help="read optional news and MCP holdings catalog JSON from stdin")
+    stdin.add_argument("--news-stdin", action="store_true", help=argparse.SUPPRESS)
+    stdin.add_argument("--context-stdin", action="store_true", help="read optional MCP holdings catalog JSON from stdin")
     args = parser.parse_args(argv)
     result, code = {}, 2
     try:
@@ -241,7 +239,8 @@ def main(argv=None):
         if factor_day and factor_day > as_of:
             raise DataError("因子截面不能晚于查询日期")
         context = read_payload(sys.stdin.buffer) if args.context_stdin else {}
-        news = read_payload(sys.stdin.buffer) if args.news_stdin else context.get("news")
+        if args.news_stdin or "news" in context:
+            raise DataError("当前数据来源规则不接收网页或外部新闻")
         strategies = tuple(dict.fromkeys(args.strategy or STRATEGIES))
         coverage = catalog_coverage(context.get("holdings_catalog"), strategies, as_of, *attribution_args)
         errors, ranks, holdings = {}, {}, {}
@@ -272,7 +271,8 @@ def main(argv=None):
                    "catalog_coverage": coverage.get(name)}
             for name in strategies
         }
-        result = report(stock, as_of, factor_day if ranks else None, ranks, holdings, errors, news)
+        result = report(stock, as_of, factor_day if ranks else None, ranks, holdings, errors, None)
+        result["news"]["status"] = "disabled_by_source_policy"
         code = 2 if result["status"] == "no_result" else 0
     except DataError as exc:
         result = {"status": "error", "message": str(exc)}

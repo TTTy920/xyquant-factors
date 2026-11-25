@@ -1,0 +1,4 @@
+interface:
+  display_name: "组合收益归因"
+  short_description: "下载服务器原始数据，在本地对客户持仓或预置策略做Barra与Brinson归因"
+  default_prompt: "使用 $portfolio-attribution，对300增强相对沪深300做2025年1至2月的月度Barra和Brinson归因。"

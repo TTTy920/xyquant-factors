@@ -5,8 +5,15 @@ from data_store import FACTORS, require
 
 
 def regress(x, returns, caps, eligible, minimum=100, max_drop=.1, condition_limit=1e10):
-    require(eligible.dropna().isin([0, 1]).all(), "回归资格只能为0/1/空")
-    candidates = eligible.index[eligible==1]
+    scope = "legacy_eligible_flag"
+    if eligible is None:
+        scope = "full_market_valid_start_exposures_and_cap"
+        aligned_cap = caps.reindex(x.index)
+        complete_styles = np.isfinite(x[FACTORS].to_numpy()).all(axis=1)
+        candidates = x.index[complete_styles & np.isfinite(aligned_cap) & (aligned_cap > 0)]
+    else:
+        require(eligible.dropna().isin([0, 1]).all(), "回归资格只能为0/1/空")
+        candidates = eligible.index[eligible==1]
     require(len(candidates)>0, "没有合格回归样本")
     xx, yy, cc = x.reindex(candidates), returns.reindex(candidates), caps.reindex(candidates)
     valid = pd.Series(np.isfinite(xx.to_numpy()).all(axis=1),index=xx.index)&np.isfinite(yy)&np.isfinite(cc)&(cc>0)
@@ -28,6 +35,7 @@ def regress(x, returns, caps, eligible, minimum=100, max_drop=.1, condition_limi
     residual = y-design@coef
     mse = float(np.average(residual**2, weights=scale**2))
     return pd.Series(coef[1:], index=FACTORS), {"sample_count": n, "eligible_count": len(candidates),
+        "sample_policy": scope, "dropped_count": len(candidates)-n,
         "dropped_fraction": drop, "rank": int(rank), "condition_number": condition,
         "intercept": float(coef[0]), "weighted_residual_rms": float(np.sqrt(mse))}
 

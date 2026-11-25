@@ -32,7 +32,7 @@ class OriginalDataDownloadTests(unittest.TestCase):
                     'files': {name: {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
                               for name, value in self.files.items()}}
         raw = json.dumps(manifest).encode()
-        folder = self.project / 'downloads/attribution-original' / self.version
+        folder = self.project / 'xyquant-data/mcp-cache/attribution/original' / self.version
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / 'attribution-data.zip'
         with zipfile.ZipFile(path, 'w') as archive:
@@ -68,7 +68,7 @@ class OriginalDataDownloadTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '文件集合无效'):
             download.save(job, self.project)
         self.assertFalse((self.project / 'downloads/outside').exists())
-        self.assertFalse((self.project / 'downloads/attribution-original' / self.version / 'data').exists())
+        self.assertFalse((self.project / 'xyquant-data/mcp-cache/attribution/original' / self.version / 'data').exists())
 
     def test_other_dataset_and_changed_manifest_are_rejected(self):
         job = self.job()
@@ -90,7 +90,7 @@ class OriginalDataDownloadTests(unittest.TestCase):
         first = self.job();download.save(first, self.project)
         self.version = 'original-20261113-ffffffffffff';self.expiry += 3600
         second = self.job()
-        archive = self.project / 'downloads/attribution-original' / self.version / 'attribution-data.zip'
+        archive = self.project / 'xyquant-data/mcp-cache/attribution/original' / self.version / 'attribution-data.zip'
         content = archive.read_bytes();archive.unlink()
         with patch.object(download, 'transfer', side_effect=lambda job, path: path.write_bytes(content)) as transfer:
             result = download.save(second, self.project)
