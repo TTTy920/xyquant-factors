@@ -1,0 +1,6 @@
+mcp>=1.28,<2
+rqdatac
+pandas
+numpy
+matplotlib
+openpyxl

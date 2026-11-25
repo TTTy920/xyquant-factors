@@ -40,15 +40,17 @@ RankIC测试使用 `factor-rankic`：因子可以来自用户文件或 MCP 授�
 
 多因子合成使用 `factor-synthesis`：用户指定2–10个因子，按因子方向计算同日共同样本的分位分数，支持等权、手动权重、历史RankIC均值或RankICIR权重。在本地交付 `scores.csv`、`report.md` 和 `metadata.json`。历史权重需要可比且覆盖足够历史期数的RankIC结果。
 
+期货会员持仓策略分析使用 [futures-member-position-analysis](plugins/xyquant/skills/futures-member-position-analysis/SKILL.md)：原样收录净值分析、拥挤度指标1与历史分位、会员持仓相关性热力图的说明和代码。随附的 `compute_futures_crowding`、`get_futures_member_heatmap` 工具尚未接入 XYQuant MCP。
+
 ## 基础数据与本地目录
 
 四个业务 Skill 将缓存、用户输入和结果放在项目的 `xyquant-data/` 内。基础数据严格读取 `xyquant-data/inputs/datasets/<数据集>/` 下的文件及对应 `manifest.json`：`adjusted-prices`、`trading-calendar`、`listed-history`、`attribution-market`、`barra-exposures`、`industry-classification`。具体计算按需要读取其中的数据集。
 
-当前发布包含四个业务 Skill 及其本地数据读取接口。RankIC 基础数据通过 `query_rankic_data` 下载；归因基础数据通过 `query_stock_data` 分成市场、暴露、日历、行业四包，持仓包独立提供。公共下载器校验后直接放入项目基础数据目录，详细流程见[基础数据下载](plugins/xyquant/references/datasets.md)。服务器按需生成每包、共享固定一小时，到期清理；客户端下载临时文件在完成后清理。因子查询、导出和既有持仓取数继续使用现有 MCP。数据文件、用户输入和授权凭据不进入插件包。
+RankIC 基础数据通过 `query_rankic_data` 下载；归因基础数据通过 `query_stock_data` 分成市场、暴露、日历、行业四包，持仓包独立提供。公共下载器校验后直接放入项目基础数据目录，详细流程见[基础数据下载](plugins/xyquant/references/datasets.md)。服务器按需生成每包、共享固定一小时，到期清理；客户端下载临时文件在完成后清理。因子查询、导出和既有持仓取数继续使用现有 MCP。数据文件、用户输入和授权凭据不进入插件包。
 
 通用因子下载保存在 `downloads/factors/`；四个业务 Skill 使用自己的 `xyquant-data/mcp-cache/` 缓存。客户端应按对应 Skill 的接收命令保存下载任务。
 
-当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic`、`stock-holding-diagnosis` 和 `factor-synthesis`。
+当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic`、`stock-holding-diagnosis`、`factor-synthesis` 和 `futures-member-position-analysis`。
 
 通用因子保留目录、预览和导出四个工具，`get_export` 增加可选的文件下载凭据；策略与团队介绍统一使用 `query_strategy_research`，市场信号继续使用 `query_market_signals`。科技策略知识及策略个股因子值接口开发阶段暂不开放。
 

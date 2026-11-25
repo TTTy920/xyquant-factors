@@ -1,0 +1,4 @@
+interface:
+  display_name: "期货会员持仓策略分析"
+  short_description: "计算品种拥挤度指标1和历史分位数，生成最新会员净持仓热力图并分析策略"
+  default_prompt: "使用 $futures-member-position-analysis 计算豆粕最新拥挤度指标1、近60/120/250交易日分位数，并展示20日会员持仓热力图。"

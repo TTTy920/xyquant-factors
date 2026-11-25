@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "xyquant",
-  "version": "0.4.0-rc.18",
+  "version": "0.4.0-rc.19",
   "description": "查询已授权的量化因子和策略资料，下载数据，并在本地完成个股持有诊断、因子RankIC测试、多因子合成与组合收益归因。",
   "author": {
     "name": "XYQuant"

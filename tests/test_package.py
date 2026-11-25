@@ -39,7 +39,7 @@ class PackageTest(unittest.TestCase):
             self.assertEqual(portable["type"], "streamable-http")
             self.assertEqual(portable["url"], servers["xyquant"]["url"])
             skills = {s.parent.name for s in (pkg / "skills").glob("*/SKILL.md")}
-            self.assertEqual(skills, {"factor-download", "portfolio-attribution", "xyquant-login", "factor-rankic", "stock-holding-diagnosis", "factor-synthesis"})
+            self.assertEqual(skills, {"factor-download", "portfolio-attribution", "xyquant-login", "factor-rankic", "stock-holding-diagnosis", "factor-synthesis", "futures-member-position-analysis"})
             skill_source = ROOT / "plugins/xyquant/skills/portfolio-attribution"
             skill_package = pkg / "skills/portfolio-attribution"
             for source in skill_source.rglob("*"):
