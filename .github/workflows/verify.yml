@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install business skill runtime
-        run: python -m pip install -r plugins/xyquant/skills/factor-rankic/requirements.txt -r plugins/xyquant/skills/factor-synthesis/requirements.txt -r plugins/xyquant/skills/portfolio-attribution/requirements.txt -r plugins/xyquant/skills/stock-holding-diagnosis/requirements.txt
+        run: python -m pip install -r plugins/xyquant/skills/factor-rankic/requirements.txt -r plugins/xyquant/skills/factor-synthesis/requirements.txt -r plugins/xyquant/skills/portfolio-attribution/requirements.txt -r plugins/xyquant/skills/stock-holding-diagnosis/requirements.txt -r plugins/xyquant/skills/ipo-return-calculator/requirements.txt
       - name: Verify plugin and local workflows
         run: python -B -m unittest discover -s tests
       - name: Verify attribution workflows

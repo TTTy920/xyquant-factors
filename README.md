@@ -42,6 +42,8 @@ RankIC测试使用 `factor-rankic`：因子可以来自用户文件或 MCP 授�
 
 期货会员持仓策略分析使用 [futures-member-position-analysis](plugins/xyquant/skills/futures-member-position-analysis/SKILL.md)：原样收录净值分析、拥挤度指标1与历史分位、会员持仓相关性热力图的说明和代码。随附的 `compute_futures_crowding`、`get_futures_member_heatmap` 工具尚未接入 XYQuant MCP。
 
+A 类网下打新测算使用 [ipo-return-calculator](plugins/xyquant/skills/ipo-return-calculator/SKILL.md)：通过 `query_ipo_data` 获取 IPO 发行工作簿，在本地按账户规模、年份和板块测算打新收益，支持月度、年度与个股明细。用户也可直接提供本地 Excel。
+
 ## 基础数据与本地目录
 
 四个业务 Skill 将缓存、用户输入和结果放在项目的 `xyquant-data/` 内。基础数据严格读取 `xyquant-data/inputs/datasets/<数据集>/` 下的文件及对应 `manifest.json`：`adjusted-prices`、`trading-calendar`、`listed-history`、`attribution-market`、`barra-exposures`、`industry-classification`。具体计算按需要读取其中的数据集。
@@ -50,7 +52,7 @@ RankIC 基础数据通过 `query_rankic_data` 下载；归因基础数据通过 
 
 通用因子下载保存在 `downloads/factors/`；四个业务 Skill 使用自己的 `xyquant-data/mcp-cache/` 缓存。客户端应按对应 Skill 的接收命令保存下载任务。
 
-当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic`、`stock-holding-diagnosis`、`factor-synthesis` 和 `futures-member-position-analysis`。
+当前插件加载 `xyquant-login`、`factor-download`、`portfolio-attribution`、`factor-rankic`、`stock-holding-diagnosis`、`factor-synthesis`、`futures-member-position-analysis` 和 `ipo-return-calculator`。
 
 通用因子保留目录、预览和导出四个工具，`get_export` 增加可选的文件下载凭据；策略与团队介绍统一使用 `query_strategy_research`，市场信号继续使用 `query_market_signals`。科技策略知识及策略个股因子值接口开发阶段暂不开放。
 
