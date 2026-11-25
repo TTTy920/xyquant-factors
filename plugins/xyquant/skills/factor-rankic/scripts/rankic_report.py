@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from xyquant_data import RANKIC_RESULTS, data_path
 sys.path.pop(0)
 
-VERSION = '0.4.0-rc.17'
+VERSION = '0.4.0-rc.18'
 DETAIL_COLUMNS = ['observation_date', 'exit_date', 'status', 'n_pool', 'n_valid', 'rank_ic', 'valid_stock_count', 'reason', 'valid_rank_ic']
 DIAGNOSTIC_COLUMNS = ['observation_date', 'status', 'n_pool', 'unknown_universe', 'excluded_authorization', 'excluded_factor', 'excluded_price', 'n_valid', 'reason']
 XMLNS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'

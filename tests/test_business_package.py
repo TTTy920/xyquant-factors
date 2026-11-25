@@ -32,6 +32,7 @@ class BusinessPackageTests(unittest.TestCase):
             with ZipFile(build(Path(tmp))) as archive:
                 archive.extractall(tmp)
             plugin = Path(tmp) / 'xyquant'
+            self.assertIn('usage:', self.run_cli(plugin / 'shared/dataset_transfer.py', '--help'))
             for entry in ('factor-rankic/scripts/rankic.py', 'factor-rankic/scripts/rankic_transfer.py',
                           'portfolio-attribution/scripts/entry.py', 'portfolio-attribution/scripts/download_original.py',
                           'stock-holding-diagnosis/scripts/diagnosis.py', 'stock-holding-diagnosis/scripts/mcp_transfer.py',

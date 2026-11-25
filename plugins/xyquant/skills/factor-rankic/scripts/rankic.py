@@ -52,7 +52,7 @@ def main(argv=None):
         factor = factor_input(args.project, p, args.factor_job, args.factor_sha256, scratch) if args.factor else nullcontext()
         with factor as exported:
             with DataBundle(data, p, config_path.parent, scratch=scratch, mcp_factor=exported,
-                            check_source=check_source) as source:
+                            check_source=check_source, verified_server=data['origin']=='xyquant_server') as source:
                 result = calculate(p, source.calendar, source, calendar_through=source.calendar_through,
                                    price_through=source.price_through)
                 source.assert_unchanged()

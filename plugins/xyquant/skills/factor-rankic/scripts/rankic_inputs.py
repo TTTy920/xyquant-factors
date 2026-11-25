@@ -220,22 +220,20 @@ class _HDF:
 
 
 class DataBundle:
-    def __init__(self, manifest, parameters, base_dir, *, scratch=None, check_source=None, mcp_factor=None):
+    def __init__(self, manifest, parameters, base_dir, *, scratch=None, check_source=None, mcp_factor=None, verified_server=False):
         self.stack = ExitStack()
         try:
-            self._load(manifest, parameters, Path(base_dir), scratch, check_source, mcp_factor)
+            self._load(manifest, parameters, Path(base_dir), scratch, check_source, mcp_factor, verified_server)
         except Exception:
             self.stack.close()
             raise
 
-    def _load(self, data, p, base_dir, scratch, check_source, mcp_factor):
+    def _load(self, data, p, base_dir, scratch, check_source, mcp_factor, verified_server):
         self.origin = data.get('origin')
         if self.origin not in ('local_reference', 'xyquant_server'):
             raise DataContractError('origin must be local_reference or xyquant_server')
-        if self.origin == 'xyquant_server':
-            # No server contract has been independently accepted for this release.
-            # Caller-supplied booleans/hashes are not proof of origin or acceptance.
-            raise DataContractError('server RankIC data contract is not verified in this release; local reference only')
+        if self.origin == 'xyquant_server' and not verified_server:
+            raise DataContractError('server data must pass the authorized dataset resolver')
         if mcp_factor is None and data.get('factor_name') != p.factor_name:
             raise DataContractError('factor identity does not match the request')
         for key in ('snapshot_id', 'adjustment_id'):
@@ -289,7 +287,9 @@ class DataBundle:
             ignored = reader.metadata().get('ignored_non_stock_columns', 0)
             if ignored:
                 self.warnings.append(f'Local HDF5 {role}: explicitly ignored {ignored} non-stock axis labels.')
-        if self.factor_export is not None:
+        if self.origin == 'xyquant_server':
+            self.warnings.append('Market inputs were verified against the authorized XYQuant dataset package. Declared data coverage limitations still apply.')
+        elif self.factor_export is not None:
             self.warnings.append('MCP FACTOR VALUES ONLY. Local reference prices, calendar and applicable historical-universe data are not verified server inputs.')
         else:
             self.warnings.append('LOCAL REFERENCE ONLY: not proof of server authorization, price semantics, historical-universe completeness or independent exchange-calendar verification.')

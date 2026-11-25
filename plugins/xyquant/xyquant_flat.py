@@ -36,6 +36,10 @@ class Dataset:
         self.single, self.version, self.digest = single, version, digest
         self.start, self.end = manifest["coverage"]["start"], manifest["coverage"]["end"]
         self.gaps = manifest["known_gaps"]
+        receipt = managed_file(project, (*self.parts, ".xyquant-source.json"))
+        if receipt.exists():
+            from xyquant_dataset_download import verify_source
+            verify_source(project, name)
 
     def file(self, name=None, *, verify=False):
         name = name if name is not None else self.single

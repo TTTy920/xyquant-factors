@@ -1,15 +1,17 @@
+服务器基础数据接入见[基础数据下载](../../../references/datasets.md)。`origin=xyquant_server` 需要真实下载及清单校验记录，股票范围由数据包提供；下述本地参考配置继续用于离线数据。
+
 # RankIC 输入契约（schema_version 1）
 
 ## 接入状态与信任边界
 
-本 Skill 复用既有通用因子目录和授权导出。**MCP 因子值 + 本地市场基础数据**可计算 RankIC。服务器复权定义、完整交易日历和历史在市全集尚未验收，不能宣称全部数据可由服务器提供。
+本 Skill 复用既有通用因子目录和授权导出。基础市场数据通过 `query_rankic_data` 下载，也可使用用户明确提供的离线参考数据。数据集清单中的复权价格口径、日历来源和历史在市覆盖限制继续适用；下载校验通过不代表这些限制消失。
 
 配置是本地数据声明，不是授权凭据，也不是密码学证明。`verified` 必须对应提供方文档、可复核样本及下载清单；模型不能为通过校验而自我认证。客户端保持 OAuth 权限及下载票据隔离。现有下载脚本白名单不放宽；不猜测服务器不存在的导出路径。
 
-`origin=xyquant_server` 在本版**固定拒绝**，即使本地文件哈希正确、调用方把 `verified` 全部填为 true 也不能启用。正式验收后需要维护者交付已审的服务器适配版本。以下是待完成的验收资料清单，不是本版可用的启用开关：
-- 明确的 `verification_reference`，以及 `verified.authorization/adjusted_close/calendar=true`；全 A 还需 `historical_universe=true`。
-- 每份 CSV/Parquet 源文件与授权下载清单一致的 SHA-256。程序重新校验文件哈希；缺失、不符或未核实即拒绝。
-- 唯一 `snapshot_id`、因子唯一 `factor_name`、统一的复权快照标识 `adjustment_id`、显式 `authorized_codes`。
+`origin=xyquant_server` 由正式数据入口核验，不能靠配置中的 `verified` 自行启用：
+- 通过现有 MCP 授权取得就绪任务，下载器核验整个压缩包、总清单、各数据集清单和文件的 SHA-256。
+- 正式入口要求下载器保存的来源记录、尚未过期的一小时快照，以及价格、日历和所需历史在市清单的一致版本。缺失或不符即拒绝；到期重新查询、下载。
+- `snapshot_id`、`adjustment_id` 和 `authorized_codes` 从已核验的数据中生成或读取；配置不能扩大数据包的股票范围。因子仍以唯一 `factor_name` 标识。
 - 真实交易日历覆盖观察区间及确认周期末所需日期；下一周期价格不足保持未完成，不伪造。
 
 `origin=local_reference` 是开发/用户明确提供的离线参考，不证明服务器授权、复权语义、历史全集或独立交易日历。所有报告强制携带此限制；它不是绕过服务器授权的降级方式。
@@ -18,7 +20,7 @@
 
 - 按通用因子目录确认的唯一 ID 创建单因子导出。`rankic_transfer.py` 用原下载流程核验文件大小和 SHA-256，保存到 `xyquant-data/mcp-cache/factors/<任务>/`，另写不含凭据的范围文件。
 - 启动 `rankic.py` 时同时传 `--factor`（目录 ID）、`--factor-job` 和 `--factor-sha256`。ID、观测起止日、代码范围必须与导出任务完全一致；全 A 应无显式代码筛选。程序读取单因子 Parquet 或仅含 `<因子ID>.parquet` 的 ZIP；因子表按物理列 `date, stock_cd, alpha` 读取，兼容导出文件中的 pandas 索引声明。范围不匹配、文件校验失败或缺少范围记录均不回退到旧因子文件。
-- 配置仍由本地声明 `price`、`calendar`、`authorized_codes`、全 A 所需的 `listed` 及其标识。`parameters.factor_name` 由 `--factor` 覆盖；`data.factor_name` 和 `data.factor` 在该模式下可省略且不读取。本地声明的股票范围不因选用 MCP 而扩大。报告中 `data.origin=local_reference` 表示基础市场数据，`data.factor_export` 单独记录 MCP 因子身份、日期、文件 SHA-256 和筛选范围。
+- 基础市场数据由下述正式入口解析；`origin=xyquant_server` 的股票范围取自已核验的数据包，`origin=local_reference` 的股票范围由用户声明。`parameters.factor_name` 由 `--factor` 覆盖；`data.factor_name` 和 `data.factor` 在该模式下可省略且不读取。报告的 `data.origin` 表示基础市场数据来源，`data.factor_export` 单独记录 MCP 因子身份、日期、文件 SHA-256 和筛选范围。
 
 ## 表结构
 
@@ -31,9 +33,9 @@
 
 ### 正式入口的唯一基础数据源
 
-`data.origin` 为 `local_reference`，配置仍放 `xyquant-data/inputs/rankic/`。`rankic.py` 只认 `xyquant-data/inputs/datasets/{adjusted-prices/prices.parquet,trading-calendar/calendar.parquet,listed-history/listed.parquet}`，并校验对应 `manifest.json` 的契约、覆盖和文件 SHA-256。用自定义股票池时不读在市表。配置里手填的 `price/calendar/listed` 路径、覆盖或旧版目录选择均不作为输入。目录缺失时不回退其他市场源。
+`data.origin` 为 `xyquant_server` 或 `local_reference`，配置仍放 `xyquant-data/inputs/rankic/`。`rankic.py` 只认 `xyquant-data/inputs/datasets/{adjusted-prices/prices.parquet,trading-calendar/calendar.parquet,listed-history/listed.parquet}`，并校验对应 `manifest.json` 的契约、覆盖和文件 SHA-256。用自定义股票池时不读在市表。配置里手填的 `price/calendar/listed` 路径、覆盖或旧版目录选择均不作为输入。目录缺失时不回退其他市场源。
 
-市场数据的起止和截止日取自扁平清单 `coverage.start/end`。报告 `data.catalog_inputs` 留存实际版本、清单和文件 SHA-256、已知覆盖缺口；价格口径、由价格轴派生的日历等限制仍需披露。本地校验不等于 MCP 市场数据正式开放。
+市场数据的起止和截止日取自扁平清单 `coverage.start/end`。报告 `data.catalog_inputs` 留存实际版本、清单和文件 SHA-256、已知覆盖缺口；价格口径、由价格轴派生的日历等限制仍需披露。来源和完整性校验不改变数据清单声明的覆盖范围。
 
 - 日期是 YYYY-MM-DD；Parquet 也可为无时区午夜日期类型，不能输入日内时间。
 - 代码必须为字符串，保留前导零。接受 `000001.SZ`、`SZ000001`、六位代码；自动补交易所时 0/3→SZ、6/9→SH、4/8/92→BJ。建议始终给后缀。自定义池仅 A 股；全 A 同时依据历史上市标记及 A 股代码范围，排除 B 股、指数等非股票代码。北交所普通股票范围按 `43`（历史）、`83/87/88`、`92` 号段识别，不把所有 4/8 开头代码视为股票；号段校验不代替历史在市与授权范围验证，也不自动映射新旧证券代码。号段依据见[北交所证券代码编制指引](https://www.bse.cn/jygl_list/200021626.html)及[历史代码对照表](https://www.bse.cn/service/code_mapping.html)。

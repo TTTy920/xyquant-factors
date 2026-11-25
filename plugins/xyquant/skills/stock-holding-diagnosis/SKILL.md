@@ -37,7 +37,7 @@ description: 输入一只 A 股代码，查询四因子同日截面排名、四�
 python <本Skill>/scripts/mcp_transfer.py save --kind <factors或holdings> --job <任务ID> --project <项目绝对路径>
 ```
 
-OpenCode 可使用[单次回环交接](references/host-transfer.md)；不将 MCP 的带票据结果作为 Code Mode 输出。若没有可用的安全交接，报告阻塞，不回显任务对象或改用 SSH。归因包约百余 MB，由本地下载器流式下载；它不是 MCP 工具响应的一部分。
+OpenCode 可使用[单次回环交接](references/host-transfer.md)；不将 MCP 的带票据结果作为 Code Mode 输出。若没有可用的安全交接，报告阻塞，不回显任务对象或改用 SSH。持仓包由本地下载器流式下载，实际大小以任务返回值为准；文件内容不放在 MCP 工具响应中。
 
 ## 数据来源限制
 

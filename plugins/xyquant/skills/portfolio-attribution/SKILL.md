@@ -5,7 +5,7 @@ description: 用 inputs/datasets 的基础数据、MCP 或自带的持仓权重�
 
 # 组合收益归因
 
-**持仓之外的输入只从 `<项目>/xyquant-data/inputs/datasets/` 读，不回退 MCP 原包内的其他文件。** 基础数据包括交易日历、年度市场日收益和市值，及适用的十个风格暴露、月度行业。组合、基准权重和快照可来自 MCP 或用户本地。缺数据时按实际状态说明，不换来源。
+**持仓之外的输入只从 `<项目>/xyquant-data/inputs/datasets/` 读，不回退 MCP 原包内的其他文件。** 基础数据包括交易日历、年度市场日收益和市值，及适用的十个风格暴露、月度行业。缺少或过期时按[基础数据下载](../../references/datasets.md)通过 `query_stock_data` 分包下载并校验。组合、基准权重和快照可来自 MCP 或用户本地。缺数据时按实际状态说明，不换来源。
 
 ## 选择持仓入口
 
@@ -22,7 +22,7 @@ description: 用 inputs/datasets 的基础数据、MCP 或自带的持仓权重�
    ```text
    python3 <Skill绝对路径>/scripts/download_original.py status --project <已有项目绝对路径> --data-version <data_version> --manifest-sha256 <manifest_sha256>
    ```
-    返回 ready 就把 `data_root` 作为持仓输入，不重复下载。缺缓存时，以 UUID `request_id` 和目录版本调用 `query_stock_data(dataset="attribution_bundle", data_version=..., request_id=...)`；现有服务仍传完整原包，不传日期或股票筛选，但归因只使用其中的持仓、基准权重及快照。网络重试复用原编号；只传 `job_id` 查询就绪状态。
+    返回 ready 就把 `data_root` 作为持仓输入，不重复下载。缺缓存时，以 UUID `request_id` 和目录版本调用 `query_stock_data(dataset="attribution_bundle", data_version=..., request_id=...)`；该包只提供持仓、基准权重及快照，不传日期或股票筛选；市场基础数据按上述独立入口获取。网络重试复用原编号；只传 `job_id` 查询就绪状态。
 3. 把ready任务JSON作为数据通过不回显的进程标准输入传给下载脚本：
    ```text
    python3 <Skill绝对路径>/scripts/download_original.py save --project <已有项目绝对路径>

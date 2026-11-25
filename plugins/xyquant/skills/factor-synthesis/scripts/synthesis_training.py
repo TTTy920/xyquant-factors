@@ -25,8 +25,8 @@ def load_config(project, path, score_date, pool):
             raise ValueError
     except (OSError, ValueError, TypeError, KeyError, RecursionError, download.DownloadError):
         raise SynthesisError("无法读取训练配置；须使用项目内的 RankIC 本地配置") from None
-    if data.get("origin") != "local_reference":
-        raise SynthesisError("自动定权仍需要本地复权价、交易日历及适用的历史在市数据")
+    if data.get("origin") not in ("local_reference", "xyquant_server"):
+        raise SynthesisError("自动定权需要已校验的复权价、交易日历及适用的历史在市数据")
     if not iso_date(params.get("start")) <= iso_date(params.get("end")) < score_date:
         raise SynthesisError("训练观察窗口必须结束于合成日之前")
     if params.get("pool") != ("custom" if pool else "all_a") or stock_pool(params.get("codes", ())) != pool:

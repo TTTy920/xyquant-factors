@@ -44,7 +44,7 @@ RankIC测试使用 `factor-rankic`：因子可以来自用户文件或 MCP 授�
 
 四个业务 Skill 将缓存、用户输入和结果放在项目的 `xyquant-data/` 内。基础数据严格读取 `xyquant-data/inputs/datasets/<数据集>/` 下的文件及对应 `manifest.json`：`adjusted-prices`、`trading-calendar`、`listed-history`、`attribution-market`、`barra-exposures`、`industry-classification`。具体计算按需要读取其中的数据集。
 
-当前发布包含四个业务 Skill 及其本地数据读取接口。六套基础数据的 MCP 授权导出和自动落盘尚待接入；依赖它们的计算需要先具备已校验的本地文件。因子查询、导出和既有持仓取数继续使用现有 MCP。数据文件、用户输入和授权凭据不进入插件包。
+当前发布包含四个业务 Skill 及其本地数据读取接口。RankIC 基础数据通过 `query_rankic_data` 下载；归因基础数据通过 `query_stock_data` 分成市场、暴露、日历、行业四包，持仓包独立提供。公共下载器校验后直接放入项目基础数据目录，详细流程见[基础数据下载](plugins/xyquant/references/datasets.md)。服务器按需生成每包、共享固定一小时，到期清理；客户端下载临时文件在完成后清理。因子查询、导出和既有持仓取数继续使用现有 MCP。数据文件、用户输入和授权凭据不进入插件包。
 
 通用因子下载保存在 `downloads/factors/`；四个业务 Skill 使用自己的 `xyquant-data/mcp-cache/` 缓存。客户端应按对应 Skill 的接收命令保存下载任务。
 

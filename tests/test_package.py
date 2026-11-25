@@ -46,7 +46,8 @@ class PackageTest(unittest.TestCase):
                 if source.is_file() and "__pycache__" not in source.parts:
                     self.assertEqual((skill_package / source.relative_to(skill_source)).read_bytes(), source.read_bytes())
             for name in ("xyquant_data.py", "xyquant_catalog.py", "xyquant_flat.py",
-                         "shared/xyquant_download.py", "shared/mcp_receive.py",
+                         "shared/xyquant_download.py", "shared/mcp_receive.py", "shared/dataset_transfer.py",
+                         "xyquant_dataset_download.py", "references/datasets.md",
                          "skills/factor-rankic/scripts/rankic.py", "skills/factor-synthesis/scripts/synthesis.py"):
                 self.assertTrue((pkg / name).is_file(), name)
             for name in ("SKILL.md", "requirements.txt", "scripts/diagnosis.py", "scripts/sources.py",
